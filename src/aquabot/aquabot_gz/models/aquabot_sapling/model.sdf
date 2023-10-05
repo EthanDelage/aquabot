@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<sdf version="1.5">
+  <model name="aquabot_sapling">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <pose>0 0 3.5 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>4 4 7</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <pose>0.0 0.0 0.0 0 0 0 </pose>
+        <geometry>
+          <mesh>
+            <uri>mesh/sapling.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>
