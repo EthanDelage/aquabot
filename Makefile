@@ -1,5 +1,5 @@
 ROS_SOURCE = /opt/ros/humble/setup
-VRX_SOURCE = install/local_setup
+VRX_SOURCE = install/setup
 
 BASH_ROS_SOURCE = $(ROS_SOURCE).bash
 BASH_VRX_SOURCE = $(VRX_SOURCE).bash
