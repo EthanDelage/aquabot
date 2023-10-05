@@ -1,12 +1,12 @@
 ROS_SOURCE = /opt/ros/humble/setup
-VRX_SOURCE = install/setup
+VRX_SOURCE = install/local_setup
 
 BASH_ROS_SOURCE = $(ROS_SOURCE).bash
 BASH_VRX_SOURCE = $(VRX_SOURCE).bash
 ZSH_ROS_SOURCE = $(ROS_SOURCE).zsh
 
 .PHONY: run
-run:
+run: build
 	ros2 launch aquabot_gz competition.launch.py world:=aquabot_regatta > /dev/null &
 
 .PHONY:	build
