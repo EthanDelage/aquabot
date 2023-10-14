@@ -3,16 +3,17 @@ VRX_SOURCE = install/setup
 
 BASH_ROS_SOURCE = $(ROS_SOURCE).bash
 BASH_VRX_SOURCE = $(VRX_SOURCE).bash
+ZSH_VRX_SOURCE = $(VRX_SOURCE).zsh
 ZSH_ROS_SOURCE = $(ROS_SOURCE).zsh
 
 .PHONY: run
-run: build
+run:
 	ros2 launch aquabot_gz competition.launch.py world:=aquabot_regatta > /dev/null &
 
 .PHONY:	build
 build:
 	colcon build --merge-install
-	bash -c ". $(BASH_VRX_SOURCE)"
+	@echo "\e[31mPlease run \". $(ZSH_VRX_SOURCE)\" before running simulation"
 
 .PHONY: fclean
 fclean:
