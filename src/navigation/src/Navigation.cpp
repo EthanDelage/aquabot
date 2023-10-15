@@ -46,16 +46,15 @@ void Navigation::setHeading(double bearing, double range) {
 
 double Navigation::regulator(double bearing) {
 	const double	goal = 0;
-	const double	k = 0.25;
+	const double	k = 0.5;
 	double			gap;
-	double			percentage;
+	double			regulation;
 
-	gap = bearing - goal;
-	gap = (gap + M_PI) / (2 * M_PI);
-	percentage = gap * k;
-	std::cout << "%: " << percentage << std::endl;
-	percentage = std::min(percentage, 1.);
-	percentage = std::max(percentage, 0.);
-	std::cout << "%: " << percentage << std::endl;
-	return (percentage);
+	gap = (goal - bearing) * k;
+	regulation = (gap + M_PI) / (2 * M_PI);
+	std::cout << "Regulation: " << regulation << std::endl;
+	regulation = std::min(regulation, 1.);
+	regulation = std::max(regulation, 0.);
+	std::cout << "%: " << regulation << std::endl;
+	return (regulation);
 }
