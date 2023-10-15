@@ -31,6 +31,7 @@ void Navigation::setHeading(double bearing, double range) {
 	regulation = regulator(bearing);
 	posMsg.data = (POS_MIN + regulation * 2 * POS_MAX);
 	thrustMsg.data = std::abs(std::abs(regulation - 0.5) - 0.5) * 2 * THRUST_MAX;
+	thrustMsg.data = calculateThrust(regulation);
 	if (range < 20) {
 		posMsg.data = 0;
 		thrustMsg.data = 0;
@@ -42,6 +43,19 @@ void Navigation::setHeading(double bearing, double range) {
 	std::cout << "Thrust: " << thrustMsg.data << std::endl << std::endl;
 	_publisherPos->publish(posMsg);
 	_publisherThrust->publish(thrustMsg);
+}
+
+double Navigation::calculateThrust(double regulation) {
+	// Écart-type
+	const double sigma = 0.05;
+	const double amplitude = THRUST_MAX - NAV_THRUST_MIN;
+	// Position où l'amplitude est atteinte
+	const double mean = 0.5;
+	double thrust;
+
+	thrust = amplitude * std::exp(-std::pow(((regulation - mean)) / (sigma * 2), 2));
+	thrust += NAV_THRUST_MIN;
+	return (thrust);
 }
 
 double Navigation::regulator(double bearing) {

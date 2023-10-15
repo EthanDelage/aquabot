@@ -6,9 +6,10 @@
 # include "ros_gz_interfaces/msg/param_vec.hpp"
 # include <cmath>
 
-# define THRUST_MAX 1000
-# define POS_MAX	M_PI_4
-# define POS_MIN	-POS_MAX
+# define THRUST_MAX 	12000
+# define NAV_THRUST_MIN	1000
+# define POS_MAX		M_PI_4
+# define POS_MIN		-POS_MAX
 
 class Navigation : public rclcpp::Node {
 
@@ -26,6 +27,7 @@ private:
 
 	void	pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
 	void	setHeading(double bearing, double range);
+	double	calculateThrust(double regulation);
 	double	regulator(double bearing);
 
 };
