@@ -11,6 +11,8 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(ros_gz_interfaces REQUIRED)
 
+include_directories(include)
+
 add_executable(navigation
           src/main.cpp
           src/Navigation.cpp
