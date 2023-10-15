@@ -6,9 +6,9 @@ include_directories(/opt/ros/humble/include/std_msgs)
 include_directories(/opt/ros/humble/include/sensor_msgs)
 include_directories(/opt/ros/humble/include/ros_gz_interfaces)
 
-include_directories(src/sandbox/include)
+include_directories(src/navigation/include)
 
 add_executable(autoComplete
-				src/sandbox/src/main.cpp
-				src/sandbox/src/Sandbox.cpp
-				src/sandbox/include/sandbox/Sandbox.hpp)
+		src/navigation/src/Navigation.cpp
+		src/navigation/src/main.cpp
+		src/navigation/include/Navigation.hpp)
