@@ -8,11 +8,11 @@ ZSH_ROS_SOURCE = $(ROS_SOURCE).zsh
 
 .PHONY: run
 run:
-	ros2 launch aquabot_gz competition.launch.py world:=aquabot_regatta > /dev/null &
+	ros2 launch aquabot_gz competition.launch.py world:=aquabot_task_easy > /dev/null &
 
 .PHONY:	build
 build:
-	colcon build --merge-install
+	colcon build --base-paths src/ --merge-install
 	@echo "\e[31mPlease run \". $(ZSH_VRX_SOURCE)\" before running simulation"
 
 .PHONY: fclean
