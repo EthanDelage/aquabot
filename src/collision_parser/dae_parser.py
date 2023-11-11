@@ -56,8 +56,8 @@ def get_bounding_box_from_dae(file, rotation):
         mesh = geometry.find("COLLADA:mesh", ns)
         positions = find_positions(mesh)
         positions_array = positions.find("COLLADA:float_array", ns)
-        vertices = [transformation_3D(float(vertex), np.array([1, 1, 1]), rotation, np.array([0, 0, 0])) for vertex in positions_array.text.strip().split()]
-        vertices = [(vertices[i], vertices[i + 1], vertices[i + 2]) for i in range(0, len(vertices), 3)]
+        vertices = [float(vertex) for vertex in positions_array.text.strip().split()]
+        vertices = [transformation_3D((vertices[i], vertices[i + 1], vertices[i + 2]), np.array([1, 1, 1]), rotation, np.array([0,0,0])) for i in range(0, len(vertices), 3)]
         vertices = np.array(vertices)
         min_coord = np.min(vertices, axis=0)
         max_coord = np.max(vertices, axis=0)

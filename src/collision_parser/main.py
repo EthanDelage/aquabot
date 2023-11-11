@@ -2,7 +2,6 @@ import xml.etree.ElementTree as ET
 import numpy as np
 from pprint import pprint
 from dae_parser import get_bounding_box_from_dae
-import transformations as tf
 
 WORLD_PATH = "../aquabot/aquabot_gz/models/aquabot_regatta_world/model.sdf"
 MODEL_PATH = "../aquabot/aquabot_gz/models/"
@@ -162,13 +161,13 @@ def add_rock_map_bounding_box_in_file(rocks):
             # print(rock[1])
             conversion = convert_rock_bounding_box_to_map(rock_dae_box, rock)
             # print(conversion)
-            # print_boat(i + 1, conversion[0][0], conversion[0][1])
+            print_boat(i + 1, conversion[0][0], conversion[0][1])
             i += 1
-            # print_boat(i + 1, conversion[1][0], conversion[1][1])
+            print_boat(i + 1, conversion[1][0], conversion[1][1])
             i += 1
-            # print_boat(i + 1, conversion[2][0], conversion[2][1])
+            print_boat(i + 1, conversion[2][0], conversion[2][1])
             i += 1
-            # print_boat(i + 1, conversion[3][0], conversion[3][1])
+            print_boat(i + 1, conversion[3][0], conversion[3][1])
             i += 1
             file.write(convert_map_bounding_box_to_str(conversion))
 
