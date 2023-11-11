@@ -5,7 +5,7 @@
 using std::placeholders::_1;
 
 Navigation::Navigation() : Node("navigation") {
-	_gain = 0.5;
+	_gain = 0.2;
 	_sigma = 0.05;
 	_benchmark = false;
 	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/wamv/sensors/acoustics/receiver/range_bearing", 10,
