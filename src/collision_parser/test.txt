@@ -1,0 +1,792 @@
+
+    <actor name="ally_1">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>100.6180382482702 -23.288076529411995 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_2">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>144.32379632232198 -77.3160008307418 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_3">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>100.6180382482702 -77.3160008307418 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_4">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>144.32379632232198 -23.288076529411995 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_5">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-131.2204034646104 17.084251046677643 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_6">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-168.34151535333524 -18.905505645252433 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_7">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-131.2204034646104 -18.905505645252433 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_8">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-168.34151535333524 17.084251046677643 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_9">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-180.4572170228213 49.0058337925112 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_10">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-132.28951848508484 13.151912745527124 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_11">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-180.4572170228213 13.151912745527124 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_12">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-132.28951848508484 49.0058337925112 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_13">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>108.81366855633739 108.41184697579041 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_14">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>107.31716965895143 153.55534745389542 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_15">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>108.81366855633739 153.55534745389542 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_16">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>107.31716965895143 108.41184697579041 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_17">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>136.91920620358138 184.18362841318734 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_18">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>86.00253868475072 152.35977652650658 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_19">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>136.91920620358138 152.35977652650658 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_20">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>86.00253868475072 184.18362841318734 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_21">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-6.806781999999998 -67.21926577903531 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_22">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>30.371602 -125.9453871205946 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_23">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-6.806781999999998 -125.9453871205946 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_24">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>30.371602 -67.21926577903531 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_25">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>52.57167364218371 172.9667495287667 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_26">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>122.07556740506479 172.5214221512762 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_27">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>52.57167364218371 172.5214221512762 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_28">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>122.07556740506479 172.9667495287667 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_29">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-112.35758781280026 176.24709309632448 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_30">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-76.05382681492617 186.31468817936994 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_31">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-112.35758781280026 186.31468817936994 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_32">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-76.05382681492617 176.24709309632448 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_33">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-76.01816613335845 235.66036888586171 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_34">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-9.189181223636776 216.0739459669942 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_35">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-76.01816613335845 216.0739459669942 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_36">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-9.189181223636776 235.66036888586171 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_37">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-66.806782 -109.05432 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_38">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-29.628398 -73.12373 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_39">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-66.806782 -73.12373 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_40">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-29.628398 -109.05432 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_41">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-49.85725006857029 -167.05432 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_42">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-21.55519698031828 -131.12373 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_43">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-49.85725006857029 -131.12373 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
+
+    <actor name="ally_44">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-21.55519698031828 -167.05432 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    
