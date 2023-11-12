@@ -8,7 +8,7 @@ ZSH_ROS_SOURCE = $(ROS_SOURCE).zsh
 
 .PHONY: run
 run:
-	ros2 launch aquabot_gz competition.launch.py world:=aquabot_task_easy > /dev/null &
+	ros2 launch aquabot_gz competition.launch.py world:=aquabot_task_hard > /dev/null &
 
 .PHONY:	build
 build:

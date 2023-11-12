@@ -10,19 +10,29 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(ros_gz_interfaces REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 include_directories(include)
 
 add_executable(navigation
           src/main.cpp
           src/Navigation.cpp
-          include/Navigation.hpp)
+          include/Navigation.hpp
+          src/Graph.cpp
+          include/Graph.hpp
+          src/Pathfinding.cpp
+          include/Pathfinding.hpp)
 
 ament_target_dependencies(navigation
         rclcpp
         sensor_msgs
         ros_gz_interfaces
-        std_msgs)
+        std_msgs
+        geometry_msgs
+        tf2_ros
+        tf2_geometry_msgs)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
