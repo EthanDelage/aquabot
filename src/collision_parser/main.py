@@ -63,84 +63,16 @@ def parse_obstacle_model(model):
     return mesh_poses
 
 # Fonction pour appliquer les rotations
-def apply_rotations(x, y, z, roll, pitch, yaw):
-    # Définir la matrice de rotation pour chaque axe
-    R_roll = np.array([[1, 0, 0], [0, np.cos(roll), -np.sin(roll)], [0, np.sin(roll), np.cos(roll)]])
-    R_pitch = np.array([[np.cos(pitch), 0, np.sin(pitch)], [0, 1, 0], [-np.sin(pitch), 0, np.cos(pitch)]])
-    R_yaw = np.array([[np.cos(yaw), -np.sin(yaw), 0], [np.sin(yaw), np.cos(yaw), 0], [0, 0, 1]])
 
-    # Combiner les matrices de rotation pour obtenir la matrice de rotation totale
-    R_total = np.dot(R_yaw, np.dot(R_pitch, R_roll))
-
-    # Appliquer la rotation au vecteur [x, y, z]
-    rotated_vector = np.dot(R_total, np.array([x, y, z]))
-    return rotated_vector
-
-
-def transformation_3D(point, scale, rotation, translation):
-    """
-    Applique une transformation 3D à un point.
-
-    Arguments :
-    point : np.array, point 3D à transformer
-    scale : np.array, vecteur 3D de scaling
-    rotation : np.array, vecteur 3D d'angles de rotation en radians
-    translation : np.array, vecteur 3D de translation
-
-    Returns :
-    np.array, point transformé
-    """
-    rotation = np.array([0, 0, 0])
-    # Matrice de scaling
-    scale_matrix = np.diag(scale)
-
-    # Matrice de rotation autour de l'axe x
-    rotation_x = np.array([[1, 0, 0],
-                           [0, np.cos(rotation[0]), -np.sin(rotation[0])],
-                           [0, np.sin(rotation[0]), np.cos(rotation[0])]])
-
-    # Matrice de rotation autour de l'axe y
-    rotation_y = np.array([[np.cos(rotation[1]), 0, np.sin(rotation[1])],
-                           [0, 1, 0],
-                           [-np.sin(rotation[1]), 0, np.cos(rotation[1])]])
-
-    # Matrice de rotation autour de l'axe z
-    rotation_z = np.array([[np.cos(rotation[2]), -np.sin(rotation[2]), 0],
-                           [np.sin(rotation[2]), np.cos(rotation[2]), 0],
-                           [0, 0, 1]])
-
-    # Matrice de rotation totale dans l'ordre x, y, z
-    rotation_matrix = rotation_z.dot(rotation_y).dot(rotation_x)
-
-    # Appliquer la transformation complète
-    transformed_point = scale_matrix.dot(rotation_matrix).dot(point) + translation
-
-    return transformed_point
-
-
-def convert_mesh_point_to_map(point, translation, rotation, scale):
-    # point = apply_rotations(point[0], point[1], point[2], rotation[0], rotation[1], rotation[2])
-    # point *= scale
-    # point += translation
-    # Appliquez la rotation, la translation et la mise à l'échelle
-    # transformation_matrix = tf.euler_matrix(*rotation, 'sxyz')
-    # transformation_matrix[:3, 3] = translation
-    # transformation_matrix[:3, :3] *= scale
-    #
-    # # Mettez à jour la balise <pose> avec la nouvelle position et orientation
-    # new_pose_values = tf.euler_from_matrix(transformation_matrix, 'sxyz') + translation
-
-    return transformation_3D(point, scale, rotation, translation)
-    # return point
-
-
-def convert_rock_bounding_box_to_map(dae_bounding_box, rock):
-    point1 = convert_mesh_point_to_map(dae_bounding_box[0][0], rock[0][:3], rock[0][3:], rock[1])
+def convert_rock_bounding_box_to_map(points):
+    point1 = points[0][0]
     point1[2] = 0
-    point2 = convert_mesh_point_to_map(dae_bounding_box[0][1], rock[0][:3], rock[0][3:], rock[1])
+    point2 = points[0][1]
     point2[2] = 0
     point3 = np.array([point1[0], point2[1], 0])
     point4 = np.array([point2[0], point1[1], 0])
+    print(point1)
+    print(point2)
     return point1, point2, point3, point4
 
 
@@ -156,10 +88,10 @@ def add_rock_map_bounding_box_in_file(rocks):
     i = 0
     with open("rocks.txt", "w") as file:
         for rock in rocks:
-            rock_dae_box = get_bounding_box_from_dae("../aquabot/aquabot_gz/models/aquabot_rock/mesh/rock.dae", rock[0][3:])
+            rock_dae_box = get_bounding_box_from_dae("../aquabot/aquabot_gz/models/aquabot_rock/mesh/rock.dae", rock[1], rock[0][3:], rock[0][:3])
             # print(rock[0])
             # print(rock[1])
-            conversion = convert_rock_bounding_box_to_map(rock_dae_box, rock)
+            conversion = convert_rock_bounding_box_to_map(rock_dae_box)
             # print(conversion)
             print_boat(i + 1, conversion[0][0], conversion[0][1])
             i += 1

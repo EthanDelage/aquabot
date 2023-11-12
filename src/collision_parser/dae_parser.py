@@ -15,8 +15,12 @@ def transformation_3D(point, scale, rotation, translation):
     np.array, point transformé
     """
     # Matrice de scaling
+    # print(f"Scale {scale}")
+    # print(f"Rotation {rotation}")
+    # print(f"Translation {translation}")
     scale_matrix = np.diag(scale)
 
+    scale += np.array([.3, .3, 0])
     # Matrice de rotation autour de l'axe x
     rotation_x = np.array([[1, 0, 0],
                            [0, np.cos(rotation[0]), -np.sin(rotation[0])],
@@ -41,7 +45,7 @@ def transformation_3D(point, scale, rotation, translation):
     return transformed_point
 
 
-def get_bounding_box_from_dae(file, rotation):
+def get_bounding_box_from_dae(file, scale, rotation, translation):
     tree = ET.parse(file)
     root = tree.getroot()
     ns = {
@@ -57,10 +61,14 @@ def get_bounding_box_from_dae(file, rotation):
         positions = find_positions(mesh)
         positions_array = positions.find("COLLADA:float_array", ns)
         vertices = [float(vertex) for vertex in positions_array.text.strip().split()]
-        vertices = [transformation_3D((vertices[i], vertices[i + 1], vertices[i + 2]), np.array([1, 1, 1]), rotation, np.array([0,0,0])) for i in range(0, len(vertices), 3)]
+        print(vertices)
+        vertices = [(vertices[i], vertices[i + 1], vertices[i + 2]) for i in range(0, len(vertices), 3)]
+        vertices = [transformation_3D(vertex, scale, rotation, translation) for vertex in vertices]
         vertices = np.array(vertices)
         min_coord = np.min(vertices, axis=0)
+        print(f"min_coord: {min_coord}")
         max_coord = np.max(vertices, axis=0)
+        print(f"max_coord: {max_coord}")
         bounding_boxes.append((min_coord, max_coord))
     return bounding_boxes
 
@@ -75,5 +83,6 @@ def find_positions(mesh):
 
 
 if __name__ == "__main__":
-    bounding_box = get_bounding_box_from_dae("../aquabot/aquabot_gz/models/aquabot_rock/mesh/rock.dae")
-    print(bounding_box)
+    pass
+    # # bounding_box = get_bounding_box_from_dae("../aquabot/aquabot_gz/models/aquabot_rock/mesh/rock.dae")
+    # print(bounding_box)
