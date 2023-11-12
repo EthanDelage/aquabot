@@ -70,9 +70,9 @@ double Pathfinding::calculateDist(point_t a, point_t b) {
 	return (std::sqrt(std::pow(b.x - a.x, 2) + std::pow(b.y - a.y, 2)));
 }
 
-bool Pathfinding::isHitObstacle(point_t start, point_t end, rectangle_t obstacle) {
-	return (isIntersect(start, end, obstacle.a, obstacle.b)
-			|| isIntersect(start, end, obstacle.b, obstacle.c)
-			|| isIntersect(start, end, obstacle.c, obstacle.d)
-			|| isIntersect(start, end, obstacle.d, obstacle.a));
-}
+//bool Pathfinding::isHitObstacle(point_t start, point_t end, rectangle_t obstacle) {
+//	return (isIntersect(start, end, obstacle.a, obstacle.b)
+//			|| isIntersect(start, end, obstacle.b, obstacle.c)
+//			|| isIntersect(start, end, obstacle.c, obstacle.d)
+//			|| isIntersect(start, end, obstacle.d, obstacle.a));
+//}

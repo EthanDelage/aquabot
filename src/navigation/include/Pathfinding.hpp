@@ -39,8 +39,8 @@ private:
 	void						generateObstaclesGraph();
 	void 						addObstacleAdjList(rectangle_t const & obstacle, size_t index);
 	static double				calculateDist(point_t a, point_t b);
-	static bool					isHitObstacle(point_t start, point_t end, rectangle_t obstacle);
-	static bool					isIntersect(point_t p1, point_t q1, point_t p2, point_t q2);
+//	static bool					isHitObstacle(point_t start, point_t end, rectangle_t obstacle);
+//	static bool					isIntersect(point_t p1, point_t q1, point_t p2, point_t q2);
 
 public:
 	Pathfinding();
