@@ -7,8 +7,11 @@ include_directories(/opt/ros/humble/include/sensor_msgs)
 include_directories(/opt/ros/humble/include/ros_gz_interfaces)
 
 include_directories(src/navigation/include)
+include_directories(src/perception/include)
 
 add_executable(autoComplete
 		src/navigation/src/Navigation.cpp
 		src/navigation/src/main.cpp
-		src/navigation/include/Navigation.hpp)
+		src/navigation/include/Navigation.hpp
+		src/perception/src/Perception.cpp
+		src/perception/src/main.cpp)
