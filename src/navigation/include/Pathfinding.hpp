@@ -22,10 +22,8 @@ typedef struct point_s {
 } point_t;
 
 typedef struct rectangle_s {
-	point_t a;
-	point_t	b;
-	point_t c;
-	point_t d;
+	size_t	id;
+	point_t point[4];
 } rectangle_t;
 
 class Pathfinding {
@@ -38,9 +36,12 @@ private:
 	rectangle_t					parseBoundingBox(std::string const & strBoundingBox);
 	void						generateObstaclesGraph();
 	void 						addObstacleAdjList(rectangle_t const & obstacle, size_t index);
+	void						generateAdjList(rectangle_t const & lhs, rectangle_t const & rhs);
 	static double				calculateDist(point_t a, point_t b);
-//	static bool					isHitObstacle(point_t start, point_t end, rectangle_t obstacle);
-//	static bool					isIntersect(point_t p1, point_t q1, point_t p2, point_t q2);
+	static bool					isHitObstacle(point_t const start, point_t const end, rectangle_t const & obstacle);
+	static bool					isHitItself(point_t const start, point_t const end, rectangle_t const & obstacle, size_t index);
+	static bool					isIntersect(point_t p1, point_t q1, point_t p2, point_t q2);
+	static bool					areRectangleEqual(rectangle_t const & lhs, rectangle_t const & rhs);
 
 public:
 	Pathfinding();

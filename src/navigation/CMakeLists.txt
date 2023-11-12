@@ -23,7 +23,8 @@ add_executable(navigation
           src/Graph.cpp
           include/Graph.hpp
           src/Pathfinding.cpp
-          include/Pathfinding.hpp)
+          include/Pathfinding.hpp
+          src/collision.cpp)
 
 ament_target_dependencies(navigation
         rclcpp

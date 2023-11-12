@@ -14,6 +14,18 @@
 static int orientation(point_t p, point_t q, point_t r);
 static bool onSegment(point_t p, point_t q, point_t r);
 
+bool Pathfinding::isHitObstacle(point_t const start, point_t const end, rectangle_t const & obstacle) {
+	return (isIntersect(start, end, obstacle.point[0], obstacle.point[1])
+		|| isIntersect(start, end, obstacle.point[1], obstacle.point[2])
+		|| isIntersect(start, end, obstacle.point[2], obstacle.point[3])
+		|| isIntersect(start, end, obstacle.point[3], obstacle.point[0]));
+}
+
+bool Pathfinding::isHitItself(const point_t start, const point_t end, const rectangle_t& obstacle, size_t index) {
+	return (isIntersect(start, end, obstacle.point[(index + 1) % 4], obstacle.point[(index + 2) % 4]))
+		|| isIntersect(start, end, obstacle.point[(index + 2) % 4], obstacle.point[(index + 3) % 4]);
+}
+
 // Vérifie si deux segments se coupent
 bool Pathfinding::isIntersect(point_t p1, point_t q1, point_t p2, point_t q2) {
 	// Trouver les quatre orientations nécessaires pour l'intersection
