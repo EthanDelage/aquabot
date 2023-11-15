@@ -1,6 +1,7 @@
 #ifndef NAVIGATION_HPP
 #define NAVIGATION_HPP
 
+# include "point.hpp"
 # include "rclcpp/rclcpp.hpp"
 # include "std_msgs/msg/float64.hpp"
 # include "ros_gz_interfaces/msg/param_vec.hpp"
@@ -33,12 +34,17 @@ public:
 	Navigation(double gain, double sigma);
 
 private:
-	double	_bearing;
-	double	_range;
-	double	_gain;
+	bool							_buoyPing;
+	bool 							_gpsPing;
+	double							_bearing;
+	double							_range;
+	point_t							_buoyPos;
+	point_t							_boatPos;
+	double							_gain;
 	// Écart-type
-	double	_sigma;
-	bool	_benchmark;
+	double							_sigma;
+	bool							_benchmark;
+	geometry_msgs::msg::Quaternion	_orientation;
 
 	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_pinger;
 	rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr		_gps;
@@ -55,7 +61,8 @@ private:
 	void	setHeading(double bearing, double range);
 	double	calculateThrust(double regulation);
 	double	regulator(double bearing);
-	std::pair<double, double>	calculateMapPos(double latitude, double longitude);
+	double	convertToMinusPiPi(double angleRadians);
+	void	calculateMapPos(double latitude, double longitude);
 };
 
 

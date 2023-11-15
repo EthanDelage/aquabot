@@ -14,4 +14,4 @@ include_directories(src/navigation/include)
 add_executable(autoComplete
 		src/navigation/src/Navigation.cpp
 		src/navigation/src/main.cpp
-		src/navigation/include/Navigation.hpp src/navigation/src/Pathfinding.cpp src/navigation/src/Graph.cpp src/navigation/include/Graph.hpp src/navigation/include/Pathfinding.hpp src/navigation/src/collision.cpp)
+		src/navigation/include/Navigation.hpp src/navigation/src/Pathfinding.cpp src/navigation/src/Graph.cpp src/navigation/include/Graph.hpp src/navigation/include/Pathfinding.hpp src/navigation/src/collision.cpp src/navigation/include/point.hpp)

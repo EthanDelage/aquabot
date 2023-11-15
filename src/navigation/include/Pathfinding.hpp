@@ -13,13 +13,9 @@
 # define PATHFINDING_HPP
 
 # include "Graph.hpp"
+# include "point.hpp"
 
 # define OBSTACLE_FILE	"src/navigation/obstacles.txt"
-
-typedef struct point_s {
-	double	x;
-	double	y;
-} point_t;
 
 typedef struct rectangle_s {
 	size_t	id;
