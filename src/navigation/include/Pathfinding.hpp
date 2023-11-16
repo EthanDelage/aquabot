@@ -27,12 +27,16 @@ class Pathfinding {
 private:
 	std::vector<rectangle_t>	_obstacles;
 	Graph						_obstaclesGraph;
+	point_t						_buoyPos;
+	size_t						_buoyGraphIndex;
 
 	std::vector<rectangle_t>	parseObstacles();
 	rectangle_t					parseBoundingBox(std::string const & strBoundingBox);
 	void						generateObstaclesGraph();
 	void 						addObstacleAdjList(rectangle_t const & obstacle, size_t index);
 	void						generateAdjList(rectangle_t const & lhs, rectangle_t const & rhs);
+	void						generateNodeAdjList(point_t nodePos, size_t nodeIndex, Graph& graph);
+	std::vector<int>			djikstra(int start, int end, adjList_t const & adjList);
 	static double				calculateDist(point_t a, point_t b);
 	static bool					isHitObstacle(point_t const start, point_t const end, rectangle_t const & obstacle);
 	static bool					isHitItself(point_t const start, point_t const end, rectangle_t const & obstacle, size_t index);
@@ -41,6 +45,10 @@ private:
 
 public:
 	Pathfinding();
+
+	void					addBuoy(point_t buoyPos);
+	size_t 					addBoat(point_t boatPos, Graph& graph);
+	std::vector<point_t>	calculatePath(point_t boatPos);
 
 };
 

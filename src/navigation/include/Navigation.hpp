@@ -2,6 +2,7 @@
 #define NAVIGATION_HPP
 
 # include "point.hpp"
+# include "Pathfinding.hpp"
 # include "rclcpp/rclcpp.hpp"
 # include "std_msgs/msg/float64.hpp"
 # include "ros_gz_interfaces/msg/param_vec.hpp"
@@ -44,6 +45,7 @@ private:
 	// Écart-type
 	double							_sigma;
 	bool							_benchmark;
+	Pathfinding						*_pathfinding;
 	geometry_msgs::msg::Quaternion	_orientation;
 
 	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_pinger;

@@ -1,5 +1,4 @@
 #include "Navigation.hpp"
-#include "Pathfinding.hpp"
 
 #include <algorithm>
 
@@ -12,20 +11,23 @@ Navigation::Navigation() : Node("navigation") {
 	_buoyPing = false;
 	try {
 		Pathfinding	pathfinding;
+		_pathfinding = &pathfinding;
+		_pathfinding->addBuoy({8, 9});
+		_pathfinding->calculatePath({1, 1});
 	} catch (std::runtime_error const & e) {
 		std::cerr << e.what() << std::endl;
 		exit(1);
 	}
-	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/wamv/sensors/acoustics/receiver/range_bearing", 10,
-				std::bind(&Navigation::pingerCallback, this, _1));
-	_gps = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/sensors/gps/gps/fix", 10,
-				std::bind(&Navigation::gpsCallback, this, _1));
-	_imu = create_subscription<sensor_msgs::msg::Imu>("/wamv/sensors/imu/imu/data", 10,
-				std::bind(&Navigation::imuCallback, this, _1));
-	_alliesPos = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/ais_sensor/allies_position", 10,
-				std::bind(&Navigation::alliesPosCallback, this, _1));
-	_publisherThrust = create_publisher<std_msgs::msg::Float64>("/wamv/thrusters/main/thrust", 5);
-	_publisherPos = create_publisher<std_msgs::msg::Float64>("/wamv/thrusters/main/pos", 5);
+//	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/wamv/sensors/acoustics/receiver/range_bearing", 10,
+//				std::bind(&Navigation::pingerCallback, this, _1));
+//	_gps = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/sensors/gps/gps/fix", 10,
+//				std::bind(&Navigation::gpsCallback, this, _1));
+//	_imu = create_subscription<sensor_msgs::msg::Imu>("/wamv/sensors/imu/imu/data", 10,
+//				std::bind(&Navigation::imuCallback, this, _1));
+//	_alliesPos = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/ais_sensor/allies_position", 10,
+//				std::bind(&Navigation::alliesPosCallback, this, _1));
+//	_publisherThrust = create_publisher<std_msgs::msg::Float64>("/wamv/thrusters/main/thrust", 5);
+//	_publisherPos = create_publisher<std_msgs::msg::Float64>("/wamv/thrusters/main/pos", 5);
 }
 
 Navigation::Navigation(double gain, double sigma) : Navigation() {
@@ -55,31 +57,22 @@ void Navigation::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 }
 
 void Navigation::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
+	static bool	isCalculate = false;
+	double		yaw;
+
 	_orientation = msg->orientation;
-	double	yaw;
-
-	// roll (x-axis rotation)
-//	double sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
-//	double cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
-//	angles.roll = std::atan2(sinr_cosp, cosr_cosp);
-
-	// pitch (y-axis rotation)
-//	double sinp = std::sqrt(1 + 2 * (q.w * q.y - q.x * q.z));
-//	double cosp = std::sqrt(1 - 2 * (q.w * q.y - q.x * q.z));
-//	angles.pitch = 2 * std::atan2(sinp, cosp) - M_PI / 2;
-
-	// yaw (z-axis rotation)
 	double siny_cosp = 2 * (_orientation.w * _orientation.z + _orientation.x * _orientation.y);
 	double cosy_cosp = 1 - 2 * (_orientation.y * _orientation.y + _orientation.z * _orientation.z);
 	yaw = std::atan2(siny_cosp, cosy_cosp);
-	if (_buoyPing && _gpsPing) {
+	if (_buoyPing && _gpsPing && !isCalculate) {
 		_buoyPing = false;
 		_gpsPing = false;
 		double	buoyOrientation = convertToMinusPiPi(yaw + _bearing);
 		_buoyPos.x = _range * std::cos(buoyOrientation) + _boatPos.y;
 		_buoyPos.y = _range * std::sin(buoyOrientation) + _boatPos.x;
-		std::cout << "Buoy: [" << _buoyPos.x << ", " << _buoyPos.y << "]" << std::endl;
-		std::cout << "Boat: [" << _boatPos.x << ", " << _boatPos.y << "]" << std::endl;
+		isCalculate = true;
+		_pathfinding->addBuoy(_buoyPos);
+		std::cout << "Buoy pos: [" << _buoyPos.x << ", " << _buoyPos.y << "]" << std::endl;
 	}
 }
 

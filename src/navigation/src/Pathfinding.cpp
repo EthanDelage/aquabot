@@ -19,39 +19,38 @@ Pathfinding::Pathfinding() :
 	generateObstaclesGraph();
 }
 
-std::vector<rectangle_t> Pathfinding::parseObstacles() {
-	std::vector<rectangle_t>	obstacles;
-	std::string					line;
-	std::ifstream				obstacleFile(OBSTACLE_FILE);
-
-	obstacles.clear();
-	if (!obstacleFile.is_open())
-		throw (std::runtime_error(std::string("Cannot open ") + OBSTACLE_FILE));
-	while (!obstacleFile.eof()) {
-		std::getline(obstacleFile, line, '\n');
-		if (!line.empty())
-			obstacles.push_back(parseBoundingBox(line));
-	}
-	obstacleFile.close();
-	return (obstacles);
+void Pathfinding::addBuoy(point_t buoyPos) {
+	_buoyPos.x = buoyPos.x;
+	_buoyPos.y = buoyPos.y;
+	_buoyGraphIndex = _obstaclesGraph.addVertex();
+	generateNodeAdjList(_buoyPos, _buoyGraphIndex, _obstaclesGraph);
 }
 
-rectangle_t Pathfinding::parseBoundingBox(const std::string& strBoundingBox) {
-	static size_t	id = 0;
-	rectangle_t		boudingBox;
-	char*			rest;
+size_t Pathfinding::addBoat(point_t boatPos, Graph& graph) {
+	size_t	boatIndex;
 
-	boudingBox.point[0].x = strtod(strBoundingBox.c_str(), &rest);
-	boudingBox.point[0].y = strtod(rest + 1, &rest);
-	boudingBox.point[1].x = strtod(rest + 1, &rest);
-	boudingBox.point[1].y = strtod(rest + 1, &rest);
-	boudingBox.point[2].x = strtod(rest + 1, &rest);
-	boudingBox.point[2].y = strtod(rest + 1, &rest);
-	boudingBox.point[3].x = strtod(rest + 1, &rest);
-	boudingBox.point[3].y = strtod(rest + 1, NULL);
-	boudingBox.id = id;
-	++id;
-	return (boudingBox);
+	boatIndex = graph.addVertex();
+	generateNodeAdjList(boatPos, boatIndex, graph);
+	std::cout << std::endl;
+	graph.printGraph();
+	return (boatIndex);
+}
+
+std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
+	Graph				graph(_obstaclesGraph);
+	size_t				boatIndex;
+	std::vector<int>	path;
+
+	boatIndex = addBoat(boatPos, graph);
+
+	//implement djikstra algorithm
+	path = djikstra(boatIndex, _buoyGraphIndex, graph.getAdjList());
+
+	return (std::vector<point_t>());
+}
+
+std::vector<int> Pathfinding::djikstra(int start, int end, const adjList_t& adjList) {
+	return (std::vector<int>());
 }
 
 void Pathfinding::generateObstaclesGraph() {
@@ -94,10 +93,63 @@ void Pathfinding::generateAdjList(const rectangle_t& lhs, const rectangle_t& rhs
 	}
 }
 
+void Pathfinding::generateNodeAdjList(point_t nodePos, size_t nodeIndex, Graph& graph) {
+	for (size_t i = 0; i != _obstacles.size(); ++i) {
+		for (size_t j = 0; j < 4; ++j) {
+			if (!isHitItself(nodePos, _obstacles[i].point[j], _obstacles[i], j)) {
+				if (_obstacles.size() > 1) {
+					for (auto obstacle : _obstacles) {
+						if (!areRectangleEqual(obstacle, _obstacles[i])
+							&& !isHitObstacle(nodePos, _obstacles[i].point[j], obstacle))
+							graph.addEdge(nodeIndex, i * 4 + j, calculateDist(nodePos, _obstacles[i].point[j]));
+					}
+				} else {
+					graph.addEdge(nodeIndex, i * 4 + j, calculateDist(nodePos, _obstacles[i].point[j]));
+				}
+			}
+		}
+	}
+}
+
 double Pathfinding::calculateDist(point_t a, point_t b) {
 	return (std::sqrt(std::pow(b.x - a.x, 2) + std::pow(b.y - a.y, 2)));
 }
 
 bool Pathfinding::areRectangleEqual(const rectangle_t& lhs, const rectangle_t& rhs) {
 	return (lhs.point == rhs.point);
+}
+
+std::vector<rectangle_t> Pathfinding::parseObstacles() {
+	std::vector<rectangle_t>	obstacles;
+	std::string					line;
+	std::ifstream				obstacleFile(OBSTACLE_FILE);
+
+	obstacles.clear();
+	if (!obstacleFile.is_open())
+		throw (std::runtime_error(std::string("Cannot open ") + OBSTACLE_FILE));
+	while (!obstacleFile.eof()) {
+		std::getline(obstacleFile, line, '\n');
+		if (!line.empty())
+			obstacles.push_back(parseBoundingBox(line));
+	}
+	obstacleFile.close();
+	return (obstacles);
+}
+
+rectangle_t Pathfinding::parseBoundingBox(const std::string& strBoundingBox) {
+	static size_t	id = 0;
+	rectangle_t		boudingBox;
+	char*			rest;
+
+	boudingBox.point[0].x = strtod(strBoundingBox.c_str(), &rest);
+	boudingBox.point[0].y = strtod(rest + 1, &rest);
+	boudingBox.point[1].x = strtod(rest + 1, &rest);
+	boudingBox.point[1].y = strtod(rest + 1, &rest);
+	boudingBox.point[2].x = strtod(rest + 1, &rest);
+	boudingBox.point[2].y = strtod(rest + 1, &rest);
+	boudingBox.point[3].x = strtod(rest + 1, &rest);
+	boudingBox.point[3].y = strtod(rest + 1, NULL);
+	boudingBox.id = id;
+	++id;
+	return (boudingBox);
 }
