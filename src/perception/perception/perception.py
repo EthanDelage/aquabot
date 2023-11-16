@@ -1,3 +1,5 @@
+import math
+
 import cv2
 import numpy as np
 import rclpy
@@ -7,17 +9,30 @@ from cv_bridge import CvBridge
 from uuid import uuid4
 
 from sensor_msgs.msg import Image
-
+from sensor_msgs.msg import CameraInfo
+from sensor_msgs.msg import PointCloud2
 
 class Perception(Node):
 
     def __init__(self):
         super().__init__('perception')
-        self.subscription = self.create_subscription(
+        self.image_subscription = self.create_subscription(
             Image,
             '/wamv/sensors/cameras/main_camera_sensor/image_raw',
             self.image_callback,
             10)
+        self.camera_subscription = self.create_subscription(
+            CameraInfo,
+            '/wamv/sensors/cameras/main_camera_sensor/camera_info',
+            self.camera_callback,
+            10
+        )
+        self.lidar_subscription = self.create_subscription(
+            PointCloud2,
+            '/wamv/sensors/lidars/lidar_wamv_sensor/points',
+            self.lidar_callback,
+            10
+        )
         self.bridge = CvBridge()
         self.image = None
 
@@ -36,6 +51,20 @@ class Perception(Node):
             cv.imwrite(
                 'src/perception/resource/negative/{}.jpg'.format(uuid4()),
                 self.image)
+
+    def camera_callback(self, msg):
+        projection_matrix = msg.p
+        image_width = msg.width
+        fx = projection_matrix[0]
+
+        fov_horizontal = 2 * math.atan(image_width / (2 * fx))
+        fov_horizontal_degrees = math.degrees(fov_horizontal)
+        # print(fov_horizontal)
+        # print(fov_horizontal_degrees)
+        # print(projection_matrix)
+
+    def lidar_callback(self, msg):
+        print(msg)
 
     @staticmethod
     def is_contour_inside_rect(contour1, contour2):
