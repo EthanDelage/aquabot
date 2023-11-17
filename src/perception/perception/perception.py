@@ -12,6 +12,12 @@ from sensor_msgs.msg import Image
 from sensor_msgs.msg import CameraInfo
 from sensor_msgs.msg import PointCloud2
 
+import numpy as np
+import matplotlib.pyplot as plt
+
+import struct
+
+
 class Perception(Node):
 
     def __init__(self):
@@ -63,8 +69,60 @@ class Perception(Node):
         # print(fov_horizontal_degrees)
         # print(projection_matrix)
 
-    def lidar_callback(self, msg):
-        print(msg)
+    def lidar_callback(self, point_cloud_msg):
+        if point_cloud_msg.data:
+            # Assuming XYZ point cloud data with float32 encoding
+            # Get the point cloud data as a bytearray
+            data_buffer = bytearray(point_cloud_msg.data)
+
+            # Define variables for the point cloud data
+            points = []
+            point_size = len(point_cloud_msg.fields)  # Number of fields per point (e.g., x, y, z)
+
+            # Calculate the offset and stride for XYZ (assuming x, y, z are the first 3 fields)
+            x_offset = point_cloud_msg.fields[0].offset
+            y_offset = point_cloud_msg.fields[1].offset
+            z_offset = point_cloud_msg.fields[2].offset
+            point_step = point_cloud_msg.point_step
+
+            # Iterate through the data and extract XYZ coordinates
+            for i in range(0, len(data_buffer), point_step):
+                x = struct.unpack_from('f', data_buffer, i + x_offset)[0]
+                y = struct.unpack_from('f', data_buffer, i + y_offset)[0]
+                z = struct.unpack_from('f', data_buffer, i + z_offset)[0]
+                points.append([x, y, z])
+
+            # Convert the list of points to a NumPy array
+            parsed_points = np.array(points, dtype=np.float32)
+            print(point_cloud_msg.is_dense)
+            print(parsed_points)
+            # Affichage des points dans un nuage 3D avec Matplotlib
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection='3d')
+            ax.set_zlim([0, 70])  # Remplacez min_z_value et max_z_value par les valeurs Z minimales et maximales que vous souhaitez afficher
+            # Réduire la taille des marqueurs pour afficher des points moins hauts
+
+
+# Séparation des coordonnées XYZ
+            x = parsed_points[:, 0]
+            y = parsed_points[:, 1]
+            z = parsed_points[:, 2]
+
+            # Affichage des points
+            ax.scatter(x, y, z, c=z, cmap='viridis', s=1)  # La couleur est basée sur l'axe Z
+
+            # Réglages d'affichage
+            ax.set_xlabel('X Label')
+            ax.set_ylabel('Y Label')
+            ax.set_zlabel('Z Label')
+
+            plt.show()
+            # return points_array
+        return None
+
+
+
+
 
     @staticmethod
     def is_contour_inside_rect(contour1, contour2):
