@@ -42,9 +42,9 @@ size_t Pathfinding::addBoat(point_t boatPos, Graph& graph) {
 std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
 	Graph								graph(_obstaclesGraph);
 	size_t								boatIndex;
-	std::vector<std::pair<int, double>>	reversePath;
-	std::pair<int, double>				current;
-	std::list<int>						path;
+	std::vector<std::pair<size_t, double>>	reversePath;
+	std::pair<size_t, double>				current;
+	std::list<size_t>						path;
 
 	boatIndex = addBoat(boatPos, graph);
 
@@ -61,11 +61,11 @@ std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
 	return (convertNodeToPoint(path));
 }
 
-std::vector<std::pair<int, double>> Pathfinding::djikstra(int start, int end, Graph const & graph) {
-	adjList_t 							adjList;
-	std::vector<int>					visited(1, start);
-	std::pair<int, double>				current(start, 0);
-	std::vector<std::pair<int, double>>	path(graph.getNbVertices(), std::pair<int, double>(-1, std::numeric_limits<double>::infinity()));
+std::vector<std::pair<size_t, double>> Pathfinding::djikstra(size_t start, size_t end, Graph const & graph) {
+	adjList_t 								adjList;
+	std::vector<size_t>						visited(1, start);
+	std::pair<size_t, double>				current(start, 0);
+	std::vector<std::pair<size_t, double>>	path(graph.getNbVertices(), std::pair<int, double>(-1, std::numeric_limits<double>::infinity()));
 
 	adjList = graph.getAdjList();
 	path[start] = current;
@@ -82,13 +82,13 @@ std::vector<std::pair<int, double>> Pathfinding::djikstra(int start, int end, Gr
 	return (path);
 }
 
-bool Pathfinding::isVisited(int index, const std::vector<int>& visited) {
+bool Pathfinding::isVisited(size_t index, const std::vector<size_t>& visited) {
 	return (std::find(visited.begin(), visited.end(), index) != visited.end());
 }
 
-std::pair<int, double> Pathfinding::getMinNode(
-	std::vector<std::pair<int, double>> const & path,
-	std::vector<int> const & visited) {
+std::pair<size_t, double> Pathfinding::getMinNode(
+	std::vector<std::pair<size_t, double>> const & path,
+	std::vector<size_t> const & visited) {
 
 	double					minDist = std::numeric_limits<double>::infinity();
 	std::pair<int, double>	min;
@@ -106,7 +106,7 @@ std::pair<int, double> Pathfinding::getMinNode(
 	return (min);
 }
 
-std::vector<point_t> Pathfinding::convertNodeToPoint(std::list<int> nodePath) {
+std::vector<point_t> Pathfinding::convertNodeToPoint(std::list<size_t> nodePath) {
 	std::vector<point_t>	path;
 
 	for (auto node : nodePath) {

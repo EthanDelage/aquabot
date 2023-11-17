@@ -24,7 +24,7 @@ Graph::Graph(const Graph& other) :
 }
 
 void Graph::addEdge(size_t right, size_t left, double range) {
-	std::pair<int, double>	dest;
+	std::pair<size_t, double>	dest;
 
 	dest.first = left;
 	dest.second = range;
@@ -37,7 +37,7 @@ void Graph::addEdge(size_t right, size_t left, double range) {
  * @return Index of the new vertex
  */
 size_t Graph::addVertex() {
-	std::vector<std::pair<int, double>>	vertexAdjList;
+	std::vector<std::pair<size_t, double>>	vertexAdjList;
 
 	_adjList.push_back(vertexAdjList);
 	++_nbVertices;

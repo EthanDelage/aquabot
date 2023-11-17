@@ -15,7 +15,7 @@
 # include <iostream>
 # include <vector>
 
-typedef std::vector<std::vector<std::pair<int, double>>>	adjList_t;
+typedef std::vector<std::vector<std::pair<size_t, double>>>	adjList_t;
 
 class Graph {
 
