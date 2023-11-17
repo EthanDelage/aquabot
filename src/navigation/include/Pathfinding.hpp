@@ -31,7 +31,7 @@ private:
 	point_t						_buoyPos;
 	size_t						_buoyGraphIndex;
 
-	std::vector<rectangle_t>				parseObstacles();
+	int 									parseObstacles();
 	rectangle_t								parseBoundingBox(std::string const & strBoundingBox);
 	void									generateObstaclesGraph();
 	void 									addObstacleAdjList(rectangle_t const & obstacle, size_t index);
@@ -50,6 +50,7 @@ private:
 public:
 	Pathfinding();
 
+	int						init();
 	void					addBuoy(point_t buoyPos);
 	size_t 					addBoat(point_t boatPos, Graph& graph);
 	std::vector<point_t>	calculatePath(point_t boatPos);

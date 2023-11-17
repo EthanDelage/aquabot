@@ -10,19 +10,16 @@ Navigation::Navigation() : Node("navigation") {
 	_sigma = 0.05;
 	_benchmark = false;
 	_buoyPing = false;
-	try {
-		Pathfinding	pathfinding;
-		_pathfinding = &pathfinding;
-		_pathfinding->addBuoy({9, 9});
-		path = _pathfinding->calculatePath({1, 1});
-		for (auto node : path) {
-			std::cout << "[" << node.x << "," << node.y << "], ";
-		}
-		std::cout << std::endl;
-	} catch (std::runtime_error const & e) {
-		std::cerr << e.what() << std::endl;
+	if (_pathfinding.init() == -1) {
+		std::cout << "Cannot open " <<  OBSTACLE_FILE << std::endl;
 		exit(1);
 	}
+	_pathfinding.addBuoy({9, 9});
+	path = _pathfinding.calculatePath({1, 1});
+	for (auto node : path) {
+		std::cout << "[" << node.x << "," << node.y << "], ";
+	}
+	std::cout << std::endl;
 //	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/wamv/sensors/acoustics/receiver/range_bearing", 10,
 //				std::bind(&Navigation::pingerCallback, this, _1));
 //	_gps = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/sensors/gps/gps/fix", 10,
@@ -76,7 +73,7 @@ void Navigation::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 		_buoyPos.x = _range * std::cos(buoyOrientation) + _boatPos.y;
 		_buoyPos.y = _range * std::sin(buoyOrientation) + _boatPos.x;
 		isCalculate = true;
-		_pathfinding->addBuoy(_buoyPos);
+		_pathfinding.addBuoy(_buoyPos);
 		std::cout << "Buoy pos: [" << _buoyPos.x << ", " << _buoyPos.y << "]" << std::endl;
 	}
 }

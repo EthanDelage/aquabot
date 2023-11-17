@@ -16,9 +16,12 @@
 #include <cmath>
 #include "Pathfinding.hpp"
 
-Pathfinding::Pathfinding() :
-	_obstacles(parseObstacles()),
-	_obstaclesGraph(_obstacles.size() * 4) {
+Pathfinding::Pathfinding() {}
+
+int Pathfinding::init() {
+	if (parseObstacles() == -1)
+		return (-1);
+	_obstaclesGraph.setNbVertices(_obstacles.size() * 4);
 	generateObstaclesGraph();
 }
 
@@ -48,7 +51,6 @@ std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
 
 	boatIndex = addBoat(boatPos, graph);
 
-	//implement djikstra algorithm
 	reversePath = djikstra(boatIndex, _buoyGraphIndex, graph);
 
 	current = reversePath[_buoyGraphIndex];
@@ -69,7 +71,7 @@ std::vector<std::pair<size_t, double>> Pathfinding::djikstra(size_t start, size_
 
 	adjList = graph.getAdjList();
 	path[start] = current;
-	while (current.first != _buoyGraphIndex) {
+	while (current.first != end) {
 		for (auto node : adjList[current.first]) {
 			if (isVisited(node.first, visited) || node.first == current.first)
 				continue;
@@ -184,21 +186,20 @@ bool Pathfinding::areRectangleEqual(const rectangle_t& lhs, const rectangle_t& r
 	return (lhs.point == rhs.point);
 }
 
-std::vector<rectangle_t> Pathfinding::parseObstacles() {
-	std::vector<rectangle_t>	obstacles;
+int Pathfinding::parseObstacles() {
 	std::string					line;
 	std::ifstream				obstacleFile(OBSTACLE_FILE);
 
-	obstacles.clear();
+	_obstacles.clear();
 	if (!obstacleFile.is_open())
-		throw (std::runtime_error(std::string("Cannot open ") + OBSTACLE_FILE));
+		return (-1);
 	while (!obstacleFile.eof()) {
 		std::getline(obstacleFile, line, '\n');
 		if (!line.empty())
-			obstacles.push_back(parseBoundingBox(line));
+			_obstacles.push_back(parseBoundingBox(line));
 	}
 	obstacleFile.close();
-	return (obstacles);
+	return (0);
 }
 
 rectangle_t Pathfinding::parseBoundingBox(const std::string& strBoundingBox) {

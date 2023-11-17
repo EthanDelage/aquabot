@@ -45,7 +45,7 @@ private:
 	// Écart-type
 	double							_sigma;
 	bool							_benchmark;
-	Pathfinding						*_pathfinding;
+	Pathfinding						_pathfinding;
 	geometry_msgs::msg::Quaternion	_orientation;
 
 	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_pinger;

@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "Graph.hpp"
 
-Graph::Graph(size_t nbVertices) : _nbVertices(nbVertices), _adjList(nbVertices) {}
+Graph::Graph() : _nbVertices(0), _adjList(0) {}
 
 Graph::Graph(const Graph& other) :
 	_nbVertices(other._nbVertices),
@@ -47,6 +47,11 @@ size_t Graph::addVertex() {
 size_t Graph::getNbVertices() const {return (_nbVertices);}
 
 adjList_t Graph::getAdjList() const {return (_adjList);}
+
+void Graph::setNbVertices(size_t nbVertices) {
+	_nbVertices = nbVertices;
+	_adjList = adjList_t(_nbVertices);
+}
 
 void Graph::printGraph() {
 	for (size_t i = 0; i < _nbVertices; ++i) {
