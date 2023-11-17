@@ -5,6 +5,7 @@
 using std::placeholders::_1;
 
 Navigation::Navigation() : Node("navigation") {
+	std::vector<point_t>	path;
 	_gain = 0.2;
 	_sigma = 0.05;
 	_benchmark = false;
@@ -12,8 +13,12 @@ Navigation::Navigation() : Node("navigation") {
 	try {
 		Pathfinding	pathfinding;
 		_pathfinding = &pathfinding;
-		_pathfinding->addBuoy({8, 9});
-		_pathfinding->calculatePath({1, 1});
+		_pathfinding->addBuoy({9, 9});
+		path = _pathfinding->calculatePath({1, 1});
+		for (auto node : path) {
+			std::cout << "[" << node.x << "," << node.y << "], ";
+		}
+		std::cout << std::endl;
 	} catch (std::runtime_error const & e) {
 		std::cerr << e.what() << std::endl;
 		exit(1);

@@ -42,46 +42,41 @@ size_t Pathfinding::addBoat(point_t boatPos, Graph& graph) {
 std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
 	Graph								graph(_obstaclesGraph);
 	size_t								boatIndex;
-	std::vector<std::pair<int, double>>	path;
+	std::vector<std::pair<int, double>>	reversePath;
 	std::pair<int, double>				current;
+	std::list<int>						path;
 
 	boatIndex = addBoat(boatPos, graph);
 
 	//implement djikstra algorithm
-	path = djikstra(boatIndex, _buoyGraphIndex, graph);
+	reversePath = djikstra(boatIndex, _buoyGraphIndex, graph);
 
-	current = path[_buoyGraphIndex];
+	current = reversePath[_buoyGraphIndex];
 
-	std::cout << _buoyGraphIndex << ", ";
+	path.push_front(_buoyGraphIndex);
 	while (current.first != boatIndex) {
-		std::cout << current.first << ", ";
-		current = path[current.first];
+		path.push_front(current.first);
+		current = reversePath[current.first];
 	}
-	std::cout << boatIndex << std::endl;
-
-	return (std::vector<point_t>());
+	return (convertNodeToPoint(path));
 }
 
 std::vector<std::pair<int, double>> Pathfinding::djikstra(int start, int end, Graph const & graph) {
 	adjList_t 							adjList;
 	std::vector<int>					visited(1, start);
 	std::pair<int, double>				current(start, 0);
-	std::pair<int, double>				previous;
 	std::vector<std::pair<int, double>>	path(graph.getNbVertices(), std::pair<int, double>(-1, std::numeric_limits<double>::infinity()));
 
 	adjList = graph.getAdjList();
 	path[start] = current;
-	while (current.first != end) {
-		std::cout << "current: " << current.first << std::endl;
+	while (current.first != _buoyGraphIndex) {
 		for (auto node : adjList[current.first]) {
 			if (isVisited(node.first, visited) || node.first == current.first)
 				continue;
 			if (current.second + node.second < path[node.first].second)
 				path[node.first] = std::pair<int, double>(current.first, current.second + node.second);
 		}
-		previous = current;
-		current = getMinNode(path, visited, adjList[current.first]);
-		path[current.first].first = previous.first;
+		current = getMinNode(path, visited);
 		visited.push_back(current.first);
 	}
 	return (path);
@@ -93,8 +88,7 @@ bool Pathfinding::isVisited(int index, const std::vector<int>& visited) {
 
 std::pair<int, double> Pathfinding::getMinNode(
 	std::vector<std::pair<int, double>> const & path,
-	std::vector<int> const & visited,
-	std::vector<std::pair<int, double>> const & nodeAdjList) {
+	std::vector<int> const & visited) {
 
 	double					minDist = std::numeric_limits<double>::infinity();
 	std::pair<int, double>	min;
@@ -102,22 +96,26 @@ std::pair<int, double> Pathfinding::getMinNode(
 
 	for (auto node : path) {
 		if ((node.second < minDist || minDist == std::numeric_limits<double>::infinity())
-			&& !isVisited(index, visited)
-			&& haveEdge(index, nodeAdjList)) {
+			&& !isVisited(index, visited)) {
 			min.second = node.second;
 			min.first = index;
+			minDist = min.second;
 		}
 		++index;
 	}
 	return (min);
 }
 
-bool Pathfinding::haveEdge(int nodeIndex, std::vector<std::pair<int, double>> const & nodeAdjList) {
-	for (auto Edge : nodeAdjList) {
-		if (Edge.first == nodeIndex)
-			return (true);
+std::vector<point_t> Pathfinding::convertNodeToPoint(std::list<int> nodePath) {
+	std::vector<point_t>	path;
+
+	for (auto node : nodePath) {
+		if (node != _buoyGraphIndex)
+			path.push_back(_obstacles[node / 4].point[node % 4]);
+		else
+			path.push_back(_buoyPos);
 	}
-	return (false);
+	return (path);
 }
 
 void Pathfinding::generateObstaclesGraph() {
