@@ -135,10 +135,14 @@ void Pathfinding::generateObstaclesGraph() {
 }
 
 void Pathfinding::addObstacleAdjList(rectangle_t const & obstacle, size_t index) {
-	_obstaclesGraph.addEdge(index * 4, index * 4 + 1, calculateDist(obstacle.point[0], obstacle.point[1]));
-	_obstaclesGraph.addEdge(index * 4 + 1, index * 4 + 2, calculateDist(obstacle.point[1], obstacle.point[2]));
-	_obstaclesGraph.addEdge(index * 4 + 2, index * 4 + 3, calculateDist(obstacle.point[2], obstacle.point[3]));
-	_obstaclesGraph.addEdge(index * 4 + 3, index * 4, calculateDist(obstacle.point[3], obstacle.point[0]));
+	if (!isHitObstacle(obstacle.point[0], obstacle.point[1], obstacle))
+		_obstaclesGraph.addEdge(index * 4, index * 4 + 1, calculateDist(obstacle.point[0], obstacle.point[1]));
+	if (!isHitObstacle(obstacle.point[1], obstacle.point[2], obstacle))
+		_obstaclesGraph.addEdge(index * 4 + 1, index * 4 + 2, calculateDist(obstacle.point[1], obstacle.point[2]));
+	if (!isHitObstacle(obstacle.point[2], obstacle.point[3], obstacle))
+		_obstaclesGraph.addEdge(index * 4 + 2, index * 4 + 3, calculateDist(obstacle.point[2], obstacle.point[3]));
+	if (!isHitObstacle(obstacle.point[3], obstacle.point[0], obstacle))
+		_obstaclesGraph.addEdge(index * 4 + 3, index * 4, calculateDist(obstacle.point[3], obstacle.point[0]));
 }
 
 void Pathfinding::generateAdjList(const rectangle_t& lhs, const rectangle_t& rhs) {
