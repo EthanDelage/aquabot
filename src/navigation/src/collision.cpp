@@ -47,6 +47,24 @@ bool Pathfinding::isHitItself(const point_t start, const point_t end, const rect
 }
 
 bool Pathfinding::isIntersect(point_t a1, point_t a2, point_t b1, point_t b2) {
+	double tmp;
+	if (a2.x < a1.x) {
+		tmp = a1.x;
+		a1.x = a2.x;
+		a2.x = tmp;
+		tmp = a1.y;
+		a1.y = a2.y;
+		a2.y = tmp;
+	}
+	if (b2.x < b1.x) {
+		tmp = b1.x;
+		b1.x = b2.x;
+		b2.x = tmp;
+		tmp = b1.y;
+		b1.y = b2.y;
+		b2.y = tmp;
+	}
+
 	const point_t points[4] = {{a1.x, a1.y}, {a2.x, a2.y}, \
         {b1.x, b1.y}, {b2.x, b2.y}};
 	const int            o1 = orientation(points[0], points[1], points[2]);
