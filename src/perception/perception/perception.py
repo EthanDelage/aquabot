@@ -88,7 +88,7 @@ class Perception(Node):
             intensity_offset = point_cloud_msg.fields[3].offset
             ring_offset = point_cloud_msg.fields[4].offset
             point_step = point_cloud_msg.point_step
-            print(f"Point Step: \n{point_step}")
+            # print(f"Point Step: \n{point_step}")
 
             # Iterate through the data and extract XYZ coordinates
             for i in range(0, len(data_buffer), point_step):
@@ -99,10 +99,6 @@ class Perception(Node):
                                                i + intensity_offset)[0]
                 ring = struct.unpack_from('H', data_buffer,
                                           i + ring_offset)[0]
-                if intensity != 0:
-                    print(f"Intensity: {intensity}")
-                # if ring == 1:
-                #     print(f"Ring: {ring}")
                 points.append([x, y, z])
             # Convert the list of points to a NumPy array
             parsed_points = np.array(points, dtype=np.float32)
@@ -112,7 +108,7 @@ class Perception(Node):
     def filter_visible_lidar_points(self, lidar_points, camera_info):
         # Matrice de projection de la caméra P (à partir de vos données de la caméra)
         P = camera_info.p
-        print(P)
+        # print(P)
         P = P.reshape(3, 4)
         # print("after")
         # pprint(P)
@@ -124,17 +120,18 @@ class Perception(Node):
             if inf[0] or inf[1] or inf[2]:
                 continue
             point_4d = np.array([point_3d[0], point_3d[1], point_3d[2], 1])
-            print(f"4D: {point_4d}")
+            # print(f"4D: {point_4d}")
 
             # Projeter les points 3D du lidar dans le plan de l'image de la caméra
-            pprint(P)
-            point_2d = np.dot(P, point_4d)
-            print(f"2D: {point_2d}")
+            point_2d = np.dot(P, point_4d.T)
+            # print(f"2D: {point_2d}")
+            if point_2d[2] == 0:
+                continue
             x = point_2d[0] / point_2d[2]
             y = point_2d[1] / point_2d[2]
             camera_resolution = (self.camera.width, self.camera.height)
             # print(camera_resolution)
-            print(f"x/y: {x} {y}")
+            # print(f"x/y: {x} {y}")
             is_visible = 0 <= x <= camera_resolution[0] and 0 <= y <= camera_resolution[1]
             if is_visible:
                 print("Visible:")
@@ -145,7 +142,7 @@ class Perception(Node):
     def lidar_callback(self, point_cloud_msg):
 
         parsed_points = self.get_all_lidar_points(point_cloud_msg)
-        parsed_points = np.array([[15, 10, 0]])
+        # parsed_points = np.array([[15, 10, 0]])
         if self.camera != None:
             cam_points = self.filter_visible_lidar_points(parsed_points, self.camera)
             if len(cam_points) > 0:
