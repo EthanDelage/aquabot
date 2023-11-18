@@ -23,6 +23,7 @@ int Pathfinding::init() {
 		return (-1);
 	_obstaclesGraph.setNbVertices(_obstacles.size() * 4);
 	generateObstaclesGraph();
+	return (0);
 }
 
 void Pathfinding::addBuoy(point_t buoyPos) {
@@ -122,6 +123,7 @@ std::vector<point_t> Pathfinding::convertNodeToPoint(std::list<size_t> nodePath)
 
 void Pathfinding::generateObstaclesGraph() {
 	for (auto it = _obstacles.begin(); it != _obstacles.end(); ++it) {
+		//TODO: check isHitObstacle
 		addObstacleAdjList(*it, std::distance(_obstacles.begin(), it));
 	}
 	for (size_t src = 0; src < _obstacles.size() - 1; ++src) {
@@ -143,14 +145,10 @@ void Pathfinding::generateAdjList(const rectangle_t& lhs, const rectangle_t& rhs
 	for (size_t i = 0; i < 4; ++i) {
 		for (size_t j = 0; j < 4; ++j) {
 			if (_obstacles.size() > 2) {
-				for (auto it = _obstacles.begin(); it != _obstacles.end(); ++it) {
-					if (!areRectangleEqual(*it, lhs) && !areRectangleEqual(*it, rhs)) {
-						if (!isHitObstacle(lhs.point[i], rhs.point[j], *it)
-							&& !isHitItself(lhs.point[i], rhs.point[j], lhs, i)
-							&& !isHitItself(lhs.point[i], rhs.point[j], rhs, j))
-							_obstaclesGraph.addEdge(lhs.id * 4 + i, rhs.id * 4 + j, calculateDist(lhs.point[i], rhs.point[j]));
-					}
-				}
+				if (!isHitObstacle(lhs.point[i], rhs.point[j], lhs, rhs)
+					&& !isHitItself(lhs.point[i], rhs.point[j], lhs, i)
+					&& !isHitItself(lhs.point[i], rhs.point[j], rhs, j))
+					_obstaclesGraph.addEdge(lhs.id * 4 + i, rhs.id * 4 + j, calculateDist(lhs.point[i], rhs.point[j]));
 			} else {
 				if (!isHitItself(lhs.point[i], rhs.point[j], lhs, i)
 					&& !isHitItself(lhs.point[i], rhs.point[j], rhs, j))
@@ -163,16 +161,9 @@ void Pathfinding::generateAdjList(const rectangle_t& lhs, const rectangle_t& rhs
 void Pathfinding::generateNodeAdjList(point_t nodePos, size_t nodeIndex, Graph& graph) {
 	for (size_t i = 0; i != _obstacles.size(); ++i) {
 		for (size_t j = 0; j < 4; ++j) {
-			if (!isHitItself(nodePos, _obstacles[i].point[j], _obstacles[i], j)) {
-				if (_obstacles.size() > 1) {
-					for (auto obstacle : _obstacles) {
-						if (!areRectangleEqual(obstacle, _obstacles[i])
-							&& !isHitObstacle(nodePos, _obstacles[i].point[j], obstacle))
-							graph.addEdge(nodeIndex, i * 4 + j, calculateDist(nodePos, _obstacles[i].point[j]));
-					}
-				} else {
+			if (!isHitItself(nodePos, _obstacles[i].point[j], _obstacles[i], j)
+				&& !isHitObstacle(nodePos, _obstacles[i].point[j], _obstacles[i])) {
 					graph.addEdge(nodeIndex, i * 4 + j, calculateDist(nodePos, _obstacles[i].point[j]));
-				}
 			}
 		}
 	}
@@ -183,7 +174,10 @@ double Pathfinding::calculateDist(point_t a, point_t b) {
 }
 
 bool Pathfinding::areRectangleEqual(const rectangle_t& lhs, const rectangle_t& rhs) {
-	return (lhs.point == rhs.point);
+	return (lhs.point[0].x == rhs.point[0].x && lhs.point[0].y == rhs.point[0].y
+			&& lhs.point[1].x == rhs.point[1].x && lhs.point[1].y == rhs.point[1].y
+			&& lhs.point[2].x == rhs.point[2].x && lhs.point[2].y == rhs.point[2].y
+			&& lhs.point[3].x == rhs.point[3].x && lhs.point[3].y == rhs.point[3].y);
 }
 
 int Pathfinding::parseObstacles() {

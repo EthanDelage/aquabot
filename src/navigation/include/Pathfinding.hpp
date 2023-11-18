@@ -42,9 +42,10 @@ private:
 	static bool								isVisited(size_t index, std::vector<size_t> const & visited);
 	static std::pair<size_t, double>		getMinNode(std::vector<std::pair<size_t, double>> const & path, std::vector<size_t> const & visited);
 	static double							calculateDist(point_t a, point_t b);
-	static bool								isHitObstacle(point_t const start, point_t const end, rectangle_t const & obstacle);
+	bool 									isHitObstacle(point_t const start, point_t const end, rectangle_t const & lhs, rectangle_t const & rhs);
+	bool 									isHitObstacle(point_t const start, point_t const end, rectangle_t const & dest);
 	static bool								isHitItself(point_t const start, point_t const end, rectangle_t const & obstacle, size_t index);
-	static bool								isIntersect(point_t p1, point_t q1, point_t p2, point_t q2);
+	static bool								isIntersect(point_t a1, point_t a2, point_t b1, point_t b2);
 	static bool								areRectangleEqual(rectangle_t const & lhs, rectangle_t const & rhs);
 
 public:
