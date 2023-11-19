@@ -9,7 +9,7 @@ Navigation::Navigation() : Node("navigation") {
 	_gain = 0.2;
 	_sigma = 0.05;
 	_benchmark = false;
-	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/wamv/sensors/acoustics/receiver/range_bearing", 10,
+	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/range_bearing", 10,
 				std::bind(&Navigation::pingerCallback, this, _1));
 	_alliesPos = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/ais_sensor/allies_position", 10,
 				std::bind(&Navigation::alliesPosCallback, this, _1));
@@ -27,10 +27,14 @@ void Navigation::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg)
 	for (const auto &param: msg->params) {
 		std::string name = param.name;
 
-		if (name == "bearing")
+		if (name == "bearing") {
 			_bearing = param.value.double_value;
-		else if (name == "range")
+			std::cout << "Bearing: " << _bearing << std::endl;
+		}
+		else if (name == "range") {
 			_range = param.value.double_value;
+			std::cout << "Range: " << _range << std::endl;
+		}
 	}
 	setHeading(_bearing, _range);
 }
@@ -57,14 +61,12 @@ void Navigation::setHeading(double bearing, double range) {
 		posMsg.data = 0;
 		thrustMsg.data = 0;
 	}
-	std::cout << "Bearing: " << bearing << std::endl;
-//	std::cout << "Range: " << range << std::endl;
 //	std::cout << "Regulator: " << regulation << std::endl;
 //	std::cout << "Pos: " << posMsg.data << std::endl;
 //	std::cout << "Thrust: " << thrustMsg.data << std::endl << std::endl;
 
-//	_publisherPos->publish(posMsg);
-//	_publisherThrust->publish(thrustMsg);
+	_publisherPos->publish(posMsg);
+	_publisherThrust->publish(thrustMsg);
 	if (range < MAX_BUOY_RANGE && _benchmark)
 		rclcpp::shutdown();
 }

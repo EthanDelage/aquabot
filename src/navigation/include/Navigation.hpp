@@ -16,7 +16,7 @@
 # define NAV_THRUST_MIN	1000
 # define POS_MAX		M_PI_4
 # define POS_MIN		(-POS_MAX)
-# define MAX_BUOY_RANGE	20
+# define MAX_BUOY_RANGE	0
 
 class Navigation : public rclcpp::Node {
 

@@ -7,6 +7,7 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rcl_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(ros_gz_interfaces REQUIRED)
@@ -26,10 +27,15 @@ add_executable(pathfinding
         src/collision.cpp
         src/djikstra.cpp
         src/graphGeneration.cpp
+        src/callback.cpp
+        src/buoy.cpp
+        src/parsing.cpp
+        src/boat.cpp
         src/main.cpp)
 
 ament_target_dependencies(pathfinding
         rclcpp
+        rcl_interfaces
         sensor_msgs
         ros_gz_interfaces
         std_msgs

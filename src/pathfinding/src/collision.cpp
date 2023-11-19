@@ -38,6 +38,17 @@ bool Pathfinding::isHitObstacle(point_t const start, point_t const end, rectangl
 	return (false);
 }
 
+bool Pathfinding::isHitObstacle(point_t const start, point_t const end) {
+	for (auto obstacle : _obstacles) {
+		if (isIntersect(start, end, obstacle.point[0], obstacle.point[1])
+			|| isIntersect(start, end, obstacle.point[1], obstacle.point[2])
+			|| isIntersect(start, end, obstacle.point[2], obstacle.point[3])
+			|| isIntersect(start, end, obstacle.point[3], obstacle.point[0]))
+			return (true);
+	}
+	return (false);
+}
+
 bool Pathfinding::isHitItself(const point_t start, const point_t end, const rectangle_t& obstacle, size_t index) {
 	return (isIntersect(start, end, obstacle.point[(index + 1) % 4], obstacle.point[(index + 2) % 4]))
 		|| isIntersect(start, end, obstacle.point[(index + 2) % 4], obstacle.point[(index + 3) % 4]);

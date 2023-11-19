@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(autoComplete)
 
 include_directories(/opt/ros/humble/include/rclcpp)
+include_directories(/opt/ros/humble/include/rcl_interfaces)
 include_directories(/opt/ros/humble/include/std_msgs)
 include_directories(/opt/ros/humble/include/sensor_msgs)
 include_directories(/opt/ros/humble/include/ros_gz_interfaces)
@@ -25,4 +26,4 @@ add_executable(autoComplete
 		src/pathfinding/include/point.hpp
 		src/pathfinding/src/graphGeneration.cpp
 		src/pathfinding/src/djikstra.cpp
-		src/pathfinding/src/callback.cpp)
+		src/pathfinding/src/callback.cpp src/pathfinding/src/buoy.cpp src/pathfinding/src/parsing.cpp src/pathfinding/src/boat.cpp)
