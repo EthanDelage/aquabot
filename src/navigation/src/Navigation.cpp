@@ -9,27 +9,12 @@ Navigation::Navigation() : Node("navigation") {
 	_gain = 0.2;
 	_sigma = 0.05;
 	_benchmark = false;
-	_buoyPing = false;
-	if (_pathfinding.init() == -1) {
-		std::cout << "Cannot open " <<  OBSTACLE_FILE << std::endl;
-		exit(1);
-	}
-	_pathfinding.addBuoy({9, 9});
-	path = _pathfinding.calculatePath({1, 1});
-	for (auto node : path) {
-		std::cout << "[" << node.x << "," << node.y << "], ";
-	}
-	std::cout << std::endl;
-//	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/wamv/sensors/acoustics/receiver/range_bearing", 10,
-//				std::bind(&Navigation::pingerCallback, this, _1));
-//	_gps = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/sensors/gps/gps/fix", 10,
-//				std::bind(&Navigation::gpsCallback, this, _1));
-//	_imu = create_subscription<sensor_msgs::msg::Imu>("/wamv/sensors/imu/imu/data", 10,
-//				std::bind(&Navigation::imuCallback, this, _1));
-//	_alliesPos = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/ais_sensor/allies_position", 10,
-//				std::bind(&Navigation::alliesPosCallback, this, _1));
-//	_publisherThrust = create_publisher<std_msgs::msg::Float64>("/wamv/thrusters/main/thrust", 5);
-//	_publisherPos = create_publisher<std_msgs::msg::Float64>("/wamv/thrusters/main/pos", 5);
+	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/wamv/sensors/acoustics/receiver/range_bearing", 10,
+				std::bind(&Navigation::pingerCallback, this, _1));
+	_alliesPos = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/ais_sensor/allies_position", 10,
+				std::bind(&Navigation::alliesPosCallback, this, _1));
+	_publisherThrust = create_publisher<std_msgs::msg::Float64>("/wamv/thrusters/main/thrust", 5);
+	_publisherPos = create_publisher<std_msgs::msg::Float64>("/wamv/thrusters/main/pos", 5);
 }
 
 Navigation::Navigation(double gain, double sigma) : Navigation() {
@@ -47,35 +32,7 @@ void Navigation::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg)
 		else if (name == "range")
 			_range = param.value.double_value;
 	}
-	_buoyPing = true;
 	setHeading(_bearing, _range);
-}
-
-void Navigation::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
-	double latitude = msg->latitude;
-	double longitude = msg->longitude;
-
-	calculateMapPos(latitude, longitude);
-}
-
-void Navigation::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
-	static bool	isCalculate = false;
-	double		yaw;
-
-	_orientation = msg->orientation;
-	double siny_cosp = 2 * (_orientation.w * _orientation.z + _orientation.x * _orientation.y);
-	double cosy_cosp = 1 - 2 * (_orientation.y * _orientation.y + _orientation.z * _orientation.z);
-	yaw = std::atan2(siny_cosp, cosy_cosp);
-	if (_buoyPing && _gpsPing && !isCalculate) {
-		_buoyPing = false;
-		_gpsPing = false;
-		double	buoyOrientation = convertToMinusPiPi(yaw + _bearing);
-		_buoyPos.x = _range * std::cos(buoyOrientation) + _boatPos.y;
-		_buoyPos.y = _range * std::sin(buoyOrientation) + _boatPos.x;
-		isCalculate = true;
-		_pathfinding.addBuoy(_buoyPos);
-		std::cout << "Buoy pos: [" << _buoyPos.x << ", " << _buoyPos.y << "]" << std::endl;
-	}
 }
 
 void Navigation::alliesPosCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
@@ -112,17 +69,6 @@ void Navigation::setHeading(double bearing, double range) {
 		rclcpp::shutdown();
 }
 
-void	Navigation::calculateMapPos(double latitude, double longitude) {
-	double	x, y;
-
-	x = (latitude - LATITUDE_0) / (LATITUDE_1 - LATITUDE_0);
-	_boatPos.x = x * 600 - 300;
-	y = (longitude - LONGITUDE_0) / (LONGITUDE_1 - LONGITUDE_0);
-	_boatPos.y = y * 600 - 300;
-	_gpsPing = true;
-//	std::cout << "Boat: [" << _boatPos.x << ", " << _boatPos.y << "]" << std::endl;
-}
-
 double Navigation::calculateThrust(double regulation) {
 	const double amplitude = THRUST_MAX - NAV_THRUST_MIN;
 	// Position où l'amplitude est atteinte
@@ -146,12 +92,4 @@ double Navigation::regulator(double bearing) {
 	regulation = std::max(regulation, 0.);
 //	std::cout << "%: " << regulation << std::endl;
 	return (regulation);
-}
-
-double Navigation::convertToMinusPiPi(double angleRadians) {
-	double result = fmod(angleRadians, 2.0 * M_PI);
-	if (result > M_PI) {
-		result -= 2.0 * M_PI;
-	}
-	return result;
 }
