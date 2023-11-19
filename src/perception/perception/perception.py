@@ -40,7 +40,10 @@ class Perception(Node):
             10
         )
         self.bridge = CvBridge()
+        self.camera = None
+        self.horizontal_fov = 1.3962634
         self.image = None
+        self.enemy_bearing = None
 
     def image_callback(self, msg):
         self.image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
@@ -62,12 +65,8 @@ class Perception(Node):
         projection_matrix = msg.p
         image_width = msg.width
         fx = projection_matrix[0]
-
-        fov_horizontal = 2 * math.atan(image_width / (2 * fx))
-        fov_horizontal_degrees = math.degrees(fov_horizontal)
-        # print(fov_horizontal)
-        # print(fov_horizontal_degrees)
-        # print(projection_matrix)
+        self.camera = msg
+        self.horizontal_fov = 2 * math.atan(image_width / (2 * fx))
 
     def lidar_callback(self, point_cloud_msg):
         if point_cloud_msg.data:
@@ -94,8 +93,8 @@ class Perception(Node):
 
             # Convert the list of points to a NumPy array
             parsed_points = np.array(points, dtype=np.float32)
-            print(point_cloud_msg.is_dense)
-            print(parsed_points)
+            # print(point_cloud_msg.is_dense)
+            # print(parsed_points)
             # Affichage des points dans un nuage 3D avec Matplotlib
             fig = plt.figure()
             ax = fig.add_subplot(111, projection='3d')
@@ -103,7 +102,7 @@ class Perception(Node):
             # Réduire la taille des marqueurs pour afficher des points moins hauts
 
 
-# Séparation des coordonnées XYZ
+            # Séparation des coordonnées XYZ
             x = parsed_points[:, 0]
             y = parsed_points[:, 1]
             z = parsed_points[:, 2]
@@ -119,10 +118,6 @@ class Perception(Node):
             plt.show()
             # return points_array
         return None
-
-
-
-
 
     @staticmethod
     def is_contour_inside_rect(contour1, contour2):
@@ -155,6 +150,7 @@ class Perception(Node):
                                              cv2.CHAIN_APPROX_SIMPLE)
 
         # Draw bounding boxes around detected red regions
+        largest_bounding_box = None
         for contour in red_contours:
             is_enemy = True
             for green_contour in green_contours:
@@ -163,10 +159,21 @@ class Perception(Node):
                     break
             if is_enemy:
                 x, y, w, h = cv2.boundingRect(contour)
+                size = w * h
+                if largest_bounding_box is None or size > largest_bounding_box[4]:
+                    largest_bounding_box = (x, y, w, h, size)
+                self.calculate_enemy_bearing(largest_bounding_box)
                 cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0),
                               1)
         # Display the result
         cv2.imshow('Enemy Tracking', self.image)
+
+    def calculate_enemy_bearing(self, largest_bounding_box):
+        if largest_bounding_box is not None and self.camera is not None:
+            middle_x = largest_bounding_box[0] + (largest_bounding_box[2] / 2)
+            dx = middle_x - (self.camera.width / 2)
+            self.enemy_bearing = (dx / self.camera.width) * self.horizontal_fov
+
 
 
 def main(args=None):
