@@ -142,16 +142,18 @@ class Perception(Node):
             # print(f"2D: {point_2d}")
             if point_2d[2] <= 0:
                 continue
-            x = point_2d[0] / point_2d[2]
-            y = point_2d[1] / point_2d[2]
+            x = point_2d[1] / point_2d[2]
+            y = point_2d[0] / point_2d[2]
             camera_resolution = (self.camera.width, self.camera.height)
             # print(camera_resolution)
-            is_visible = 0 <= x <= camera_resolution[0] and 0 <= y <= camera_resolution[1]
+            is_visible = 0 <= x < self.camera.width and 0 <= y < self.camera.height
             if is_visible:
                 print(f"x/y: {x} {y}")
-                # y = self.camera.height - y
                 x = int(x)
+                # x = self.camera.width - x
                 y = int(y)
+                y = self.camera.height - y
+                print(f"new x/y: {x} {y}")
                 b = self.image[y, x][0] / 255
                 g = self.image[y, x][1] / 255
                 r = self.image[y, x][2] / 255
