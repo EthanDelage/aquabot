@@ -24,6 +24,14 @@ re:	fclean
 	$(MAKE) build
 	$(MAKE) run
 
+.PHONY: headless
+headless:
+	ros2 launch aquabot_gz competition.launch.py world:=aquabot_task_hard headless:=true > /dev/null &
+
+.PHONY: perception
+perception:
+	ros2 run perception perception
+
 .PHONY: rqt
 rqt:
 	rqt &
