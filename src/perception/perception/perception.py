@@ -43,6 +43,19 @@ class Perception(Node):
         self.bridge = CvBridge()
         self.image = None
         self.camera = None
+        self.camera_translation_matrix = np.array([
+            [1, 0, 0, 0.1],
+            [0, 1, 0, 0],
+            [0, 0, 1, -0.2],
+            [0, 0, 0, 1]
+        ])
+        self.camera_rotation_matrix = np.array([
+            [np.cos(0.26), -np.sin(0.26), 0, 0],
+            [np.sin(0.26), np.cos(0.26), 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ])
+        self.camera_transformation_matrix = np.dot(self.camera_translation_matrix, self.camera_rotation_matrix)
 
     def image_callback(self, msg):
         self.image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
@@ -119,21 +132,23 @@ class Perception(Node):
             inf = np.isinf(point_3d)
             if inf[0] or inf[1] or inf[2]:
                 continue
-            point_4d = np.array([point_3d[0], point_3d[1], point_3d[2], 1])
-            # print(f"4D: {point_4d}")
+            # print(f"3D: {point_3d}")
+            point_4d = np.array([point_3d[2], point_3d[1], point_3d[0], 1])
+            point_4d = np.dot(self.camera_transformation_matrix, point_4d)
 
             # Projeter les points 3D du lidar dans le plan de l'image de la caméra
-            point_2d = np.dot(P, point_4d.T)
+            point_2d = np.dot(P, point_4d)
+            # print(f"4D: {point_4d}")
             # print(f"2D: {point_2d}")
-            if point_2d[2] == 0:
+            if point_2d[2] <= 0:
                 continue
             x = point_2d[0] / point_2d[2]
             y = point_2d[1] / point_2d[2]
             camera_resolution = (self.camera.width, self.camera.height)
             # print(camera_resolution)
-            # print(f"x/y: {x} {y}")
             is_visible = 0 <= x <= camera_resolution[0] and 0 <= y <= camera_resolution[1]
             if is_visible:
+                # print(f"x/y: {x} {y}")
                 print("Visible:")
                 print(point_3d)
                 visible.append(point_3d)
@@ -150,27 +165,27 @@ class Perception(Node):
         # pprint(f"Fields:\n{point_cloud_msg.fields}")
 
         # SAVEEEEEEE
-        # # Affichage des points dans un nuage 3D avec Matplotlib
-        # fig = plt.figure()
-        # ax = fig.add_subplot(111, projection='3d')
-        # ax.set_zlim([0, 70])  # Remplacez min_z_value et max_z_value par les valeurs Z minimales et maximales que vous souhaitez afficher
-        # # Réduire la taille des marqueurs pour afficher des points moins hauts
-        #
-        # # Séparation des coordonnées XYZ
-        # x = parsed_points[:, 0]
-        # y = parsed_points[:, 1]
-        # z = parsed_points[:, 2]
-        #
-        # # Affichage des points
-        # ax.scatter(x, y, z, c=z, cmap='viridis',
-        #            s=1)  # La couleur est basée sur l'axe Z
-        #
-        # # Réglages d'affichage
-        # ax.set_xlabel('X Label')
-        # ax.set_ylabel('Y Label')
-        # ax.set_zlabel('Z Label')
-        #
-        # plt.show()
+        # Affichage des points dans un nuage 3D avec Matplotlib
+                fig = plt.figure()
+                ax = fig.add_subplot(111, projection='3d')
+                ax.set_zlim([0, 70])  # Remplacez min_z_value et max_z_value par les valeurs Z minimales et maximales que vous souhaitez afficher
+                # Réduire la taille des marqueurs pour afficher des points moins hauts
+
+                # Séparation des coordonnées XYZ
+                x = parsed_points[:, 0]
+                y = parsed_points[:, 1]
+                z = parsed_points[:, 2]
+
+                # Affichage des points
+                ax.scatter(x, y, z, c=z, cmap='viridis',
+                           s=1)  # La couleur est basée sur l'axe Z
+
+                # Réglages d'affichage
+                ax.set_xlabel('X Label')
+                ax.set_ylabel('Y Label')
+                ax.set_zlabel('Z Label')
+
+                plt.show()
 
     @staticmethod
     def is_contour_inside_rect(contour1, contour2):
