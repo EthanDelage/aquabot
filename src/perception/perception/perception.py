@@ -148,10 +148,18 @@ class Perception(Node):
             # print(camera_resolution)
             is_visible = 0 <= x <= camera_resolution[0] and 0 <= y <= camera_resolution[1]
             if is_visible:
-                # print(f"x/y: {x} {y}")
-                print("Visible:")
-                print(point_3d)
-                visible.append(point_3d)
+                print(f"x/y: {x} {y}")
+                # y = self.camera.height - y
+                x = int(x)
+                y = int(y)
+                b = self.image[y, x][0] / 255
+                g = self.image[y, x][1] / 255
+                r = self.image[y, x][2] / 255
+                # b = self.image[x, y][0] / 255
+                # g = self.image[x, y][1] / 255
+                # r = self.image[x, y][2] / 255
+                pprint(f"Color: {r, g, b}")
+                visible.append(np.array([point_3d[0], point_3d[1], point_3d[2], r, g, b]))
         return np.array(visible)
 
     def lidar_callback(self, point_cloud_msg):
@@ -168,17 +176,22 @@ class Perception(Node):
         # Affichage des points dans un nuage 3D avec Matplotlib
                 fig = plt.figure()
                 ax = fig.add_subplot(111, projection='3d')
-                ax.set_zlim([0, 70])  # Remplacez min_z_value et max_z_value par les valeurs Z minimales et maximales que vous souhaitez afficher
                 # Réduire la taille des marqueurs pour afficher des points moins hauts
+                ax.set_zlim([0, 50])  # Remplacez min_z_value et max_z_value par les valeurs Z minimales et maximales que vous souhaitez afficher
 
                 # Séparation des coordonnées XYZ
                 x = parsed_points[:, 0]
                 y = parsed_points[:, 1]
                 z = parsed_points[:, 2]
-
+                r = parsed_points[:, 3]
+                g = parsed_points[:, 4]
+                b = parsed_points[:, 5]
                 # Affichage des points
-                ax.scatter(x, y, z, c=z, cmap='viridis',
+                colors = np.column_stack((r, g, b))
+                ax.scatter(x, y, z, c=colors, cmap='viridis',
                            s=1)  # La couleur est basée sur l'axe Z
+                # for i in range(len(parsed_points)):
+                #     plt.scatter(x[i], y[i], z[i], c=np.array([r[i], g[i], b[i]]))
 
                 # Réglages d'affichage
                 ax.set_xlabel('X Label')
