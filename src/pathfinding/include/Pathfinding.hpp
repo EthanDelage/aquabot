@@ -12,11 +12,12 @@
 # include "sensor_msgs/msg/nav_sat_fix.hpp"
 # include "ros_gz_interfaces/msg/param_vec.hpp"
 
-# define OBSTACLE_FILE	"src/pathfinding/obstacles.txt"
-# define LONGITUDE_0	(-4.980343472857843)
-# define LATITUDE_0		48.043601874279716
-# define LONGITUDE_1	(-4.9722961068569775)
-# define LATITUDE_1		48.04899798353722
+# define OBSTACLE_FILE			"src/pathfinding/obstacles.txt"
+# define MIN_CHECKPOINT_RANGE	11
+# define LONGITUDE_0			(-4.980343472857843)
+# define LATITUDE_0				48.043601874279716
+# define LONGITUDE_1			(-4.9722961068569775)
+# define LATITUDE_1				48.04899798353722
 
 typedef struct rectangle_s {
 	size_t	id;

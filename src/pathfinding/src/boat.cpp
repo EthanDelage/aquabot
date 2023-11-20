@@ -74,7 +74,7 @@ void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBear
 
 	paramVecMsg.params.push_back(range);
 	paramVecMsg.params.push_back(bearing);
-	if (rangeBearing.first < 2)
+	if (rangeBearing.first < MIN_CHECKPOINT_RANGE)
 		_path.erase(_path.begin());
 	_publisherRangeBearing->publish(paramVecMsg);
 }
