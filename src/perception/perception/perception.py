@@ -44,18 +44,60 @@ class Perception(Node):
         self.image = None
         self.camera = None
         self.camera_translation_matrix = np.array([
-            [1, 0, 0, 0.1],
+            [1, 0, 0, -0.2],
             [0, 1, 0, 0],
-            [0, 0, 1, -0.2],
+            [0, 0, 1, 0.1],
             [0, 0, 0, 1]
         ])
+        # self.camera_translation_matrix = np.array([
+        #     [1, 0, 0, -0.2],
+        #     [0, 1, 0, 0],
+        #     [0, 0, 1, 0.1],
+        #     [0, 0, 0, 1]
+        # ])
+        #
+        # Yaw
+        # self.camera_rotation_matrix = np.array([
+        #     [np.cos(0.26), -np.sin(0.26), 0, 0],
+        #     [np.sin(0.26), np.cos(0.26), 0, 0],
+        #     [0, 0, 1, 0],
+        #     [0, 0, 0, 1]
+        # ])
+
         self.camera_rotation_matrix = np.array([
-            [np.cos(0.26), -np.sin(0.26), 0, 0],
-            [np.sin(0.26), np.cos(0.26), 0, 0],
-            [0, 0, 1, 0],
+            [np.cos(0.26), 0, np.sin(0.26), 0],
+            [0, 1, 0, 0],
+            [-np.sin(0.26), 0, np.cos(0.26), 0],
             [0, 0, 0, 1]
         ])
-        self.camera_transformation_matrix = np.dot(self.camera_translation_matrix, self.camera_rotation_matrix)
+        # Échange des colonnes x et z dans la matrice de translation
+        # self.camera_translation_matrix[:, [0, 2]] = self.camera_translation_matrix[:, [2, 0]]
+
+        # Échange des colonnes x et z dans la matrice de rotation
+        # self.camera_rotation_matrix[:, [0, 2]] = self.camera_rotation_matrix[:, [2, 0]]
+
+        # self.camera_transformation_matrix = np.dot(self.camera_translation_matrix, self.camera_rotation_matrix)
+        # self.camera_transformation_matrix = np.array([
+        #     [np.cos(0.26), 0, np.sin(0.26), -0.1],
+        #     [0, 1, 0, 0],
+        #     [-np.sin(0.26), 0, np.cos(0.26), 0.2],
+        #     [0, 0, 0, 1],
+        # ])
+        # self.camera_transformation_matrix = np.array([
+        #     [np.cos(-0.26), 0, np.sin(-0.26), -0.1],
+        #     [0, 1, 0, 0],
+        #     [-np.sin(-0.26), 0, np.cos(-0.26), 0.2],
+        #     [0, 0, 0, 1],
+        # ])
+        self.camera_transformation_matrix = np.array([
+            [1             , 0, 0, 0.2],
+            [0             , np.cos(0.26), -np.sin(0.26)            , -0.1],
+            [0             , np.sin(0.26), np.cos(0.26)            , 0],
+            [0             , 0, 0            , 1],
+        ])
+
+
+    # self.camera_transformation_matrix = np.dot(self.camera_rotation_matrix, self.camera_translation_matrix)
 
     def image_callback(self, msg):
         self.image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
@@ -128,6 +170,8 @@ class Perception(Node):
         # exit(1)
 
         visible = []
+        if self.image is None:
+            return np.array(visible)
         for point_3d in lidar_points:
             inf = np.isinf(point_3d)
             if inf[0] or inf[1] or inf[2]:
@@ -135,9 +179,9 @@ class Perception(Node):
             # print(f"3D: {point_3d}")
             point_4d = np.array([point_3d[2], point_3d[1], point_3d[0], 1])
             point_4d = np.dot(self.camera_transformation_matrix, point_4d)
-
             # Projeter les points 3D du lidar dans le plan de l'image de la caméra
             point_2d = np.dot(P, point_4d)
+            # point_2d = np.dot(self.camera_transformation_matrix, point_2d)
             # print(f"4D: {point_4d}")
             # print(f"2D: {point_2d}")
             if point_2d[2] <= 0:
@@ -146,21 +190,21 @@ class Perception(Node):
             y = point_2d[0] / point_2d[2]
             camera_resolution = (self.camera.width, self.camera.height)
             # print(camera_resolution)
-            is_visible = 0 <= x < self.camera.width and 0 <= y < self.camera.height
+            is_visible = 0 < x < self.camera.width and 0 < y < self.camera.height
             if is_visible:
-                print(f"x/y: {x} {y}")
                 x = int(x)
-                # x = self.camera.width - x
                 y = int(y)
-                y = self.camera.height - y
-                print(f"new x/y: {x} {y}")
+                y = self.camera.height - y - 1
+                x = self.camera.width - x - 1
+                # print(f"new x/y: {x} {y}")
                 b = self.image[y, x][0] / 255
                 g = self.image[y, x][1] / 255
                 r = self.image[y, x][2] / 255
+                self.image[y, x] = [255, 255, 255]
                 # b = self.image[x, y][0] / 255
                 # g = self.image[x, y][1] / 255
                 # r = self.image[x, y][2] / 255
-                pprint(f"Color: {r, g, b}")
+                # pprint(f"Color: {r, g, b}")
                 visible.append(np.array([point_3d[0], point_3d[1], point_3d[2], r, g, b]))
         return np.array(visible)
 
@@ -176,31 +220,32 @@ class Perception(Node):
 
         # SAVEEEEEEE
         # Affichage des points dans un nuage 3D avec Matplotlib
-                fig = plt.figure()
-                ax = fig.add_subplot(111, projection='3d')
-                # Réduire la taille des marqueurs pour afficher des points moins hauts
-                ax.set_zlim([0, 50])  # Remplacez min_z_value et max_z_value par les valeurs Z minimales et maximales que vous souhaitez afficher
-
-                # Séparation des coordonnées XYZ
-                x = parsed_points[:, 0]
-                y = parsed_points[:, 1]
-                z = parsed_points[:, 2]
-                r = parsed_points[:, 3]
-                g = parsed_points[:, 4]
-                b = parsed_points[:, 5]
-                # Affichage des points
-                colors = np.column_stack((r, g, b))
-                ax.scatter(x, y, z, c=colors, cmap='viridis',
-                           s=1)  # La couleur est basée sur l'axe Z
-                # for i in range(len(parsed_points)):
-                #     plt.scatter(x[i], y[i], z[i], c=np.array([r[i], g[i], b[i]]))
-
-                # Réglages d'affichage
-                ax.set_xlabel('X Label')
-                ax.set_ylabel('Y Label')
-                ax.set_zlabel('Z Label')
-
-                plt.show()
+                cv2.imshow('Lidar Tracking', self.image)
+                # fig = plt.figure()
+                # ax = fig.add_subplot(111, projection='3d')
+                # # Réduire la taille des marqueurs pour afficher des points moins hauts
+                # ax.set_zlim([0, 50])  # Remplacez min_z_value et max_z_value par les valeurs Z minimales et maximales que vous souhaitez afficher
+                #
+                # # Séparation des coordonnées XYZ
+                # x = parsed_points[:, 0]
+                # y = parsed_points[:, 1]
+                # z = parsed_points[:, 2]
+                # r = parsed_points[:, 3]
+                # g = parsed_points[:, 4]
+                # b = parsed_points[:, 5]
+                # # Affichage des points
+                # colors = np.column_stack((r, g, b))
+                # ax.scatter(x, y, z, c=colors, cmap='viridis',
+                #            s=1)  # La couleur est basée sur l'axe Z
+                # # for i in range(len(parsed_points)):
+                # #     plt.scatter(x[i], y[i], z[i], c=np.array([r[i], g[i], b[i]]))
+                #
+                # # Réglages d'affichage
+                # ax.set_xlabel('X Label')
+                # ax.set_ylabel('Y Label')
+                # ax.set_zlabel('Z Label')
+                #
+                # plt.show()
 
     @staticmethod
     def is_contour_inside_rect(contour1, contour2):
@@ -244,7 +289,7 @@ class Perception(Node):
                 cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0),
                               1)
         # Display the result
-        cv2.imshow('Enemy Tracking', self.image)
+        # cv2.imshow('Enemy Tracking', self.image)
 
 
 def main(args=None):
