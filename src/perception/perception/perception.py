@@ -44,60 +44,18 @@ class Perception(Node):
         self.image = None
         self.camera = None
         self.camera_translation_matrix = np.array([
-            [1, 0, 0, -0.2],
+            [1, 0, 0, 0.1],
             [0, 1, 0, 0],
-            [0, 0, 1, 0.1],
+            [0, 0, 1, -0.2],
             [0, 0, 0, 1]
         ])
-        # self.camera_translation_matrix = np.array([
-        #     [1, 0, 0, -0.2],
-        #     [0, 1, 0, 0],
-        #     [0, 0, 1, 0.1],
-        #     [0, 0, 0, 1]
-        # ])
-        #
-        # Yaw
-        # self.camera_rotation_matrix = np.array([
-        #     [np.cos(0.26), -np.sin(0.26), 0, 0],
-        #     [np.sin(0.26), np.cos(0.26), 0, 0],
-        #     [0, 0, 1, 0],
-        #     [0, 0, 0, 1]
-        # ])
-
         self.camera_rotation_matrix = np.array([
             [np.cos(0.26), 0, np.sin(0.26), 0],
             [0, 1, 0, 0],
             [-np.sin(0.26), 0, np.cos(0.26), 0],
             [0, 0, 0, 1]
         ])
-        # Échange des colonnes x et z dans la matrice de translation
-        # self.camera_translation_matrix[:, [0, 2]] = self.camera_translation_matrix[:, [2, 0]]
-
-        # Échange des colonnes x et z dans la matrice de rotation
-        # self.camera_rotation_matrix[:, [0, 2]] = self.camera_rotation_matrix[:, [2, 0]]
-
-        # self.camera_transformation_matrix = np.dot(self.camera_translation_matrix, self.camera_rotation_matrix)
-        # self.camera_transformation_matrix = np.array([
-        #     [np.cos(0.26), 0, np.sin(0.26), -0.1],
-        #     [0, 1, 0, 0],
-        #     [-np.sin(0.26), 0, np.cos(0.26), 0.2],
-        #     [0, 0, 0, 1],
-        # ])
-        # self.camera_transformation_matrix = np.array([
-        #     [np.cos(-0.26), 0, np.sin(-0.26), -0.1],
-        #     [0, 1, 0, 0],
-        #     [-np.sin(-0.26), 0, np.cos(-0.26), 0.2],
-        #     [0, 0, 0, 1],
-        # ])
-        self.camera_transformation_matrix = np.array([
-            [1             , 0, 0, 0.2],
-            [0             , np.cos(0.26), -np.sin(0.26)            , -0.1],
-            [0             , np.sin(0.26), np.cos(0.26)            , 0],
-            [0             , 0, 0            , 1],
-        ])
-
-
-    # self.camera_transformation_matrix = np.dot(self.camera_rotation_matrix, self.camera_translation_matrix)
+        self.camera_transformation_matrix = np.dot(self.camera_translation_matrix, self.camera_rotation_matrix)
 
     def image_callback(self, msg):
         self.image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
@@ -163,7 +121,6 @@ class Perception(Node):
     def filter_visible_lidar_points(self, lidar_points, camera_info):
         # Matrice de projection de la caméra P (à partir de vos données de la caméra)
         P = camera_info.p
-        # print(P)
         P = P.reshape(3, 4)
         # print("after")
         # pprint(P)
@@ -177,19 +134,17 @@ class Perception(Node):
             if inf[0] or inf[1] or inf[2]:
                 continue
             # print(f"3D: {point_3d}")
-            point_4d = np.array([point_3d[2], point_3d[1], point_3d[0], 1])
+            point_4d = np.array([point_3d[0], point_3d[1], point_3d[2], 1])
             point_4d = np.dot(self.camera_transformation_matrix, point_4d)
-            # Projeter les points 3D du lidar dans le plan de l'image de la caméra
+            point_4d /= point_4d[3]
+            point_4d = np.array([point_4d[2], point_3d[1], point_3d[0], 1])
             point_2d = np.dot(P, point_4d)
-            # point_2d = np.dot(self.camera_transformation_matrix, point_2d)
             # print(f"4D: {point_4d}")
             # print(f"2D: {point_2d}")
             if point_2d[2] <= 0:
                 continue
             x = point_2d[1] / point_2d[2]
             y = point_2d[0] / point_2d[2]
-            camera_resolution = (self.camera.width, self.camera.height)
-            # print(camera_resolution)
             is_visible = 0 < x < self.camera.width and 0 < y < self.camera.height
             if is_visible:
                 x = int(x)
