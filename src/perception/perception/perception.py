@@ -44,18 +44,27 @@ class Perception(Node):
         self.image = None
         self.camera = None
         self.camera_translation_matrix = np.array([
-            [1, 0, 0, 0.1],
+            [1, 0, 0, 0],
             [0, 1, 0, 0],
-            [0, 0, 1, -0.2],
+            [0, 0, 1, 0],
             [0, 0, 0, 1]
         ])
         self.camera_rotation_matrix = np.array([
-            [np.cos(0.26), 0, np.sin(0.26), 0],
-            [0, 1, 0, 0],
-            [-np.sin(0.26), 0, np.cos(0.26), 0],
+            [1, 0, 0, 0],
+            [0, np.cos(0.26), -np.sin(0.26), 0],
+            [0, np.sin(0.26), np.cos(0.26), 0],
             [0, 0, 0, 1]
         ])
+        self.camera_rotation_matrix1 = np.array([
+            [np.cos(np.pi / 2), 0, np.sin(np.pi / 2), 0],
+            [0, 1, 0, 0],
+            [-np.sin(np.pi / 2), 0, np.cos(np.pi / 2), 0],
+            [0, 0, 0, 1]
+        ])
+        self.camera_rotation_matrix = np.dot(self.camera_rotation_matrix, self.camera_rotation_matrix1)
         self.camera_transformation_matrix = np.dot(self.camera_translation_matrix, self.camera_rotation_matrix)
+        # self.camera_transformation_matrix = self.camera_rotation_matrix
+        # self.camera_transformation_matrix = self.camera_translation_matrix
 
     def image_callback(self, msg):
         self.image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
@@ -135,22 +144,23 @@ class Perception(Node):
                 continue
             # print(f"3D: {point_3d}")
             point_4d = np.array([point_3d[0], point_3d[1], point_3d[2], 1])
+            point_4d = np.array([point_4d[0], point_4d[2], point_4d[1], 1])
             point_4d = np.dot(self.camera_transformation_matrix, point_4d)
             point_4d /= point_4d[3]
-            point_4d = np.array([point_4d[2], point_3d[1], point_3d[0], 1])
+            # point_4d = np.array([point_4d[2], point_4d[1], point_4d[0], 1])
             point_2d = np.dot(P, point_4d)
             # print(f"4D: {point_4d}")
             # print(f"2D: {point_2d}")
-            if point_2d[2] <= 0:
+            if point_2d[2] >= 0:
                 continue
-            x = point_2d[1] / point_2d[2]
-            y = point_2d[0] / point_2d[2]
+            x = point_2d[0] / point_2d[2]
+            y = point_2d[1] / point_2d[2]
             is_visible = 0 < x < self.camera.width and 0 < y < self.camera.height
             if is_visible:
                 x = int(x)
                 y = int(y)
-                y = self.camera.height - y - 1
-                x = self.camera.width - x - 1
+                # y = self.camera.height - y - 1
+                # x = self.camera.width - x - 1
                 # print(f"new x/y: {x} {y}")
                 b = self.image[y, x][0] / 255
                 g = self.image[y, x][1] / 255
