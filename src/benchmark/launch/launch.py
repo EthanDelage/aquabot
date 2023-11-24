@@ -28,12 +28,12 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory('aquabot_gz'), 'launch/competition.launch.py')
         ),
-        launch_arguments={'world': 'aquabot_task_medium'}.items(),
+        launch_arguments={'world': 'aquabot_task_hard'}.items(),
     )
 
     # ld.add_action(benchmark_node)
-    # ld.add_action(navigation_node)
-    # ld.add_action(pathfinding_node)
+    ld.add_action(navigation_node)
+    ld.add_action(pathfinding_node)
     ld.add_action(aquabot_launch_file)
 
     return ld
