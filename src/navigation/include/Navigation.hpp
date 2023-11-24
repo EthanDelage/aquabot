@@ -27,6 +27,7 @@ public:
 private:
 	double							_bearing;
 	double							_range;
+	double							_desiredRange;
 	double							_gain;
 	// Écart-type
 	double							_sigma;

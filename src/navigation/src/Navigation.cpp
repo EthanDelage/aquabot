@@ -30,10 +30,12 @@ void Navigation::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg)
 		if (name == "bearing") {
 			_bearing = param.value.double_value;
 			std::cout << "Bearing: " << _bearing << std::endl;
-		}
-		else if (name == "range") {
+		} else if (name == "range") {
 			_range = param.value.double_value;
 			std::cout << "Range: " << _range << std::endl;
+		} else if (name == "desiredRange") {
+			_desiredRange = param.value.double_value;
+			std::cout << "Desired range: " << _desiredRange << std::endl;
 		}
 	}
 	setHeading(_bearing, _range);
@@ -57,7 +59,7 @@ void Navigation::setHeading(double bearing, double range) {
 	thrustMsg.data = std::abs(std::abs(regulation - 0.5) - 0.5) * 2 * THRUST_MAX;
 	thrustMsg.data = calculateThrust(regulation);
 //	std::cout << "range: " << range << std::endl;
-	if (range < MAX_BUOY_RANGE) {
+	if (range < _desiredRange) {
 		posMsg.data = 0;
 		thrustMsg.data = 0;
 	}

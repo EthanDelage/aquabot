@@ -94,7 +94,7 @@ private:
 	void						calculateYaw(geometry_msgs::msg::Quaternion const & orientation);
 	std::vector<point_t>		calculatePath(point_t boatPos);
 	std::pair<double, double>	calculateRangeBearing();
-	void						publishRangeBearing(std::pair<double, double> const & rangeBearing);
+	void						publishRangeBearing(std::pair<double, double> const & rangeBearing, double desiredRange);
 
 public:
 	Pathfinding();

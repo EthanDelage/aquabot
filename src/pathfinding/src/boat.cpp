@@ -58,19 +58,23 @@ std::pair<double, double> Pathfinding::calculateRangeBearing() {
 	return (rangeBearing);
 }
 
-void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBearing) {
+void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBearing, double desiredRange) {
 	auto	paramVecMsg = ros_gz_interfaces::msg::ParamVec();
-	rcl_interfaces::msg::Parameter	range;
-	rcl_interfaces::msg::Parameter	bearing;
+	rcl_interfaces::msg::Parameter	rangeMsg;
+	rcl_interfaces::msg::Parameter	bearingMsg;
+	rcl_interfaces::msg::Parameter	desiredRangeMsg;
 
-	range.name = "range";
-	range.value.double_value = rangeBearing.first;
-	bearing.name = "bearing";
-	bearing.value.double_value = rangeBearing.second;
+	rangeMsg.name = "range";
+	rangeMsg.value.double_value = rangeBearing.first;
+	bearingMsg.name = "bearing";
+	bearingMsg.value.double_value = rangeBearing.second;
+	desiredRangeMsg.name = "desiredRange";
+	desiredRangeMsg.value.double_value = desiredRange;
 
-	paramVecMsg.params.push_back(range);
-	paramVecMsg.params.push_back(bearing);
-	if (rangeBearing.first < MIN_CHECKPOINT_RANGE)
+	paramVecMsg.params.push_back(rangeMsg);
+	paramVecMsg.params.push_back(bearingMsg);
+	paramVecMsg.params.push_back(desiredRangeMsg);
+	if (rangeBearing.first < desiredRange)
 		_path.erase(_path.begin());
 	_publisherRangeBearing->publish(paramVecMsg);
 }
