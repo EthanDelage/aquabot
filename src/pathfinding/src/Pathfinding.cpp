@@ -45,7 +45,7 @@ size_t Pathfinding::addBoat(point_t boatPos, Graph& graph) {
 	boatIndex = graph.addVertex();
 	generateNodeAdjList(boatPos, boatIndex, graph);
 	if (!isHitObstacle(boatPos, _buoyPos))
-		_obstaclesGraph.addEdge(boatIndex, _buoyGraphIndex, calculateDist(boatPos, _buoyPos));
+		graph.addEdge(boatIndex, _buoyGraphIndex, calculateDist(boatPos, _buoyPos));
 	std::cout << std::endl;
 	graph.printGraph();
 	return (boatIndex);
