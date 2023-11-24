@@ -12,9 +12,6 @@
 #include "Pathfinding.hpp"
 #include <cmath>
 
-static int    orientation(point_t p, point_t q, point_t r);
-static bool    on_segment(point_t p, point_t q, point_t r);
-
 bool Pathfinding::isHitObstacle(point_t const start, point_t const end, rectangle_t const & lhs, rectangle_t const & rhs) {
 	for (auto obstacle : _obstacles) {
 		if (!(areRectangleEqual(lhs, obstacle) || areRectangleEqual(rhs, obstacle))) {
@@ -37,6 +34,17 @@ bool Pathfinding::isHitObstacle(point_t const start, point_t const end, rectangl
 				|| isIntersect(start, end, obstacle.point[3], obstacle.point[0]))
 				return (true);
 		}
+	}
+	return (false);
+}
+
+bool Pathfinding::isHitObstacle(point_t const start, point_t const end) {
+	for (auto obstacle : _obstacles) {
+		if (isIntersect(start, end, obstacle.point[0], obstacle.point[1])
+			|| isIntersect(start, end, obstacle.point[1], obstacle.point[2])
+			|| isIntersect(start, end, obstacle.point[2], obstacle.point[3])
+			|| isIntersect(start, end, obstacle.point[3], obstacle.point[0]))
+			return (true);
 	}
 	return (false);
 }
@@ -74,19 +82,18 @@ bool Pathfinding::isIntersect(point_t a1, point_t a2, point_t b1, point_t b2) {
 
 	if (o1 != o2 && o3 != o4)
 		return (true);
-	if (o1 == 0 && on_segment(points[0], points[2], points[1]))
+	if (o1 == 0 && onSegment(points[0], points[2], points[1]))
 		return (true);
-	if (o2 == 0 && on_segment(points[0], points[3], points[2]))
+	if (o2 == 0 && onSegment(points[0], points[3], points[2]))
 		return (true);
-	if (o3 == 0 && on_segment(points[2], points[0], points[3]))
+	if (o3 == 0 && onSegment(points[2], points[0], points[3]))
 		return (true);
-	if (o4 == 0 && on_segment(points[2], points[1], points[3]))
+	if (o4 == 0 && onSegment(points[2], points[1], points[3]))
 		return (true);
 	return (false);
 }
 
-static int    orientation(point_t p, point_t q, point_t r)
-{
+int    Pathfinding::orientation(point_t p, point_t q, point_t r) {
 	const double    val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
 
 	if (fabs(val) < 1e-9)
@@ -96,8 +103,14 @@ static int    orientation(point_t p, point_t q, point_t r)
 	return (2);
 }
 
-static bool    on_segment(point_t p, point_t q, point_t r)
-{
+bool    Pathfinding::onSegment(point_t p, point_t q, point_t r) {
 	return (q.x <= fmax(p.x, r.x) && q.x >= fmin(p.x, r.x)
 			&& q.y <= fmax(p.y, r.y) && q.y >= fmin(p.y, r.y));
+}
+
+bool Pathfinding::areRectangleEqual(const rectangle_t& lhs, const rectangle_t& rhs) {
+	return (lhs.point[0].x == rhs.point[0].x && lhs.point[0].y == rhs.point[0].y
+			&& lhs.point[1].x == rhs.point[1].x && lhs.point[1].y == rhs.point[1].y
+			&& lhs.point[2].x == rhs.point[2].x && lhs.point[2].y == rhs.point[2].y
+			&& lhs.point[3].x == rhs.point[3].x && lhs.point[3].y == rhs.point[3].y);
 }
