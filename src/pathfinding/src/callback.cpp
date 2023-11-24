@@ -43,8 +43,8 @@ void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 	}
 	if (_gpsPing && _pathCalculated && !_path.empty()) {
 		if (_path[0].x == _buoyPos.x && _path[0].y == _buoyPos.y)
-			publishRangeBearing(std::pair<double, double>(_buoyRange, _buoyBearing), 15);
+			publishRangeBearing(std::pair<double, double>(_buoyRange, _buoyBearing), MAX_BUOY_RANGE);
 		else
-			publishRangeBearing(calculateRangeBearing(), 10);
+			publishRangeBearing(calculateRangeBearing(), MAX_CHECKPOINT_RANGE);
 	}
 }

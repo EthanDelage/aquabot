@@ -13,7 +13,8 @@
 # include "ros_gz_interfaces/msg/param_vec.hpp"
 
 # define OBSTACLE_FILE			"src/pathfinding/obstacles.txt"
-# define MIN_CHECKPOINT_RANGE	11
+# define MAX_CHECKPOINT_RANGE	11
+# define MAX_BUOY_RANGE			20
 # define LONGITUDE_0			(-4.980343472857843)
 # define LATITUDE_0				48.043601874279716
 # define LONGITUDE_1			(-4.9722961068569775)
