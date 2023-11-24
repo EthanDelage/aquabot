@@ -3,25 +3,16 @@
 
 #include <cmath>
 
-std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
-	Graph								graph(_obstaclesGraph);
-	size_t								boatIndex;
-	std::vector<std::pair<size_t, double>>	reversePath;
-	std::pair<size_t, double>				current;
-	std::list<size_t>						path;
+size_t Pathfinding::addBoat(point_t boatPos, Graph& graph) {
+	size_t	boatIndex;
 
-	boatIndex = addBoat(boatPos, graph);
-
-	reversePath = djikstra(boatIndex, _buoyGraphIndex, graph);
-
-	current = reversePath[_buoyGraphIndex];
-
-	path.push_front(_buoyGraphIndex);
-	while (current.first != boatIndex) {
-		path.push_front(current.first);
-		current = reversePath[current.first];
-	}
-	return (convertNodeToPoint(path));
+	boatIndex = graph.addVertex();
+	generateNodeAdjList(boatPos, boatIndex, graph);
+	if (!isHitObstacle(boatPos, _buoyPos))
+		graph.addEdge(boatIndex, _buoyGraphIndex, calculateDist(boatPos, _buoyPos));
+	std::cout << std::endl;
+	graph.printGraph();
+	return (boatIndex);
 }
 
 void	Pathfinding::calculateMapPos(double latitude, double longitude) {

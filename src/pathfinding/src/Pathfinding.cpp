@@ -5,12 +5,13 @@
 using std::placeholders::_1;
 
 Pathfinding::Pathfinding() :
-	Node("pathfinding"),
-	_buoyPosCalculate(false),
-	_pathCalculated(false),
-	_buoyPing(false),
-	_gpsPing(false),
-	_imuPing(false) {
+	Node("pathfinding") {
+
+	_buoyPosCalculate = false;
+	_pathCalculated = false;
+	_buoyPing = false;
+	_gpsPing = false;
+	_imuPing = false;
 
 	if (init() == -1) {
 		std::cout << "Cannot open " <<  OBSTACLE_FILE << std::endl;
@@ -32,22 +33,23 @@ int Pathfinding::init() {
 	return (0);
 }
 
-void Pathfinding::addBuoy(point_t buoyPos) {
-	_buoyPos.x = buoyPos.x;
-	_buoyPos.y = buoyPos.y;
-	_buoyGraphIndex = _obstaclesGraph.addVertex();
-	generateNodeAdjList(_buoyPos, _buoyGraphIndex, _obstaclesGraph);
+std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
+	Graph								graph(_obstaclesGraph);
+	size_t								boatIndex;
+	std::vector<std::pair<size_t, double>>	reversePath;
+	std::pair<size_t, double>				current;
+	std::list<size_t>						path;
+
+	boatIndex = addBoat(boatPos, graph);
+
+	reversePath = djikstra(boatIndex, _buoyGraphIndex, graph);
+
+	current = reversePath[_buoyGraphIndex];
+
+	path.push_front(_buoyGraphIndex);
+	while (current.first != boatIndex) {
+		path.push_front(current.first);
+		current = reversePath[current.first];
+	}
+	return (convertNodeToPoint(path));
 }
-
-size_t Pathfinding::addBoat(point_t boatPos, Graph& graph) {
-	size_t	boatIndex;
-
-	boatIndex = graph.addVertex();
-	generateNodeAdjList(boatPos, boatIndex, graph);
-	if (!isHitObstacle(boatPos, _buoyPos))
-		graph.addEdge(boatIndex, _buoyGraphIndex, calculateDist(boatPos, _buoyPos));
-	std::cout << std::endl;
-	graph.printGraph();
-	return (boatIndex);
-}
-

@@ -52,7 +52,7 @@ private:
 	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_pinger;
 	rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr		_gps;
 	rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr				_imu;
-	rclcpp::Publisher<ros_gz_interfaces::msg::ParamVec>::SharedPtr				_publisherRangeBearing;
+	rclcpp::Publisher<ros_gz_interfaces::msg::ParamVec>::SharedPtr		_publisherRangeBearing;
 
 	// Callback functions
 	void	pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
