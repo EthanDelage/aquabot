@@ -41,7 +41,7 @@ void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 		addBuoy(_buoyPos);
 		std::cout << "Buoy pos: [" << _buoyPos.x << ", " << _buoyPos.y << "]" << std::endl;
 	}
-	if (_gpsPing && _pathCalculated && _path.empty()) {
+	if (_gpsPing && _pathCalculated && !_path.empty()) {
 		if (_path[0].x == _buoyPos.x && _path[0].y == _buoyPos.y)
 			publishRangeBearing(std::pair<double, double>(_buoyRange, _buoyBearing));
 		else

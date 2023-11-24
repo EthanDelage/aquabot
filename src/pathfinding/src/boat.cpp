@@ -31,7 +31,6 @@ void	Pathfinding::calculateMapPos(double latitude, double longitude) {
 	_boatPos.x = x * 600 - 300;
 	y = (latitude - LATITUDE_0) / (LATITUDE_1 - LATITUDE_0);
 	_boatPos.y = y * 600 - 300;
-//	std::cout << "Boat: [" << _boatPos.x << ", " << _boatPos.y << "]" << std::endl;
 }
 
 void Pathfinding::calculateYaw(const geometry_msgs::msg::Quaternion& orientation) {
@@ -56,9 +55,6 @@ std::pair<double, double> Pathfinding::calculateRangeBearing() {
 	double crossProduct = boatVec.x * checkpointVec.y - boatVec.y * checkpointVec.x;
 
 	rangeBearing.second = std::atan2(crossProduct, dotProduct);
-//	rangeBearing.second = std::acos(dotProduct / (norm1 * norm2));
-//	rangeBearing.second = -convertToMinusPiPi(std::atan2(checkpointVec.y, checkpointVec.x) - _orientation);
-	std::cout << "chec orientation: " << rangeBearing.second << std::endl;
 	return (rangeBearing);
 }
 
