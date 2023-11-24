@@ -12,15 +12,8 @@ double Pathfinding::convertToMinusPiPi(double angleRadians) {
 	while (angleRadians <= -M_PI) {
 		angleRadians += 2.0 * M_PI;
 	}
-
 	while (angleRadians > M_PI) {
 		angleRadians -= 2.0 * M_PI;
 	}
-
-	return angleRadians;
-//	double result = fmod(angleRadians, 2.0 * M_PI);
-//	if (result > M_PI) {
-//		result -= 2.0 * M_PI;
-//	}
-//	return result;
+	return (angleRadians);
 }

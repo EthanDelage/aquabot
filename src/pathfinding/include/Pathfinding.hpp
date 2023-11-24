@@ -60,8 +60,8 @@ private:
 	void 	imuCallback(sensor_msgs::msg::Imu::SharedPtr msg);
 
 	// Parsing functions
-	int 		parseObstacles();
-	rectangle_t	parseBoundingBox(std::string const & strBoundingBox);
+	int 				parseObstacles();
+	static rectangle_t	parseBoundingBox(std::string const & strBoundingBox);
 
 	// Djikstra algorithm functions
 	std::vector<std::pair<size_t, double>>	djikstra(size_t start, size_t end, Graph const & graph);
