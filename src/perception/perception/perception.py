@@ -14,6 +14,7 @@ from sensor_msgs.msg import PointCloud2
 
 import numpy as np
 import matplotlib.pyplot as plt
+from pprint import pprint
 
 import struct
 
@@ -40,9 +41,31 @@ class Perception(Node):
             10
         )
         self.bridge = CvBridge()
-        self.camera = None
         self.horizontal_fov = 1.3962634
         self.image = None
+        self.camera = None
+        self.camera_translation_matrix = np.array([
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ])
+        self.camera_rotation_matrix = np.array([
+            [1, 0, 0, 0],
+            [0, np.cos(0.26), -np.sin(0.26), 0],
+            [0, np.sin(0.26), np.cos(0.26), 0],
+            [0, 0, 0, 1]
+        ])
+        self.camera_rotation_matrix1 = np.array([
+            [np.cos(np.pi / 2), 0, np.sin(np.pi / 2), 0],
+            [0, 1, 0, 0],
+            [-np.sin(np.pi / 2), 0, np.cos(np.pi / 2), 0],
+            [0, 0, 0, 1]
+        ])
+        self.camera_rotation_matrix = np.dot(self.camera_rotation_matrix, self.camera_rotation_matrix1)
+        self.camera_transformation_matrix = np.dot(self.camera_translation_matrix, self.camera_rotation_matrix)
+        # self.camera_transformation_matrix = self.camera_rotation_matrix
+        # self.camera_transformation_matrix = self.camera_translation_matrix
         self.enemy_bearing = None
 
     def image_callback(self, msg):
@@ -68,7 +91,7 @@ class Perception(Node):
         self.camera = msg
         self.horizontal_fov = 2 * math.atan(image_width / (2 * fx))
 
-    def lidar_callback(self, point_cloud_msg):
+    def get_all_lidar_points(self, point_cloud_msg):
         if point_cloud_msg.data:
             # Assuming XYZ point cloud data with float32 encoding
             # Get the point cloud data as a bytearray
@@ -76,12 +99,13 @@ class Perception(Node):
 
             # Define variables for the point cloud data
             points = []
-            point_size = len(point_cloud_msg.fields)  # Number of fields per point (e.g., x, y, z)
 
             # Calculate the offset and stride for XYZ (assuming x, y, z are the first 3 fields)
             x_offset = point_cloud_msg.fields[0].offset
             y_offset = point_cloud_msg.fields[1].offset
             z_offset = point_cloud_msg.fields[2].offset
+            intensity_offset = point_cloud_msg.fields[3].offset
+            ring_offset = point_cloud_msg.fields[4].offset
             point_step = point_cloud_msg.point_step
 
             # Iterate through the data and extract XYZ coordinates
@@ -89,35 +113,100 @@ class Perception(Node):
                 x = struct.unpack_from('f', data_buffer, i + x_offset)[0]
                 y = struct.unpack_from('f', data_buffer, i + y_offset)[0]
                 z = struct.unpack_from('f', data_buffer, i + z_offset)[0]
+                intensity = struct.unpack_from('f', data_buffer,
+                                               i + intensity_offset)[0]
+                ring = struct.unpack_from('H', data_buffer,
+                                          i + ring_offset)[0]
                 points.append([x, y, z])
-
             # Convert the list of points to a NumPy array
             parsed_points = np.array(points, dtype=np.float32)
-            # print(point_cloud_msg.is_dense)
-            # print(parsed_points)
-            # Affichage des points dans un nuage 3D avec Matplotlib
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection='3d')
-            ax.set_zlim([0, 70])  # Remplacez min_z_value et max_z_value par les valeurs Z minimales et maximales que vous souhaitez afficher
-            # Réduire la taille des marqueurs pour afficher des points moins hauts
-
-
-            # Séparation des coordonnées XYZ
-            x = parsed_points[:, 0]
-            y = parsed_points[:, 1]
-            z = parsed_points[:, 2]
-
-            # Affichage des points
-            ax.scatter(x, y, z, c=z, cmap='viridis', s=1)  # La couleur est basée sur l'axe Z
-
-            # Réglages d'affichage
-            ax.set_xlabel('X Label')
-            ax.set_ylabel('Y Label')
-            ax.set_zlabel('Z Label')
-
-            plt.show()
-            # return points_array
+            return parsed_points
         return None
+
+    def filter_visible_lidar_points(self, lidar_points, camera_info):
+        # Matrice de projection de la caméra P (à partir de vos données de la caméra)
+        P = camera_info.p
+        P = P.reshape(3, 4)
+        # print("after")
+        # pprint(P)
+        # exit(1)
+
+        visible = []
+        if self.image is None:
+            return np.array(visible)
+        for point_3d in lidar_points:
+            inf = np.isinf(point_3d)
+            if inf[0] or inf[1] or inf[2]:
+                continue
+            # print(f"3D: {point_3d}")
+            point_4d = np.array([point_3d[0], point_3d[1], point_3d[2], 1])
+            point_4d = np.array([point_4d[0], point_4d[2], point_4d[1], 1])
+            point_4d = np.dot(self.camera_transformation_matrix, point_4d)
+            point_4d /= point_4d[3]
+            # point_4d = np.array([point_4d[2], point_4d[1], point_4d[0], 1])
+            point_2d = np.dot(P, point_4d)
+            # print(f"4D: {point_4d}")
+            # print(f"2D: {point_2d}")
+            if point_2d[2] >= 0:
+                continue
+            x = point_2d[0] / point_2d[2]
+            y = point_2d[1] / point_2d[2]
+            is_visible = 0 < x < self.camera.width and 0 < y < self.camera.height
+            if is_visible:
+                x = int(x)
+                y = int(y)
+                # y = self.camera.height - y - 1
+                # x = self.camera.width - x - 1
+                # print(f"new x/y: {x} {y}")
+                b = self.image[y, x][0] / 255
+                g = self.image[y, x][1] / 255
+                r = self.image[y, x][2] / 255
+                self.image[y, x] = [255, 255, 255]
+                # b = self.image[x, y][0] / 255
+                # g = self.image[x, y][1] / 255
+                # r = self.image[x, y][2] / 255
+                # pprint(f"Color: {r, g, b}")
+                visible.append(np.array([point_3d[0], point_3d[1], point_3d[2], r, g, b]))
+        return np.array(visible)
+
+    def lidar_callback(self, point_cloud_msg):
+
+        parsed_points = self.get_all_lidar_points(point_cloud_msg)
+        # parsed_points = np.array([[15, 10, 0]])
+        if self.camera != None:
+            cam_points = self.filter_visible_lidar_points(parsed_points, self.camera)
+            if len(cam_points) > 0:
+                parsed_points = cam_points
+        # pprint(f"Fields:\n{point_cloud_msg.fields}")
+
+        # SAVEEEEEEE
+        # Affichage des points dans un nuage 3D avec Matplotlib
+                cv2.imshow('Lidar Tracking', self.image)
+                # fig = plt.figure()
+                # ax = fig.add_subplot(111, projection='3d')
+                # # Réduire la taille des marqueurs pour afficher des points moins hauts
+                # ax.set_zlim([0, 50])  # Remplacez min_z_value et max_z_value par les valeurs Z minimales et maximales que vous souhaitez afficher
+                #
+                # # Séparation des coordonnées XYZ
+                # x = parsed_points[:, 0]
+                # y = parsed_points[:, 1]
+                # z = parsed_points[:, 2]
+                # r = parsed_points[:, 3]
+                # g = parsed_points[:, 4]
+                # b = parsed_points[:, 5]
+                # # Affichage des points
+                # colors = np.column_stack((r, g, b))
+                # ax.scatter(x, y, z, c=colors, cmap='viridis',
+                #            s=1)  # La couleur est basée sur l'axe Z
+                # # for i in range(len(parsed_points)):
+                # #     plt.scatter(x[i], y[i], z[i], c=np.array([r[i], g[i], b[i]]))
+                #
+                # # Réglages d'affichage
+                # ax.set_xlabel('X Label')
+                # ax.set_ylabel('Y Label')
+                # ax.set_zlabel('Z Label')
+                #
+                # plt.show()
 
     @staticmethod
     def is_contour_inside_rect(contour1, contour2):
@@ -166,7 +255,7 @@ class Perception(Node):
                 cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0),
                               1)
         # Display the result
-        cv2.imshow('Enemy Tracking', self.image)
+        # cv2.imshow('Enemy Tracking', self.image)
 
     def calculate_enemy_bearing(self, largest_bounding_box):
         if largest_bounding_box is not None and self.camera is not None:
