@@ -52,3 +52,4 @@ add_shell_source:
 	echo "source $(BASH_ROS_SOURCE)" >> ~/.bashrc
 	echo "# Source ROS Humble" >> ~/.zshrc
 	echo "source $(ZSH_ROS_SOURCE)" >> ~/.zshrc
+	
