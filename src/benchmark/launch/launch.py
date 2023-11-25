@@ -8,6 +8,10 @@ from launch.substitutions import PathJoinSubstitution, TextSubstitution
 from launch.event_handlers import OnProcessExit, OnShutdown
 import os
 
+def handle_node_exit(context, process_info, **kwargs):
+    status_code = process_info['return_code']
+    print(f'Status code: {status_code}')
+
 
 def generate_launch_description():
     ld = LaunchDescription()
@@ -33,7 +37,7 @@ def generate_launch_description():
             ])
         ),
         launch_arguments={
-            'world': 'aquabot_task_hard',
+            'world': 'aquabot_benchmark',
         }.items(),
     )
     launch_exit_event = RegisterEventHandler(

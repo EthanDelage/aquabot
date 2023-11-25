@@ -4,15 +4,19 @@ from typing import AnyStr
 
 
 def main(args=None):
+    scenario_path: str = 'scenario.sdf'
+    file_header_path: str = 'src/benchmark/resource/world_file_header'
+    target_file_path: str = 'install/share/aquabot_gz/worlds/aquabot_benchmark.sdf'
+
     rclpy.init(args=args)
     node = rclpy.create_node('benchmark')
     generate_scenario()
-    replace_content('scenario.sdf', 'src/benchmark/resource/world_file_header', 'src/aquabot/aquabot_gz/worlds/aquabot_benchmark.sdf')
+    replace_content(scenario_path, file_header_path, target_file_path)
     node.destroy_node()
     rclpy.shutdown()
 
 
-def generate_scenario():
+def generate_scenario() -> None:
     command = "ros2 run aquabot_python generate_scenario.py"
 
     try:
