@@ -29,7 +29,6 @@ private:
 	double							_range;
 	double							_desiredRange;
 	double							_gain;
-	// Écart-type
 	double							_sigma;
 	bool							_benchmark;
 
