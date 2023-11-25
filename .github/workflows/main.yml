@@ -1,0 +1,39 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Run install_ros_humble.sh
+      run: |
+        chmod +x ./.github/workflows/install_ros_humble.sh
+        ./.github/workflows/install_ros_humble.sh
+      working-directory: ${{ github.workspace }}
+
+    - name: Run install_gazebo_garden.sh
+      run: |
+        chmod +x ./.github/workflows/install_gazebo_garden.sh
+        ./.github/workflows/install_gazebo_garden.sh
+      working-directory: ${{ github.workspace }}
+
+    - name: Run install_vrx.sh
+      run: |
+        chmod +x ./.github/workflows/install_vrx.sh
+        ./.github/workflows/install_vrx.sh
+      working-directory: ${{ github.workspace }}
+
+    - name: Run build.sh
+      run: |
+        chmod +x ./.github/workflows/build.sh
+        ./.github/workflows/build.sh
+      working-directory: ${{ github.workspace }}
