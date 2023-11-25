@@ -1,6 +1,4 @@
 from typing import Optional, Tuple
-import timeit
-import time
 
 import cv2
 import rclpy
@@ -12,7 +10,6 @@ from sensor_msgs.msg import Image
 from sensor_msgs.msg import CameraInfo
 from sensor_msgs.msg import PointCloud2
 
-from pprint import pprint
 from .camera import Camera
 from .lidar import Lidar
 
@@ -68,18 +65,11 @@ class Perception(Node):
             self.camera = Camera(projection_matrix, horizontal_fov, resolution)
 
     def lidar_callback(self, point_cloud_msg):
-        # start = time.time()
-        timer = timeit.Timer(lambda: self.lidar.parse_points(point_cloud_msg))
-        time_exec = timer.timeit(number=1)
-        pprint(time_exec * 1000)
         self.lidar.parse_points(point_cloud_msg)
         if self.camera is not None and self.image is not None:
             self.lidar.project_points_to_camera(self.camera, self.image)
             # self.draw_lidar_points_in_image()
-            # self.draw_plt_graph()
-            self.update_plot()
-        # end = time.time()
-        # pprint((end - start) * 1000)
+            # self.update_plot()
 
     def detect_red_boat(self):
         rgb_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
@@ -177,22 +167,6 @@ class Perception(Node):
         self.scatter_plot = self.ax.scatter(xs, ys, zs, c=colors,
                                             cmap='viridis', s=1)
         plt.pause(0.01)
-
-    def draw_plt_graph(self) -> None:
-        self.initialize_plot()
-        if not self.display_plt_graph:
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection='3d')
-            points = np.array(
-                [point.position for point in self.lidar.visible_points])
-            colors = np.array([point.color[::-1] / 255 for point in
-                               self.lidar.visible_points])
-            ax.scatter(*points.T, c=colors, cmap='viridis', s=1)
-            ax.set_xlabel('X Label')
-            ax.set_ylabel('Y Label')
-            ax.set_zlabel('Z Label')
-            self.display_plt_graph = True
-            plt.show()
 
 
 def main(args=None):
