@@ -12,6 +12,7 @@ include_directories(/opt/ros/humble/include/tf2_geometry_msgs)
 
 include_directories(src/navigation/include)
 include_directories(src/pathfinding/include)
+include_directories(src/perception/include)
 
 add_executable(autoComplete
 		src/navigation/src/Navigation.cpp
@@ -26,4 +27,9 @@ add_executable(autoComplete
 		src/pathfinding/include/point.hpp
 		src/pathfinding/src/graphGeneration.cpp
 		src/pathfinding/src/djikstra.cpp
-		src/pathfinding/src/callback.cpp src/pathfinding/src/buoy.cpp src/pathfinding/src/parsing.cpp src/pathfinding/src/boat.cpp)
+		src/pathfinding/src/callback.cpp
+    src/pathfinding/src/buoy.cpp
+    src/pathfinding/src/parsing.cpp
+    src/pathfinding/src/boat.cpp
+		src/perception/src/Perception.cpp
+		src/perception/src/main.cpp)
