@@ -33,22 +33,24 @@ def generate_launch_description():
             ])
         ),
         launch_arguments={
-            'world': 'aquabot_benchmark',
+            'world': 'aquabot_task_hard',
         }.items(),
     )
-    event_handler = RegisterEventHandler(
+    launch_exit_event = RegisterEventHandler(
         OnProcessExit(
             target_action=benchmark_node,
             on_exit=[
                 aquabot_launch_file,
+                navigation_node,
+                pathfinding_node,
             ]
         )
     )
 
     ld.add_action(benchmark_node)
-    ld.add_action(navigation_node)
-    ld.add_action(pathfinding_node)
+    # ld.add_action(navigation_node)
+    # ld.add_action(pathfinding_node)
     # ld.add_action(aquabot_launch_file)
-    ld.add_action(event_handler)
+    ld.add_action(launch_exit_event)
 
     return ld

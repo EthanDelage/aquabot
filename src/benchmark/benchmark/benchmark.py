@@ -1,12 +1,13 @@
 import rclpy
 import subprocess
+from typing import AnyStr
 
 
 def main(args=None):
     rclpy.init(args=args)
     node = rclpy.create_node('benchmark')
     generate_scenario()
-    replace_content('scenario.sdf', 'src/aquabot/aquabot_gz/worlds/aquabot_benchmark.sdf')
+    replace_content('scenario.sdf', 'src/benchmark/resource/world_file_header', 'src/aquabot/aquabot_gz/worlds/aquabot_benchmark.sdf')
     node.destroy_node()
     rclpy.shutdown()
 
@@ -25,30 +26,20 @@ def generate_scenario():
         print(e)
 
 
-def replace_content(scenario_file_path, target_file_path):
-    start_line = '<!-- GENERATED SCENARIO -->'
-    task_hard_file_path = 'src/aquabot/aquabot_gz/worlds/aquabot_task_hard.sdf'
-    with open(task_hard_file_path, 'r') as target_file:
-        # Find the line number of the seed line
-        lines = target_file.readlines()
-        scenario_start_line = next((i + 1 for i, line in enumerate(lines) if start_line in line), None)
+def replace_content(scenario_file_path: str, file_header_path: str, target_file_path: str) -> None:
 
-    if scenario_start_line is not None:
-        # Read the content from the target file
-        with open(scenario_file_path, 'r') as source_file:
+    # Open the target file in write mode
+    with open(target_file_path, 'w') as target_file:
+        # Write the content from the header file to the target file
+        with open(file_header_path, 'r') as header_file:
+            target_file.write(header_file.read())
+
+        # Write the content from the scenario file to the target file
+        with open(scenario_file_path, 'r') as scenario_file:
+            # Skip the first two line of the scenario file
             for _ in range(2):
-                next(source_file)
-            new_content = source_file.read()
-
-        # Replace the content in the original file
-        lines = [line.strip('\n') for line in lines]
-        lines[scenario_start_line:] = new_content.split('\n')
-
-        # Write the modified content back to the original file
-        with open(target_file_path, 'w') as target_file:
-            target_file.write('\n'.join(lines))
-    else:
-        print(f"Line `{start_line}` not found in {scenario_file_path}.")
+                next(scenario_file)
+            target_file.write(scenario_file.read())
 
 
 if __name__ == '__main__':
