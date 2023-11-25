@@ -23,8 +23,11 @@ Pathfinding::Pathfinding() :
 				std::bind(&Pathfinding::gpsCallback, this, _1));
 	_imu = create_subscription<sensor_msgs::msg::Imu>("/wamv/sensors/imu/imu/data", 10,
 				std::bind(&Pathfinding::imuCallback, this, _1));
+	_allies = create_subscription<geometry_msgs::msg::PoseArray>("/wamv/ais_sensor/allies_positions", 10,
+				std::bind(&Pathfinding::alliesCallback, this, _1));
 	_publisherRangeBearing = create_publisher<ros_gz_interfaces::msg::ParamVec>("/range_bearing", 5);
 }
+
 int Pathfinding::init() {
 	if (parseObstacles() == -1)
 		return (-1);

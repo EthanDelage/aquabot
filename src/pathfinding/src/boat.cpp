@@ -24,10 +24,10 @@ void	Pathfinding::calculateMapPos(double latitude, double longitude) {
 	_boatPos.y = y * 600 - 300;
 }
 
-void Pathfinding::calculateYaw(const geometry_msgs::msg::Quaternion& orientation) {
+double Pathfinding::calculateYaw(const geometry_msgs::msg::Quaternion& orientation) {
 	double siny_cosp = 2 * (orientation.w * orientation.z + orientation.x * orientation.y);
 	double cosy_cosp = 1 - 2 * (orientation.y * orientation.y + orientation.z * orientation.z);
-	_orientation = std::atan2(siny_cosp, cosy_cosp);
+	return (std::atan2(siny_cosp, cosy_cosp));
 }
 
 std::pair<double, double> Pathfinding::calculateRangeBearing() {

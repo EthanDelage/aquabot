@@ -9,7 +9,9 @@
 # include "rclcpp/rclcpp.hpp"
 # include "sensor_msgs/msg/imu.hpp"
 # include "std_msgs/msg/float64.hpp"
+# include "geometry_msgs/msg/pose.hpp"
 # include "sensor_msgs/msg/nav_sat_fix.hpp"
+# include "geometry_msgs/msg/pose_array.hpp"
 # include "ros_gz_interfaces/msg/param_vec.hpp"
 
 # define OBSTACLE_FILE			"src/pathfinding/obstacles.txt"
@@ -19,6 +21,7 @@
 # define LATITUDE_0				48.043601874279716
 # define LONGITUDE_1			(-4.9722961068569775)
 # define LATITUDE_1				48.04899798353722
+# define MIN_ALLY_RANGE			20
 
 typedef struct rectangle_s {
 	size_t	id;
@@ -29,9 +32,10 @@ class Pathfinding : public rclcpp::Node {
 
 private:
 	// Cartography attributes
-	std::vector<rectangle_t>	_obstacles;
-	Graph						_obstaclesGraph;
-	size_t						_buoyGraphIndex;
+	std::vector<rectangle_t>				_obstacles;
+	std::vector<std::pair<point_t, double>>	_closeAllies;
+	Graph									_obstaclesGraph;
+	size_t									_buoyGraphIndex;
 
 	// Buoy attributes
 	point_t						_buoyPos;
@@ -52,12 +56,14 @@ private:
 	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_pinger;
 	rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr		_gps;
 	rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr				_imu;
+	rclcpp::Subscription<geometry_msgs::msg::PoseArray>::SharedPtr		_allies;
 	rclcpp::Publisher<ros_gz_interfaces::msg::ParamVec>::SharedPtr		_publisherRangeBearing;
 
 	// Callback functions
 	void	pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
 	void 	gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg);
 	void 	imuCallback(sensor_msgs::msg::Imu::SharedPtr msg);
+	void	alliesCallback(geometry_msgs::msg::PoseArray::SharedPtr msg);
 
 	// Parsing functions
 	int 				parseObstacles();
@@ -92,7 +98,7 @@ private:
 
 	// Boat functions
 	void						calculateMapPos(double latitude, double longitude);
-	void						calculateYaw(geometry_msgs::msg::Quaternion const & orientation);
+	double						calculateYaw(geometry_msgs::msg::Quaternion const & orientation);
 	std::vector<point_t>		calculatePath(point_t boatPos);
 	std::pair<double, double>	calculateRangeBearing();
 	void						publishRangeBearing(std::pair<double, double> const & rangeBearing, double desiredRange);

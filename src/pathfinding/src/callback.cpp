@@ -33,7 +33,7 @@ void Pathfinding::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 }
 
 void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
-	calculateYaw(msg->orientation);
+	_orientation = calculateYaw(msg->orientation);
 	_imuPing = true;
 	if (_buoyPing && _gpsPing && !_buoyPosCalculate) {
 		calculateBuoyPos();
@@ -47,4 +47,23 @@ void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 		else
 			publishRangeBearing(calculateRangeBearing(), MAX_CHECKPOINT_RANGE);
 	}
+}
+
+void Pathfinding::alliesCallback(geometry_msgs::msg::PoseArray::SharedPtr msg) {
+	for (const auto &pose : msg->poses)
+	{
+		std::pair<point_t, double>	allyInfo;
+
+		allyInfo.first.x = pose.position.x;
+		allyInfo.first.y = pose.position.y;
+		if (calculateDist(_boatPos, allyInfo.first) > MIN_ALLY_RANGE)
+			continue;
+
+		allyInfo.second = calculateYaw(pose.orientation);
+
+		RCLCPP_INFO(this->get_logger(), "Pose - x: %f, y: %f, yaw: %f",
+					allyInfo.first.x, allyInfo.first.y, allyInfo.second);
+		_closeAllies.push_back(allyInfo);
+	}
+	//TODO: recalculate path
 }
