@@ -10,6 +10,7 @@ log/
 .cache/
 .fleet/
 cmake-build-debug/
+venv/
 
 # Prerequisites
 *.d
