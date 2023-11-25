@@ -23,7 +23,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'benchmark = benchmark.benchmark:main'
+            'benchmark = benchmark.benchmark:main',
+            'task_info = benchmark.task_info:main'
         ],
     },
 )
