@@ -1,18 +1,16 @@
 from typing import Optional, Tuple
 
-import cv2
-import rclpy
-from rclpy.node import Node
-from cv_bridge import CvBridge
 import numpy as np
 import matplotlib.pyplot as plt
+import cv2
+from cv_bridge import CvBridge
+import rclpy
+from rclpy.node import Node
+from rcl_interfaces.msg import Parameter
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import CameraInfo
 from sensor_msgs.msg import PointCloud2
-# from std_msgs.msg import ParamVec, Param
 from ros_gz_interfaces.msg import ParamVec
-from rcl_interfaces.msg import Parameter
-import time
 
 from .camera import Camera
 from .lidar import Lidar
@@ -65,6 +63,7 @@ class Perception(Node):
     def image_callback(self, msg):
         self.image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
         self.detect_red_boat()
+        self.publish_navigation()
 
     def camera_callback(self, msg):
         if self.camera is None:
@@ -72,31 +71,13 @@ class Perception(Node):
             resolution = (msg.width, msg.height)
             horizontal_fov = 1.3962634
             self.camera = Camera(projection_matrix, horizontal_fov, resolution)
-        if self.enemy_bearing is not None:
-            msg = ParamVec()
-            bearing_param = Parameter()
-            bearing_param.name = "bearing"
-            bearing_param.value.double_value = self.enemy_bearing
-            msg.params.append(bearing_param)
-
-            range_param = Parameter()
-            range_param.name = "range"
-            range_param.value.double_value = self.near_distance  # Remplacez par votre valeur de plage
-            msg.params.append(range_param)
-
-            desired_range_param = Parameter()
-            desired_range_param.name = "desiredRange"
-            desired_range_param.value.double_value = 10.0  # Remplacez par votre valeur de plage souhaitée
-            msg.params.append(desired_range_param)
-            self.navigation_publisher.publish(msg)
 
     def lidar_callback(self, point_cloud_msg):
         self.lidar.parse_points(point_cloud_msg)
         if self.camera is not None and self.image is not None:
             self.lidar.project_points_to_camera(self.camera, self.image)
-            for point in self.lidar.visible_points:
-                if (point.image_position[0], point.image_position[1]) in self.red_pixels:
-                    self.near_distance = min(self.near_distance, point.get_distance())
+            self.calculate_enemy_range()
+            self.publish_navigation()
             # self.draw_lidar_points_in_image()
 
     def detect_red_boat(self):
@@ -160,6 +141,31 @@ class Perception(Node):
                                  self.camera.horizontal_fov
             self.enemy_bearing = -self.enemy_bearing
             return self.enemy_bearing
+
+    def calculate_enemy_range(self):
+        for point in self.lidar.visible_points:
+            if point.image_position in self.red_pixels:
+                self.near_distance = min(self.near_distance,
+                                         point.get_distance())
+
+    def publish_navigation(self):
+        if self.enemy_bearing is not None:
+            msg = ParamVec()
+            bearing_param = Parameter()
+            bearing_param.name = "bearing"
+            bearing_param.value.double_value = self.enemy_bearing
+            msg.params.append(bearing_param)
+
+            range_param = Parameter()
+            range_param.name = "range"
+            range_param.value.double_value = self.near_distance
+            msg.params.append(range_param)
+
+            desired_range_param = Parameter()
+            desired_range_param.name = "desiredRange"
+            desired_range_param.value.double_value = 30.0
+            msg.params.append(desired_range_param)
+            self.navigation_publisher.publish(msg)
 
     def draw_lidar_points_in_image(self) -> None:
         if self.lidar.visible_points is not None:

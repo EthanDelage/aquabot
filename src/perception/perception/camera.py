@@ -47,7 +47,7 @@ class Camera:
         return point2d_homogeneous
 
     def project_lidar_point(self, lidar_point: np.ndarray) -> Optional[
-            np.ndarray]:
+            tuple[int, int]]:
         if self.is_inf_point(lidar_point):
             return None
         point3d_homogeneous = np.array(
@@ -65,7 +65,7 @@ class Camera:
         y = point2d_homogeneous[1] / point2d_homogeneous[2]
         if not self.is_visible_point2d(np.array([x, y])):
             return None
-        return np.array([int(x), int(y)])
+        return int(x), int(y)
 
     def is_visible_point2d(self, point2d: np.ndarray) -> bool:
         return 0 <= point2d[0] < self.width and 0 <= point2d[1] < self.height

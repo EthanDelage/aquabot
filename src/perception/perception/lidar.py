@@ -18,7 +18,7 @@ class LidarPoint:
         self.intensity: float = intensity
         self.ring: int = ring
         self.color: Optional[np.ndarray] = None
-        self.image_position: Optional[np.ndarray] = None
+        self.image_position: Optional[tuple[int, int]] = None
         self.distance: Optional[float] = None
 
     def project_to_camera(self, camera: 'Camera', image: np.ndarray) -> bool:
