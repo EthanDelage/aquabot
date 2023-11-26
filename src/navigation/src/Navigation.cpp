@@ -58,14 +58,14 @@ void Navigation::setHeading(double bearing, double range) {
 	posMsg.data = (POS_MIN + regulation * 2 * POS_MAX);
 	thrustMsg.data = std::abs(std::abs(regulation - 0.5) - 0.5) * 2 * THRUST_MAX;
 	thrustMsg.data = calculateThrust(regulation);
-	if (range < _desiredRange) {
-		posMsg.data = 0;
-		thrustMsg.data = 0;
+	//TODO: do only when follow
+	if (range < 70) {
+		thrustMsg.data = std::pow(3 * (range - (_desiredRange - 3)), 3) + 6000;
+		thrustMsg.data = std::min(thrustMsg.data, 12000.);
+		thrustMsg.data = std::max(thrustMsg.data, 2000.);
 	}
 	_publisherPos->publish(posMsg);
 	_publisherThrust->publish(thrustMsg);
-	if (range < MAX_BUOY_RANGE && _benchmark)
-		rclcpp::shutdown();
 }
 
 double Navigation::calculateThrust(double regulation) {

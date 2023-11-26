@@ -78,7 +78,7 @@ class Perception(Node):
             self.lidar.project_points_to_camera(self.camera, self.image)
             self.calculate_enemy_range()
             self.publish_navigation()
-            # self.draw_lidar_points_in_image()
+            self.draw_lidar_points_in_image()
 
     def detect_red_boat(self):
         rgb_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
@@ -143,6 +143,7 @@ class Perception(Node):
             return self.enemy_bearing
 
     def calculate_enemy_range(self):
+        self.near_distance = 130.0
         for point in self.lidar.visible_points:
             if point.image_position in self.red_pixels:
                 self.near_distance = min(self.near_distance,
