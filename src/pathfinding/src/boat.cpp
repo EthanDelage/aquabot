@@ -3,18 +3,6 @@
 
 #include <cmath>
 
-size_t Pathfinding::addBoat(point_t boatPos, Graph& graph) {
-	size_t	boatIndex;
-
-	boatIndex = graph.addVertex();
-	generateNodeAdjList(boatPos, boatIndex, graph);
-	if (!isHitObstacle(boatPos, _buoyPos))
-		graph.addEdge(boatIndex, _buoyGraphIndex, calculateDist(boatPos, _buoyPos));
-	std::cout << std::endl;
-	graph.printGraph();
-	return (boatIndex);
-}
-
 void	Pathfinding::calculateMapPos(double latitude, double longitude) {
 	double	x, y;
 
@@ -68,4 +56,17 @@ void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBear
 	if (rangeBearing.first < desiredRange)
 		_path.erase(_path.begin());
 	_publisherRangeBearing->publish(paramVecMsg);
+}
+
+void Pathfinding::calculateAllyCheckpoint(checkpoint_t *allyCheckpoint, std::pair<point_t, double> ally) {
+	const double	checkpointDist = 20;
+
+	allyCheckpoint[0].position.x = (ally.first.x - checkpointDist * std::cos(ally.second))
+		+ checkpointDist * std::cos(ally.second + M_PI_2);
+	allyCheckpoint[0].position.y = (ally.first.y - checkpointDist * std::cos(ally.second))
+		+ checkpointDist * std::cos(ally.second + M_PI_2);
+	allyCheckpoint[1].position.x = (ally.first.x - checkpointDist * std::cos(ally.second))
+		- checkpointDist * std::cos(ally.second + M_PI_2);
+	allyCheckpoint[1].position.y = (ally.first.y - checkpointDist * std::cos(ally.second))
+		- checkpointDist * std::cos(ally.second + M_PI_2);
 }

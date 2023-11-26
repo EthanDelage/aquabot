@@ -21,24 +21,28 @@
 # define LATITUDE_0				48.043601874279716
 # define LONGITUDE_1			(-4.9722961068569775)
 # define LATITUDE_1				48.04899798353722
-# define MIN_ALLY_RANGE			20
+# define MIN_ALLY_RANGE			35
 
 typedef struct rectangle_s {
 	size_t	id;
 	point_t point[4];
 } rectangle_t;
 
+typedef struct checkpoint_s {
+	size_t	graphIndex;
+	point_t position;
+} checkpoint_t;
+
 class Pathfinding : public rclcpp::Node {
 
 private:
 	// Cartography attributes
 	std::vector<rectangle_t>				_obstacles;
-	std::vector<std::pair<point_t, double>>	_closeAllies;
+	std::vector<checkpoint_t>				_checkpoints;
 	Graph									_obstaclesGraph;
-	size_t									_buoyGraphIndex;
 
 	// Buoy attributes
-	point_t						_buoyPos;
+	checkpoint_t				_buoy;
 	bool						_buoyPing;
 	double						_buoyRange;
 	double						_buoyBearing;
@@ -72,6 +76,7 @@ private:
 	// Djikstra algorithm functions
 	std::vector<std::pair<size_t, double>>	djikstra(size_t start, size_t end, Graph const & graph);
 	std::vector<point_t>					convertNodeToPoint(std::list<size_t> nodePath);
+	std::vector<point_t>					convertDjikstraToPoint(std::vector<std::pair<size_t, double>> reversePath, size_t start, size_t end);
 	static bool								isVisited(size_t index, std::vector<size_t> const & visited);
 	static std::pair<size_t, double>		getMinNode(std::vector<std::pair<size_t, double>> const & path, std::vector<size_t> const & visited);
 	static double							calculateDist(point_t a, point_t b);
@@ -90,7 +95,7 @@ private:
 	void	generateObstaclesGraph();
 	void 	addObstacleAdjList(rectangle_t const & obstacle, size_t index);
 	void	generateAdjList(rectangle_t const & lhs, rectangle_t const & rhs);
-	void	generateNodeAdjList(point_t nodePos, size_t nodeIndex, Graph& graph);
+	void	generateCheckpointAdjList(checkpoint_t checkpoint, Graph& graph);
 
 	// Buoy functions
 	void			calculateBuoyPos();
@@ -100,15 +105,17 @@ private:
 	void						calculateMapPos(double latitude, double longitude);
 	double						calculateYaw(geometry_msgs::msg::Quaternion const & orientation);
 	std::vector<point_t>		calculatePath(point_t boatPos);
+	std::vector<point_t>		calculatePathWithAlly(point_t boatPos, std::pair<point_t, double> ally);
 	std::pair<double, double>	calculateRangeBearing();
 	void						publishRangeBearing(std::pair<double, double> const & rangeBearing, double desiredRange);
+	void						calculateAllyCheckpoint(checkpoint_t* allyCheckpoint, std::pair<point_t, double> ally);
 
 public:
 	Pathfinding();
 
 	int						init();
-	void					addBuoy(point_t buoyPos);
-	size_t 					addBoat(point_t boatPos, Graph& graph);
+	void					addBuoy();
+	size_t					addCheckPoint(point_t checkpointPos, Graph& graph);
 
 };
 

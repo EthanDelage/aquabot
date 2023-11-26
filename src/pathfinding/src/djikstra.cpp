@@ -47,14 +47,28 @@ std::pair<size_t, double> Pathfinding::getMinNode(
 	return (min);
 }
 
+std::vector<point_t> Pathfinding::convertDjikstraToPoint(std::vector<std::pair<size_t, double>> reversePath, size_t start, size_t end) {
+	std::pair<size_t, double>				current;
+	std::list<size_t>						path;
+
+	current = reversePath[end];
+
+	path.push_front(_buoy.graphIndex);
+	while (current.first != start) {
+		path.push_front(current.first);
+		current = reversePath[current.first];
+	}
+	return (convertNodeToPoint(path));
+}
+
 std::vector<point_t> Pathfinding::convertNodeToPoint(std::list<size_t> nodePath) {
 	std::vector<point_t>	path;
 
 	for (auto node : nodePath) {
-		if (node != _buoyGraphIndex)
+		if (node != _buoy.graphIndex)
 			path.push_back(_obstacles[node / 4].point[node % 4]);
 		else
-			path.push_back(_buoyPos);
+			path.push_back(_buoy.position);
 	}
 	return (path);
 }

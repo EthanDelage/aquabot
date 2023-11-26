@@ -2,17 +2,19 @@
 
 #include <cmath>
 
-void Pathfinding::addBuoy(point_t buoyPos) {
-	_buoyPos.x = buoyPos.x;
-	_buoyPos.y = buoyPos.y;
-	_buoyGraphIndex = _obstaclesGraph.addVertex();
-	generateNodeAdjList(_buoyPos, _buoyGraphIndex, _obstaclesGraph);
+void Pathfinding::addBuoy() {
+	calculateBuoyPos();
+	std::cout << "Buoy pos: [" << _buoy.position.x << ", " << _buoy.position.y << "]" << std::endl;
+	_buoyPosCalculate = true;
+	_buoy.graphIndex = _obstaclesGraph.addVertex();
+	_checkpoints.push_back(_buoy);
+	generateCheckpointAdjList(_buoy, _obstaclesGraph);
 }
 
 void Pathfinding::calculateBuoyPos() {
 	double buoyOrientation = convertToMinusPiPi(_orientation + _buoyBearing);
-	_buoyPos.x = _buoyRange * std::cos(buoyOrientation) + _boatPos.x;
-	_buoyPos.y = _buoyRange * std::sin(buoyOrientation) + _boatPos.y;
+	_buoy.position.x = _buoyRange * std::cos(buoyOrientation) + _boatPos.x;
+	_buoy.position.y = _buoyRange * std::sin(buoyOrientation) + _boatPos.y;
 }
 
 double Pathfinding::convertToMinusPiPi(double angleRadians) {

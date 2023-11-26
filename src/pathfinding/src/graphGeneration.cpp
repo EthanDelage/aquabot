@@ -1,6 +1,20 @@
 #include "Pathfinding.hpp"
 #include <cmath>
 
+size_t Pathfinding::addCheckPoint(point_t cpPos, Graph& graph) {
+	size_t			checkpointIndex;
+	checkpoint_t	cp;
+
+	cp.position.x = cpPos.x;
+	cp.position.y = cpPos.y;
+	cp.graphIndex = graph.addVertex();
+	generateCheckpointAdjList(cp, graph);
+	std::cout << std::endl;
+	graph.printGraph();
+
+	return (checkpointIndex);
+}
+
 void Pathfinding::generateObstaclesGraph() {
 	for (auto it = _obstacles.begin(); it != _obstacles.end(); ++it) {
 		addObstacleAdjList(*it, std::distance(_obstacles.begin(), it));
@@ -41,13 +55,20 @@ void Pathfinding::generateAdjList(const rectangle_t& lhs, const rectangle_t& rhs
 	}
 }
 
-void Pathfinding::generateNodeAdjList(point_t nodePos, size_t nodeIndex, Graph& graph) {
+void Pathfinding::generateCheckpointAdjList(checkpoint_t cp, Graph& graph) {
 	for (size_t i = 0; i != _obstacles.size(); ++i) {
 		for (size_t j = 0; j < 4; ++j) {
-			if (!isHitItself(nodePos, _obstacles[i].point[j], _obstacles[i], j)
-				&& !isHitObstacle(nodePos, _obstacles[i].point[j], _obstacles[i])) {
-				graph.addEdge(nodeIndex, i * 4 + j, calculateDist(nodePos, _obstacles[i].point[j]));
-			}
+			if (!isHitItself(cp.position, _obstacles[i].point[j], _obstacles[i], j)
+				&& !isHitObstacle(cp.position, _obstacles[i].point[j], _obstacles[i]))
+				graph.addEdge(cp.graphIndex, i * 4 + j, calculateDist(cp.position, _obstacles[i].point[j]));
+		}
+	}
+	if (graph.getNbVertices() != _obstacles.size() * 4 + 1) {
+		for (size_t i = 0; i != _checkpoints.size(); ++i) {
+			if (cp.graphIndex != i
+				&& !isHitObstacle(cp.position, _checkpoints[i].position))
+				graph.addEdge(cp.graphIndex, _obstacles.size() * 4 + i,
+							  calculateDist(cp.position, _checkpoints[i].position));
 		}
 	}
 }

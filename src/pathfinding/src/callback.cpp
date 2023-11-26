@@ -35,14 +35,10 @@ void Pathfinding::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 	_orientation = calculateYaw(msg->orientation);
 	_imuPing = true;
-	if (_buoyPing && _gpsPing && !_buoyPosCalculate) {
-		calculateBuoyPos();
-		_buoyPosCalculate = true;
-		addBuoy(_buoyPos);
-		std::cout << "Buoy pos: [" << _buoyPos.x << ", " << _buoyPos.y << "]" << std::endl;
-	}
+	if (_buoyPing && _gpsPing && !_buoyPosCalculate)
+		addBuoy();
 	if (_gpsPing && _pathCalculated && !_path.empty()) {
-		if (_path[0].x == _buoyPos.x && _path[0].y == _buoyPos.y)
+		if (_path[0].x == _buoy.position.x && _path[0].y == _buoy.position.y)
 			publishRangeBearing(std::pair<double, double>(_buoyRange, _buoyBearing), MAX_BUOY_RANGE);
 		else
 			publishRangeBearing(calculateRangeBearing(), MAX_CHECKPOINT_RANGE);
@@ -50,20 +46,33 @@ void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 }
 
 void Pathfinding::alliesCallback(geometry_msgs::msg::PoseArray::SharedPtr msg) {
+	double									currentDist;
+	std::vector<std::pair<point_t, double>>	closeAllies;
+	size_t									minIndex;
+	double									minDist;
+
+	minDist = std::numeric_limits<double>::infinity();
 	for (const auto &pose : msg->poses)
 	{
 		std::pair<point_t, double>	allyInfo;
-
+		//TODO: check ray of ally and boat
 		allyInfo.first.x = pose.position.x;
 		allyInfo.first.y = pose.position.y;
-		if (calculateDist(_boatPos, allyInfo.first) > MIN_ALLY_RANGE)
+		currentDist = calculateDist(_boatPos, allyInfo.first);
+		if (currentDist > MIN_ALLY_RANGE)
 			continue;
 
 		allyInfo.second = calculateYaw(pose.orientation);
 
 		RCLCPP_INFO(this->get_logger(), "Pose - x: %f, y: %f, yaw: %f",
 					allyInfo.first.x, allyInfo.first.y, allyInfo.second);
-		_closeAllies.push_back(allyInfo);
+		closeAllies.push_back(allyInfo);
+		if (currentDist < minDist) {
+			minDist = currentDist;
+			minIndex = closeAllies.size() - 1;
+		}
 	}
-	//TODO: recalculate path
+	if (closeAllies.empty())
+		return;
+	_path = calculatePathWithAlly(_boatPos, closeAllies[minIndex]);
 }
