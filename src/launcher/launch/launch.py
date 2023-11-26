@@ -14,10 +14,6 @@ def generate_launch_description():
         'world',
         default_value='aquabot_task_hard'
     )
-    node_arg = DeclareLaunchArgument(
-        'node',
-        default_value='pathfinding'
-    )
 
     navigation_node = Node(
         package='navigation',
