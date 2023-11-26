@@ -2,7 +2,7 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, EmitEvent, ExecuteProcess, RegisterEventHandler
+from launch.actions import IncludeLaunchDescription, EmitEvent, ExecuteProcess, RegisterEventHandler, LogInfo
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution, TextSubstitution
 from launch.conditions import IfCondition
@@ -25,7 +25,6 @@ def generate_launch_description():
     task_info_node = Node(
         package='benchmark',
         executable='task_info',
-        require='true'
     )
     navigation_node = Node(
         package='navigation',
@@ -44,9 +43,8 @@ def generate_launch_description():
             ])
         ),
         launch_arguments={
-            'world': 'aquabot_benchmark',
+            'world': 'aquabot_task_hard',
         }.items(),
-        condition=IfCondition('Task success'),
     )
     launch_exit_event = RegisterEventHandler(
         OnProcessExit(
@@ -58,23 +56,25 @@ def generate_launch_description():
             ]
         )
     )
-    # task_success_handler = RegisterEventHandler(
-    #     OnProcessExit(
-    #         target_action=task_info_node,
-    #         on_exit=[
-    #             EmitEvent(
-    #                 event=Shutdown(reason='Task success')
-    #             )
-    #         ]
-    #     )
-    # )
+    task_success_handler = RegisterEventHandler(
+        OnProcessExit(
+            target_action=task_info_node,
+            on_exit=[
+                LogInfo(msg='Task success'),
+                EmitEvent(
+                    event=Shutdown(reason='Task success')
+                )
+            ]
+        )
+    )
 
     # ld.add_action(benchmark_node)
+    # ld.add_action(launch_exit_event)
+    
     ld.add_action(task_info_node)
     ld.add_action(navigation_node)
     ld.add_action(pathfinding_node)
     ld.add_action(aquabot_launch_file)
-    # ld.add_action(task_success_handler)
-    # ld.add_action(launch_exit_event)
+    ld.add_action(task_success_handler)
 
     return ld

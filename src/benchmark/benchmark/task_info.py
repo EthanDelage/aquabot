@@ -1,27 +1,24 @@
 import rclpy
 from rclpy.node import Node
-from ros_gz_interfaces.msg import ParamVec
-
+from std_msgs.msg import UInt32
 
 class TaskInfo(Node):
 
     def __init__(self):
         super().__init__('task_info')
         self.subscription = self.create_subscription(
-            ParamVec,
-            '/vrx/task/info',
+            UInt32,
+            '/vrx/patrolandfollow/current_phase',
             self.listener_callback,
             10,
         )
 
     def listener_callback(self, msg):
-        for param in msg.params:
-            if param.name == 'state':
-                value = param.value.string_value
-                print(f'State: {value}')
-                if value == 'finished':
-                    rclpy.shutdown()
-
+        phase = msg.data
+        print(f'Current phase: {phase}')
+        if phase == 2:
+            print('TASK SUCCESS')
+            exit(0)
 
 def main(args=None):
     rclpy.init(args=args)
