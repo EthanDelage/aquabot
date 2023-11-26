@@ -12,6 +12,7 @@ from sensor_msgs.msg import PointCloud2
 # from std_msgs.msg import ParamVec, Param
 from ros_gz_interfaces.msg import ParamVec
 from rcl_interfaces.msg import Parameter
+import time
 
 from .camera import Camera
 from .lidar import Lidar
@@ -58,6 +59,9 @@ class Perception(Node):
         self.rgb_lower_green: np.ndarray = np.array([7, 50, 0])
         self.rgb_upper_green: np.ndarray = np.array([28, 81, 10])
 
+        self.red_pixels = []
+        self.near_distance: float = 130.0
+
     def image_callback(self, msg):
         self.image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
         self.detect_red_boat()
@@ -68,12 +72,6 @@ class Perception(Node):
             resolution = (msg.width, msg.height)
             horizontal_fov = 1.3962634
             self.camera = Camera(projection_matrix, horizontal_fov, resolution)
-
-    def lidar_callback(self, point_cloud_msg):
-        self.lidar.parse_points(point_cloud_msg)
-        if self.camera is not None and self.image is not None:
-            self.lidar.project_points_to_camera(self.camera, self.image)
-            # self.draw_lidar_points_in_image()
         if self.enemy_bearing is not None:
             msg = ParamVec()
             bearing_param = Parameter()
@@ -83,7 +81,7 @@ class Perception(Node):
 
             range_param = Parameter()
             range_param.name = "range"
-            range_param.value.double_value = 130.0  # Remplacez par votre valeur de plage
+            range_param.value.double_value = self.near_distance  # Remplacez par votre valeur de plage
             msg.params.append(range_param)
 
             desired_range_param = Parameter()
@@ -91,6 +89,15 @@ class Perception(Node):
             desired_range_param.value.double_value = 10.0  # Remplacez par votre valeur de plage souhaitée
             msg.params.append(desired_range_param)
             self.navigation_publisher.publish(msg)
+
+    def lidar_callback(self, point_cloud_msg):
+        self.lidar.parse_points(point_cloud_msg)
+        if self.camera is not None and self.image is not None:
+            self.lidar.project_points_to_camera(self.camera, self.image)
+            for point in self.lidar.visible_points:
+                if (point.image_position[0], point.image_position[1]) in self.red_pixels:
+                    self.near_distance = min(self.near_distance, point.get_distance())
+            # self.draw_lidar_points_in_image()
 
     def detect_red_boat(self):
         rgb_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
@@ -111,6 +118,13 @@ class Perception(Node):
                     largest_bounding_box, (x, y, w, h, size))
                 cv2.rectangle(self.image, (x, y), (x + w, y + h), (0, 255, 0),
                               1)
+        if largest_bounding_box is not None:
+            x, y, w, h, _ = largest_bounding_box
+            self.red_pixels = []
+            for i in range(x, x + w):
+                for j in range(y, y + h):
+                    if rgb_red_mask[j, i] == 255:
+                        self.red_pixels.append((i, j))
         self.calculate_enemy_bearing(largest_bounding_box)
 
     @staticmethod
