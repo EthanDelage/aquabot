@@ -2,13 +2,22 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 
 
 def generate_launch_description():
-    ld = LaunchDescription()
+    world = LaunchConfiguration('world')
+
+    world_arg = DeclareLaunchArgument(
+        'world',
+        default_value='aquabot_task_hard'
+    )
+    node_arg = DeclareLaunchArgument(
+        'node',
+        default_value='pathfinding'
+    )
 
     navigation_node = Node(
         package='navigation',
@@ -31,13 +40,15 @@ def generate_launch_description():
             ])
         ),
         launch_arguments={
-            'world': 'aquabot_task_hard',
+            'world': world,
         }.items(),
     )
 
-    ld.add_action(navigation_node)
-    ld.add_action(pathfinding_node)
-    ld.add_action(perception_node)
-    ld.add_action(aquabot_launch_file)
-
-    return ld
+    return LaunchDescription([
+        world_arg,
+        node_arg,
+        navigation_node,
+        pathfinding_node,
+        perception_node,
+        aquabot_launch_file,
+    ])
