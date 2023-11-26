@@ -9,6 +9,9 @@ import matplotlib.pyplot as plt
 from sensor_msgs.msg import Image
 from sensor_msgs.msg import CameraInfo
 from sensor_msgs.msg import PointCloud2
+# from std_msgs.msg import ParamVec, Param
+from ros_gz_interfaces.msg import ParamVec
+from rcl_interfaces.msg import Parameter
 
 from .camera import Camera
 from .lidar import Lidar
@@ -37,6 +40,8 @@ class Perception(Node):
             self.lidar_callback,
             10
         )
+        self.navigation_publisher = self.create_publisher(ParamVec,
+                                                          '/range_bearing', 1)
         self.bridge: CvBridge = CvBridge()
         self.image: Optional[np.ndarray] = None
         self.enemy_bearing: Optional[float] = None
@@ -69,7 +74,23 @@ class Perception(Node):
         if self.camera is not None and self.image is not None:
             self.lidar.project_points_to_camera(self.camera, self.image)
             # self.draw_lidar_points_in_image()
-            # self.update_plot()
+        if self.enemy_bearing is not None:
+            msg = ParamVec()
+            bearing_param = Parameter()
+            bearing_param.name = "bearing"
+            bearing_param.value.double_value = self.enemy_bearing
+            msg.params.append(bearing_param)
+
+            range_param = Parameter()
+            range_param.name = "range"
+            range_param.value.double_value = 130.0  # Remplacez par votre valeur de plage
+            msg.params.append(range_param)
+
+            desired_range_param = Parameter()
+            desired_range_param.name = "desiredRange"
+            desired_range_param.value.double_value = 10.0  # Remplacez par votre valeur de plage souhaitée
+            msg.params.append(desired_range_param)
+            self.navigation_publisher.publish(msg)
 
     def detect_red_boat(self):
         rgb_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
@@ -123,6 +144,7 @@ class Perception(Node):
             dx = middle_x - (self.camera.width / 2)
             self.enemy_bearing = (dx / self.camera.width) * \
                                  self.camera.horizontal_fov
+            self.enemy_bearing = -self.enemy_bearing
             return self.enemy_bearing
 
     def draw_lidar_points_in_image(self) -> None:
