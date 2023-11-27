@@ -12,6 +12,7 @@ from launch.events import Shutdown
 def generate_launch_description():
     ld = LaunchDescription()
 
+    # Ros Nodes launched
     benchmark_node = Node(
         package='benchmark',
         executable='benchmark',
@@ -29,6 +30,7 @@ def generate_launch_description():
         executable='pathfinding',
     )
 
+    # Aquabot Launch File
     aquabot_launch_file = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([
@@ -43,6 +45,7 @@ def generate_launch_description():
         }.items(),
     )
 
+    # Event triggered when benchmark scenario is created to launch simulation
     benchmark_exit_event = RegisterEventHandler(
         OnProcessExit(
             target_action=benchmark_node,
@@ -54,6 +57,7 @@ def generate_launch_description():
             ]
         )
     )
+    # Event triggered when task_info_node exit to shutdown the simulation
     task_success_handler = RegisterEventHandler(
         OnProcessExit(
             target_action=task_info_node,
@@ -66,15 +70,18 @@ def generate_launch_description():
         )
     )
 
+    # Creating new scenario and launching simulation
     # ld.add_action(benchmark_node)
     # ld.add_action(benchmark_exit_event)
 
+    # Launching simulation
     ld.add_action(aquabot_launch_file)
 
+    # Launching Ros Nodes
     ld.add_action(task_info_node)
     ld.add_action(navigation_node)
     ld.add_action(pathfinding_node)
+    # Event triggered to shutdown the simulation
     ld.add_action(task_success_handler)
-
 
     return ld
