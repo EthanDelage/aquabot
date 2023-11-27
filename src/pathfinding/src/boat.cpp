@@ -60,7 +60,7 @@ void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBear
 }
 
 void Pathfinding::calculateAllyCheckpoint(checkpoint_t *allyCheckpoint, std::pair<point_t, double> ally) {
-	const double	checkpointDist = 40;
+	const double	checkpointDist = 30;
 
 	allyCheckpoint[0].position.x = (ally.first.x - checkpointDist * std::cos(ally.second))
 		+ checkpointDist * std::cos(ally.second + M_PI_2);

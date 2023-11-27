@@ -63,21 +63,13 @@ std::vector<point_t> Pathfinding::calculatePathWithAlly(point_t boatPos, std::pa
 	allyCheckpoint[0].graphIndex = addCheckPoint(allyCheckpoint[0].position, graph);
 	allyCheckpoint[1].graphIndex = addCheckPoint(allyCheckpoint[1].position, graph);
 
-	if (calculateDist(boatPos, allyCheckpoint[0].position) < calculateDist(boatPos, allyCheckpoint[1].position)) {
-		reversePath = djikstra(boatIndex, allyCheckpoint[0].graphIndex, graph);
-		path = convertDjikstraToPoint(reversePath, boatIndex, allyCheckpoint[0].graphIndex);
-		path.push_back(allyCheckpoint[1].position);
-		reversePath = djikstra(allyCheckpoint[1].graphIndex, _buoy.graphIndex, graph);
-		tmpPath = convertDjikstraToPoint(reversePath, allyCheckpoint[1].graphIndex, _buoy.graphIndex);
-		path.insert(path.end(), tmpPath.begin(), tmpPath.end());
-	} else {
-		reversePath = djikstra(boatIndex, allyCheckpoint[1].graphIndex, graph);
-		path = convertDjikstraToPoint(reversePath, boatIndex, allyCheckpoint[1].graphIndex);
-		path.push_back(allyCheckpoint[0].position);
-		reversePath = djikstra(allyCheckpoint[0].graphIndex, _buoy.graphIndex, graph);
-		tmpPath = convertDjikstraToPoint(reversePath, allyCheckpoint[0].graphIndex, _buoy.graphIndex);
-		path.insert(path.end(), tmpPath.begin(), tmpPath.end());
-	}
+	if (calculateDist(boatPos, allyCheckpoint[0].position) > calculateDist(boatPos, allyCheckpoint[1].position))
+		std::swap(allyCheckpoint[0], allyCheckpoint[1]);
+	reversePath = djikstra(boatIndex, allyCheckpoint[0].graphIndex, graph);
+	path = convertDjikstraToPoint(reversePath, boatIndex, allyCheckpoint[0].graphIndex);
+	reversePath = djikstra(allyCheckpoint[0].graphIndex, _buoy.graphIndex, graph);
+	tmpPath = convertDjikstraToPoint(reversePath, allyCheckpoint[0].graphIndex, _buoy.graphIndex);
+	path.insert(path.end(), tmpPath.begin(), tmpPath.end());
 	_checkpoints.clear();
 	_checkpoints.push_back(_buoy);
 	std::cout << _checkpoints.size() << std::endl;
