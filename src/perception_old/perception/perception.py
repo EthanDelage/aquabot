@@ -181,7 +181,7 @@ class Perception(Node):
                 self.image[
                     point.image_position[1], point.image_position[0]] = rgb
         cv2.imshow('Lidar Tracking', self.image)
-        key = cv2.waitKey(1)
+        cv2.waitKey(1)
 
     def initialize_plot(self) -> None:
         if not self.display_plt_graph:
