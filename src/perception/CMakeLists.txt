@@ -9,8 +9,10 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 include_directories(include)
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 # OPENCV
 # Specify the path to OpenCV using CMAKE_PREFIX_PATH
@@ -19,17 +21,21 @@ find_package(OpenCV REQUIRED)
 
 add_executable(perception
         src/main.cpp
-        src/Perception.cpp)
+        src/Perception.cpp
+        src/Lidar.cpp
+        src/Camera.cpp)
 
 # Include directories for the target
 target_include_directories(perception PRIVATE ~/.local/include/opencv4/)
 
 # Link OpenCV libraries
 target_link_libraries(perception ${OpenCV_LIBS})
+target_link_libraries(perception ${EIGEN3_LIBRARIES})
 
 ament_target_dependencies(perception
         rclcpp
         sensor_msgs
+        Eigen3
         cv_bridge)
 
 if(BUILD_TESTING)

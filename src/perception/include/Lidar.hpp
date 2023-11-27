@@ -1,15 +1,45 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   Lidar.hpp                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: hferraud <hferraud@student.42lyon.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/27 13:48:00 by hferraud          #+#    #+#             */
-/*   Updated: 2023/11/27 13:48:00 by hferraud         ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
 #ifndef AQUABOT_LIDAR_HPP
 # define AQUABOT_LIDAR_HPP
+
+# include <vector>
+# include <Eigen/Dense>
+# include <opencv2/opencv.hpp>
+
+# include "rclcpp/rclcpp.hpp"
+# include "sensor_msgs/msg/point_cloud2.hpp"
+# include "Camera.hpp"
+
+class Camera;
+
+typedef struct point_s {
+	int x;
+	int	y;
+} point_t;
+
+class LidarPoint {
+
+public:
+		LidarPoint();
+
+        Eigen::Vector3d position;
+        point_t			imagePosition;
+        float			intensity;
+        uint16_t		ring;
+
+		double getDistance();
+};
+
+class Lidar {
+
+public:
+	Lidar();
+
+	void parsePoints(sensor_msgs::msg::PointCloud2::SharedPtr& pointCloud);
+	void setVisiblePoints(const Camera& camera);
+
+private:
+	std::vector<LidarPoint> _points;
+	std::vector<LidarPoint> _visiblePoints;
+};
 
 #endif

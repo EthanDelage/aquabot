@@ -13,24 +13,26 @@ public:
 	Perception();
 
 private:
-	cv::Mat		_image;
-	cv::Scalar	_rgbLowerRed{5, 6, 65};
-    cv::Scalar	_rgbUpperRed{15, 16, 110};
-    cv::Scalar	_rgbLowerGreen{0, 50, 7};
-    cv::Scalar	_rgbUpperGreen{10, 81, 28};
+	cv::Mat								_image;
+	std::vector<std::pair<int, int> >	_enemyPixels;
+	cv::Scalar							_rgbLowerRed{65, 6, 5};
+    cv::Scalar							_rgbUpperRed{110, 16, 15};
+    cv::Scalar							_rgbLowerGreen{7, 50, 0};
+    cv::Scalar							_rgbUpperGreen{28, 81, 10};
 
 	rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr		_imageSubscriber;
 	rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr	_cameraInfoSubscriber;
 	rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr	_pointCloudSubscriber;
 
 	void imageCallback(sensor_msgs::msg::Image::SharedPtr msg);
+	//void CameraInfoCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg);
+	void pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg);
+
 	void detectRedBoat();
 	static bool isEnemyContour(const std::vector<cv::Point>& redContour, const std::vector<std::vector<cv::Point>>& greenContours);
 	static bool isContourInsideRect(const std::vector<cv::Point>& contour1, const std::vector<cv::Point>& contour2);
-	static cv::Rect const * maxBoundingBox(cv::Rect const * largestBoundingBox, cv::Rect const * currentBoundingBox);
-	//void CameraInfoCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg);
-	//void PointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg);
-
+	static cv::Rect* maxBoundingBox(cv::Rect* largestBoundingBox, cv::Rect* currentBoundingBox);
+	void setEnemyPixels(const cv::Rect* largestBoundingBox, cv::Mat& rgbRedMask);
 };
 
 #endif
