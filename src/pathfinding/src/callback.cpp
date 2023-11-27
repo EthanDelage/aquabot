@@ -20,7 +20,7 @@ void Pathfinding::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 	double latitude = msg->latitude;
 	double longitude = msg->longitude;
 
-	calculateMapPos(latitude, longitude);
+	_boatPos = calculateMapPos(latitude, longitude);
 	_gpsPing = true;
 	if (_buoyPosCalculate && !_pathCalculated) {
 		_path = calculatePath(_boatPos);
@@ -55,14 +55,15 @@ void Pathfinding::alliesCallback(geometry_msgs::msg::PoseArray::SharedPtr msg) {
 	for (const auto &pose : msg->poses)
 	{
 		std::pair<point_t, double>	allyInfo;
-		//TODO: check ray of ally and boat
 		allyInfo.first.x = pose.position.x;
 		allyInfo.first.y = pose.position.y;
-		currentDist = calculateDist(_boatPos, allyInfo.first);
-		if (currentDist > MIN_ALLY_RANGE)
-			continue;
-
+		allyInfo.first = calculateMapPos(allyInfo.first.x, allyInfo.first.y);
 		allyInfo.second = calculateYaw(pose.orientation);
+		//TODO refactor line 63
+		if (!isIntersect(_boatPos, {_boatPos.x + MIN_ALLY_RANGE * std::cos(_orientation), _boatPos.y + MIN_ALLY_RANGE * std::sin(_orientation)}, allyInfo.first, {allyInfo.first.x + MIN_ALLY_RANGE * std::cos(allyInfo.second), allyInfo.first.y + MIN_ALLY_RANGE * std::sin(allyInfo.second)}))
+			continue;
+		currentDist = calculateDist(_boatPos, allyInfo.first);
+
 
 		RCLCPP_INFO(this->get_logger(), "Pose - x: %f, y: %f, yaw: %f",
 					allyInfo.first.x, allyInfo.first.y, allyInfo.second);
@@ -72,6 +73,7 @@ void Pathfinding::alliesCallback(geometry_msgs::msg::PoseArray::SharedPtr msg) {
 			minIndex = closeAllies.size() - 1;
 		}
 	}
+
 	if (closeAllies.empty())
 		return;
 	_path = calculatePathWithAlly(_boatPos, closeAllies[minIndex]);

@@ -3,13 +3,14 @@
 
 #include <cmath>
 
-void	Pathfinding::calculateMapPos(double latitude, double longitude) {
-	double	x, y;
+point_t	Pathfinding::calculateMapPos(double latitude, double longitude) {
+	point_t	pos;
 
-	x = (longitude - LONGITUDE_0) / (LONGITUDE_1 - LONGITUDE_0);
-	_boatPos.x = x * 600 - 300;
-	y = (latitude - LATITUDE_0) / (LATITUDE_1 - LATITUDE_0);
-	_boatPos.y = y * 600 - 300;
+	pos.x = (longitude - LONGITUDE_0) / (LONGITUDE_1 - LONGITUDE_0);
+	pos.x = pos.x * 600 - 300;
+	pos.y = (latitude - LATITUDE_0) / (LATITUDE_1 - LATITUDE_0);
+	pos.y = pos.y * 600 - 300;
+	return (pos);
 }
 
 double Pathfinding::calculateYaw(const geometry_msgs::msg::Quaternion& orientation) {
@@ -59,14 +60,14 @@ void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBear
 }
 
 void Pathfinding::calculateAllyCheckpoint(checkpoint_t *allyCheckpoint, std::pair<point_t, double> ally) {
-	const double	checkpointDist = 20;
+	const double	checkpointDist = 40;
 
 	allyCheckpoint[0].position.x = (ally.first.x - checkpointDist * std::cos(ally.second))
 		+ checkpointDist * std::cos(ally.second + M_PI_2);
-	allyCheckpoint[0].position.y = (ally.first.y - checkpointDist * std::cos(ally.second))
-		+ checkpointDist * std::cos(ally.second + M_PI_2);
+	allyCheckpoint[0].position.y = (ally.first.y - checkpointDist * std::sin(ally.second))
+		+ checkpointDist * std::sin(ally.second + M_PI_2);
 	allyCheckpoint[1].position.x = (ally.first.x - checkpointDist * std::cos(ally.second))
-		- checkpointDist * std::cos(ally.second + M_PI_2);
-	allyCheckpoint[1].position.y = (ally.first.y - checkpointDist * std::cos(ally.second))
-		- checkpointDist * std::cos(ally.second + M_PI_2);
+		+ checkpointDist * std::cos(ally.second - M_PI_2);
+	allyCheckpoint[1].position.y = (ally.first.y - checkpointDist * std::sin(ally.second))
+		+ checkpointDist * std::sin(ally.second - M_PI_2);
 }

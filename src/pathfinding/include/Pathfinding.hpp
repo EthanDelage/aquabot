@@ -21,7 +21,7 @@
 # define LATITUDE_0				48.043601874279716
 # define LONGITUDE_1			(-4.9722961068569775)
 # define LATITUDE_1				48.04899798353722
-# define MIN_ALLY_RANGE			35
+# define MIN_ALLY_RANGE			60
 
 typedef struct rectangle_s {
 	size_t	id;
@@ -102,7 +102,7 @@ private:
 	static double	convertToMinusPiPi(double angleRadians);
 
 	// Boat functions
-	void						calculateMapPos(double latitude, double longitude);
+	point_t						calculateMapPos(double latitude, double longitude);
 	double						calculateYaw(geometry_msgs::msg::Quaternion const & orientation);
 	std::vector<point_t>		calculatePath(point_t boatPos);
 	std::vector<point_t>		calculatePathWithAlly(point_t boatPos, std::pair<point_t, double> ally);

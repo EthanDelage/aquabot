@@ -78,5 +78,11 @@ std::vector<point_t> Pathfinding::calculatePathWithAlly(point_t boatPos, std::pa
 		tmpPath = convertDjikstraToPoint(reversePath, allyCheckpoint[0].graphIndex, _buoy.graphIndex);
 		path.insert(path.end(), tmpPath.begin(), tmpPath.end());
 	}
+	_checkpoints.clear();
+	_checkpoints.push_back(_buoy);
+	std::cout << _checkpoints.size() << std::endl;
+	for (auto node : path)
+		std::cout << "[" << node.x << "," << node.y << "], ";
+	std::cout << std::endl;
 	return (path);
 }

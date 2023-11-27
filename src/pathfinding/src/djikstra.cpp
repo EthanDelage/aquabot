@@ -53,7 +53,7 @@ std::vector<point_t> Pathfinding::convertDjikstraToPoint(std::vector<std::pair<s
 
 	current = reversePath[end];
 
-	path.push_front(_buoy.graphIndex);
+	path.push_front(end);
 	while (current.first != start) {
 		path.push_front(current.first);
 		current = reversePath[current.first];
@@ -65,10 +65,10 @@ std::vector<point_t> Pathfinding::convertNodeToPoint(std::list<size_t> nodePath)
 	std::vector<point_t>	path;
 
 	for (auto node : nodePath) {
-		if (node != _buoy.graphIndex)
+		if (node < _obstacles.size() * 4)
 			path.push_back(_obstacles[node / 4].point[node % 4]);
 		else
-			path.push_back(_buoy.position);
+			path.push_back(_checkpoints[node - (_obstacles.size() * 4)].position);
 	}
 	return (path);
 }
