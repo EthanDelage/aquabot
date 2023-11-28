@@ -42,18 +42,18 @@ void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
 }
 
 void Perception::pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg) {
-	auto start = std::chrono::high_resolution_clock::now();
 	if (_imageReceived && _cameraReceived) {
 		_lidar.parsePoints(msg);
+		auto start = std::chrono::high_resolution_clock::now();
 		_lidar.setVisiblePoints(_camera);
+		auto end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+		std::cout << "Time in ms: " << duration.count() << std::endl;
 		calculateEnemyRange();
-//		drawLidarPointsInImage();
-//		cv::imshow("Image", _image);
-//		cv::waitKey(1);
+		drawLidarPointsInImage();
+		cv::imshow("Image", _image);
+		cv::waitKey(1);
 	}
-	auto end = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-	std::cout << "Time in ms: " << duration.count() << std::endl;
 }
 
 void Perception::cameraCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg) {
@@ -173,7 +173,6 @@ double Perception::calculateEnemyRange() {
 	_enemyRange	= LIDAR_MAX_RANGE;
 	for (auto& point: _lidar.getVisiblePoints()) {
 		if (std::find(begin, end, point.imagePosition) != end) {
-//			std::cout << "Here" << std::endl;
 			_enemyRange = std::min(_enemyRange, point.getDistance());
 		}
 	}

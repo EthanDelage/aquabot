@@ -12,7 +12,7 @@
 
 # define CAMERA_FOV			1.3962634
 # define LIDAR_MAX_RANGE	130
-# define DESIRED_RANGE		27
+# define DESIRED_RANGE		30
 
 class Perception : public rclcpp::Node {
 

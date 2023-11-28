@@ -38,8 +38,6 @@ point_t Camera::projectLidarPoint(const LidarPoint& lidarPoint) const {
 	}
 	point.x = static_cast<int>(point2dHomogenous[0] / point2dHomogenous[2]);
 	point.y = static_cast<int>(point2dHomogenous[1] / point2dHomogenous[2]);
-//	std::cout << point.x << std::endl;
-//	std::cout << point.y << std::endl;
 	if (!isValidPixel(point)) {
 		throw projectionException();
 	}

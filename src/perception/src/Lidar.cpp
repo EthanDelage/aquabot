@@ -1,5 +1,8 @@
 #include "Lidar.hpp"
 
+#include <thread>
+#include <mutex>
+
 bool operator==(const point_t& lhs, const point_t& rhs) {
     return lhs.x == rhs.x && lhs.y == rhs.y;
 }
@@ -20,14 +23,6 @@ double LidarPoint::getDistance() const {
 }
 
 void Lidar::parsePoints(sensor_msgs::msg::PointCloud2::SharedPtr& pointCloud) {
-//	LidarPoint currentPoint;
-//	currentPoint.position[0] = 25.102251;
-//	currentPoint.position[1] = -5.382505;
-//	currentPoint.position[2] = 0.4481202;
-//	_points.push_back(currentPoint);
-//	return;
-
-//
 	std::vector<LidarPoint>	points;
 	LidarPoint				currentPoint;
 
@@ -55,10 +50,33 @@ void Lidar::parsePoints(sensor_msgs::msg::PointCloud2::SharedPtr& pointCloud) {
 void Lidar::setVisiblePoints(const Camera& camera) {
 	_visiblePoints.clear();
 	_visiblePoints.reserve(5000);
-	for (auto i = _points.begin(); i != _points.end(); ++i) {
-		try {
-			i->imagePosition = camera.projectLidarPoint(*i);
-			_visiblePoints.push_back(*i);
-		} catch (const std::exception & e) {}
+	const int num_threads = std::thread::hardware_concurrency();
+	std::vector<std::thread> threads;
+	std::mutex mutex;
+
+	auto processPoints = [this, &camera, &mutex](auto start, auto end) {
+		for (auto i = start; i != end; ++i) {
+			try {
+				LidarPoint& point = _points[i];
+				point.imagePosition = camera.projectLidarPoint(point);
+
+				std::lock_guard<std::mutex> lock(mutex);
+				_visiblePoints.push_back(point);
+			} catch (const std::exception& e) {}
+		}
+	};
+
+	const size_t chunk_size = _points.size() / num_threads;
+	size_t start = 0;
+	for (int i = 0; i < num_threads - 1; ++i) {
+		size_t end = start + chunk_size;
+		threads.emplace_back(processPoints, start, end);
+		start = end;
+	}
+
+	threads.emplace_back(processPoints, start, _points.size());
+
+	for (auto& thread : threads) {
+		thread.join();
 	}
 }
