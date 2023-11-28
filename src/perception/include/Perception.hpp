@@ -31,8 +31,8 @@ private:
 	void detectRedBoat();
 	static bool isEnemyContour(const std::vector<cv::Point>& redContour, const std::vector<std::vector<cv::Point>>& greenContours);
 	static bool isContourInsideRect(const std::vector<cv::Point>& contour1, const std::vector<cv::Point>& contour2);
-	static cv::Rect* maxBoundingBox(cv::Rect* largestBoundingBox, cv::Rect* currentBoundingBox);
-	void setEnemyPixels(const cv::Rect* largestBoundingBox, cv::Mat& rgbRedMask);
+	static cv::Rect maxBoundingBox(const cv::Rect& largestBoundingBox, const cv::Rect& currentBoundingBox);
+	void setEnemyPixels(const cv::Rect& largestBoundingBox, cv::Mat& rgbRedMask);
 };
 
 #endif

@@ -20,10 +20,8 @@ Perception::Perception(): Node("perception") {
 void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
 	try {
 		cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
-		cv::cvtColor(cv_ptr->image, _image, cv::COLOR_BGR2RGB);
-
+		_image = cv_ptr->image;
 		detectRedBoat();
-
 		cv::imshow("Image", _image);
 
 		cv::waitKey(1);
@@ -39,31 +37,50 @@ void Perception::pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg
 }
 
 void Perception::detectRedBoat() {
+	cv::Mat rgbImage;
 	cv::Mat rgbRedMask, rgbGreenMask;
 	std::vector<std::vector<cv::Point>> redContours, greenContours;
 
-    cv::inRange(_image, _rgbLowerRed, _rgbUpperRed, rgbRedMask);
-    cv::inRange(_image, _rgbLowerGreen, _rgbUpperGreen, rgbGreenMask);
+	cv::cvtColor(_image, rgbImage, cv::COLOR_BGR2RGB);
+	std::cout << _rgbLowerGreen << std::endl;
+	std::cout << _rgbUpperGreen << std::endl;
+	std::cout << _rgbLowerRed << std::endl;
+	std::cout << _rgbUpperRed << std::endl;
+	std::cout << "In range before" << std::endl;
+    cv::inRange(rgbImage, _rgbLowerRed, _rgbUpperRed, rgbRedMask);
+	std::cout << "In range after" << std::endl;
+    cv::inRange(rgbImage, _rgbLowerGreen, _rgbUpperGreen, rgbGreenMask);
+	std::cout << "In range after 2" << std::endl;
 
+	std::cout << "Find coutours" << std::endl;
 	cv::findContours(rgbRedMask, redContours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+	std::cout << "Find coutours 1" << std::endl;
 	cv::findContours(rgbGreenMask, greenContours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+	std::cout << "Find coutours 2" << std::endl;
 
-	cv::Rect*	largestBoundingRect = nullptr;
+	cv::Rect	largestBoundingRect;
+	bool		foundLargestBoundingRect = false;
 
 	for (const auto& contour : redContours) {
 	    if (isEnemyContour(contour, greenContours)) {
 	        cv::Rect boundingRect = cv::boundingRect(contour);
-			largestBoundingRect = maxBoundingBox(largestBoundingRect, &boundingRect);
+			if (!foundLargestBoundingRect) {
+				largestBoundingRect = boundingRect;
+				foundLargestBoundingRect = true;
+			} else {
+				largestBoundingRect = maxBoundingBox(largestBoundingRect, boundingRect);
+			}
+
 	    }
 	}
-	if (largestBoundingRect != nullptr) {
+	if (foundLargestBoundingRect) {
 		cv::rectangle(
 				_image,
-				cv::Point(largestBoundingRect->x, largestBoundingRect->y),
-				cv::Point(largestBoundingRect->x + largestBoundingRect->width, largestBoundingRect->y + largestBoundingRect->height),
+				cv::Point(largestBoundingRect.x, largestBoundingRect.y),
+				cv::Point(largestBoundingRect.x + largestBoundingRect.width, largestBoundingRect.y + largestBoundingRect.height),
 				cv::Scalar(0, 255, 0), 1);
+		setEnemyPixels(largestBoundingRect, rgbRedMask);
 	}
-	setEnemyPixels(largestBoundingRect, rgbRedMask);
 }
 
 bool Perception::isEnemyContour(const std::vector<cv::Point>& redContour, const std::vector<std::vector<cv::Point>>& greenContours) {
@@ -85,27 +102,24 @@ bool Perception::isContourInsideRect(const std::vector<cv::Point>& contour1, con
 	return ((x2 <= x1 && x1 + w1 <= x2 + w2) && (y2 <= y1 && y1 + h1 <= y2 + h2));
 }
 
-cv::Rect* Perception::maxBoundingBox(cv::Rect* largestBoundingBox, cv::Rect* currentBoundingBox) {
-	if (largestBoundingBox == nullptr || currentBoundingBox->width * currentBoundingBox->height > largestBoundingBox->width * largestBoundingBox->height) {
+cv::Rect Perception::maxBoundingBox(const cv::Rect& largestBoundingBox, const cv::Rect& currentBoundingBox) {
+	if (currentBoundingBox.width * currentBoundingBox.height > largestBoundingBox.width * largestBoundingBox.height) {
 		return (currentBoundingBox);
 	}
 	return (largestBoundingBox);
 }
 
-void Perception::setEnemyPixels(const cv::Rect* largestBoundingBox, cv::Mat& rgbRedMask) {
-	if (largestBoundingBox != nullptr) {
-		int x = largestBoundingBox->x;
-		int y = largestBoundingBox->y;
-		int w = largestBoundingBox->width;
-		int h = largestBoundingBox->height;
+void Perception::setEnemyPixels(const cv::Rect& largestBoundingBox, cv::Mat& rgbRedMask) {
+	int x = largestBoundingBox.x;
+	int y = largestBoundingBox.y;
+	int w = largestBoundingBox.width;
+	int h = largestBoundingBox.height;
 
-		_enemyPixels.clear();
-
-		for (int i = x; i < x + w; ++i) {
-			for (int j = y; j < y + h; ++j) {
-				if (rgbRedMask.at<uchar>(j, i) == 255) {
-					_enemyPixels.push_back(std::make_pair(i, j));
-				}
+	_enemyPixels.clear();
+	for (int i = x; i < x + w; ++i) {
+		for (int j = y; j < y + h; ++j) {
+			if (rgbRedMask.at<uchar>(j, i) == 255) {
+				_enemyPixels.push_back(std::make_pair(i, j));
 			}
 		}
 	}

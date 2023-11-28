@@ -20,8 +20,8 @@ void Lidar::parsePoints(sensor_msgs::msg::PointCloud2::SharedPtr& pointCloud) {
 	size_t	intensity_offset = pointCloud->fields[3].offset;
 	size_t	ring_offset = pointCloud->fields[4].offset;
 	size_t	point_step = pointCloud->point_step;
-
-	for (size_t i = 0; buffer[i]; i += point_step) {
+	size_t	bufferSize = pointCloud->row_step * pointCloud->height;
+	for (size_t i = 0; i < bufferSize; i += point_step) {
 		currentPoint.position[0] = *reinterpret_cast<float*>(buffer + i + point_offset);
 		currentPoint.position[1] = *reinterpret_cast<float*>(buffer + i + point_offset * 2);
 		currentPoint.position[2] = *reinterpret_cast<float*>(buffer + i + point_offset * 3);
@@ -29,6 +29,7 @@ void Lidar::parsePoints(sensor_msgs::msg::PointCloud2::SharedPtr& pointCloud) {
 		currentPoint.ring = *reinterpret_cast<uint16_t*>(buffer + i + ring_offset);
 		_points.push_back(currentPoint);
 	}
+	std::cout << _points.size() << std::endl;
 }
 
 void Lidar::setVisiblePoints(const Camera& camera) {
