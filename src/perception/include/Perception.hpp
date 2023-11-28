@@ -11,7 +11,8 @@
 # include "Camera.hpp"
 
 # define CAMERA_FOV			1.3962634
-# define LIDAR_MAX_RANGE	1.3962634
+# define LIDAR_MAX_RANGE	130
+# define DESIRED_RANGE		27
 
 class Perception : public rclcpp::Node {
 
@@ -31,6 +32,7 @@ private:
     cv::Scalar				_rgbUpperGreen{28, 81, 10};
 	bool					_imageReceived;
 	bool					_cameraReceived;
+	bool					_enemyFound;
 
 	rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr		_imageSubscriber;
 	rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr	_cameraSubscriber;
@@ -49,6 +51,7 @@ private:
 	void setEnemyBearing(const cv::Rect enemyBoundingBox);
 	double calculateEnemyRange();
 	void drawLidarPointsInImage();
+	void publishNavigation();
 };
 
 #endif

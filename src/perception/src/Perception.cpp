@@ -21,12 +21,10 @@ Perception::Perception(): Node("perception") {
 			std::bind(&Perception::cameraCallback, this, _1));
 	_navigationPublisher = create_publisher<ros_gz_interfaces::msg::ParamVec>(
 			"/range_bearing", 10);
-
-
-
-
-
-
+	_enemyFound = false;
+	_imageReceived = false;
+	_cameraReceived = false;
+	_enemyRange = LIDAR_MAX_RANGE;
 }
 
 void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
@@ -34,8 +32,10 @@ void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
 		cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
 		_image = cv_ptr->image;
 		detectRedBoat();
+		if (_enemyFound) {
+			publishNavigation();
+		}
 		_imageReceived = true;
-
 	} catch (const std::exception& e){
 		RCLCPP_ERROR(this->get_logger(), "imageCallback() exception: %s", e.what());
 	}
@@ -46,13 +46,14 @@ void Perception::pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg
 	if (_imageReceived && _cameraReceived) {
 		_lidar.parsePoints(msg);
 		_lidar.setVisiblePoints(_camera);
-		drawLidarPointsInImage();
-		cv::imshow("Image", _image);
-		cv::waitKey(1);
+		calculateEnemyRange();
+//		drawLidarPointsInImage();
+//		cv::imshow("Image", _image);
+//		cv::waitKey(1);
 	}
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-//	std::cout << "Time in ms: " << duration.count() << std::endl;
+	std::cout << "Time in ms: " << duration.count() << std::endl;
 }
 
 void Perception::cameraCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg) {
@@ -93,6 +94,7 @@ void Perception::detectRedBoat() {
 
 	for (const auto& contour : redContours) {
 	    if (isEnemyContour(contour, greenContours)) {
+			_enemyFound = true;
 	        cv::Rect boundingRect = cv::boundingRect(contour);
 			if (!foundLargestBoundingRect) {
 				largestBoundingRect = boundingRect;
@@ -110,6 +112,7 @@ void Perception::detectRedBoat() {
 				cv::Point(largestBoundingRect.x + largestBoundingRect.width, largestBoundingRect.y + largestBoundingRect.height),
 				cv::Scalar(0, 255, 0), 1);
 		setEnemyPixels(largestBoundingRect, rgbRedMask);
+		setEnemyBearing(largestBoundingRect);
 	}
 }
 
@@ -170,6 +173,7 @@ double Perception::calculateEnemyRange() {
 	_enemyRange	= LIDAR_MAX_RANGE;
 	for (auto& point: _lidar.getVisiblePoints()) {
 		if (std::find(begin, end, point.imagePosition) != end) {
+//			std::cout << "Here" << std::endl;
 			_enemyRange = std::min(_enemyRange, point.getDistance());
 		}
 	}
@@ -182,7 +186,26 @@ void Perception::drawLidarPointsInImage() {
 	_image.at<cv::Vec3b>(0, 1) = cv::Vec3b (0, 0, 255);
 	_image.at<cv::Vec3b>(1, 1) = cv::Vec3b (0, 0, 255);
 	for (const auto& point: _lidar.getVisiblePoints()) {
-//		std::cout << "x: " << point.imagePosition.x << " y: " << point.imagePosition.y << std::endl;
 		_image.at<cv::Vec3b>(point.imagePosition.y, point.imagePosition.x) = cv::Vec3b(255, 255, 255);
 	}
+}
+
+
+void Perception::publishNavigation() {
+	auto	paramVecMsg = ros_gz_interfaces::msg::ParamVec();
+	rcl_interfaces::msg::Parameter	rangeMsg;
+	rcl_interfaces::msg::Parameter	bearingMsg;
+	rcl_interfaces::msg::Parameter	desiredRangeMsg;
+
+	rangeMsg.name = "range";
+	rangeMsg.value.double_value = _enemyRange;
+	bearingMsg.name = "bearing";
+	bearingMsg.value.double_value = _enemyBearing;
+	desiredRangeMsg.name = "desiredRange";
+	desiredRangeMsg.value.double_value = DESIRED_RANGE;
+
+	paramVecMsg.params.push_back(rangeMsg);
+	paramVecMsg.params.push_back(bearingMsg);
+	paramVecMsg.params.push_back(desiredRangeMsg);
+	_navigationPublisher->publish(paramVecMsg);
 }
