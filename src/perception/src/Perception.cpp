@@ -19,6 +19,14 @@ Perception::Perception(): Node("perception") {
 			"/wamv/sensors/cameras/main_camera_sensor/camera_info",
 			10,
 			std::bind(&Perception::cameraCallback, this, _1));
+	_navigationPublisher = create_publisher<ros_gz_interfaces::msg::ParamVec>(
+			"/range_bearing", 10);
+
+
+
+
+
+
 }
 
 void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
@@ -26,26 +34,45 @@ void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
 		cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
 		_image = cv_ptr->image;
 		detectRedBoat();
-		cv::imshow("Image", _image);
+		_imageReceived = true;
 
-		cv::waitKey(1);
 	} catch (const std::exception& e){
 		RCLCPP_ERROR(this->get_logger(), "imageCallback() exception: %s", e.what());
 	}
 }
 
 void Perception::pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg) {
+	auto start = std::chrono::high_resolution_clock::now();
 	if (_imageReceived && _cameraReceived) {
 		_lidar.parsePoints(msg);
 		_lidar.setVisiblePoints(_camera);
+		drawLidarPointsInImage();
+		cv::imshow("Image", _image);
+		cv::waitKey(1);
 	}
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+//	std::cout << "Time in ms: " << duration.count() << std::endl;
 }
 
 void Perception::cameraCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg) {
 	if (!_cameraReceived) {
 		std::pair<int, int> resolution(msg->width, msg->height);
-		Eigen::Matrix<double, 3, 4>	projectionMatrix(msg->p.data());
+		Eigen::Matrix<double, 3, 4>	projectionMatrix;
+		projectionMatrix(0, 0) = msg->p[0];
+		projectionMatrix(0, 1) = msg->p[1];
+		projectionMatrix(0, 2) = msg->p[2];
+		projectionMatrix(0, 3) = msg->p[3];
+		projectionMatrix(1, 0) = msg->p[4];
+		projectionMatrix(1, 1) = msg->p[5];
+		projectionMatrix(1, 2) = msg->p[6];
+		projectionMatrix(1, 3) = msg->p[7];
+		projectionMatrix(2, 0) = msg->p[8];
+		projectionMatrix(2, 1) = msg->p[9];
+		projectionMatrix(2, 2) = msg->p[10];
+		projectionMatrix(2, 3) = msg->p[11];
 		_camera = Camera(projectionMatrix, CAMERA_FOV, resolution);
+		_cameraReceived = true;
 	}
 }
 
@@ -147,4 +174,15 @@ double Perception::calculateEnemyRange() {
 		}
 	}
 	return _enemyRange;
+}
+
+void Perception::drawLidarPointsInImage() {
+	_image.at<cv::Vec3b>(0, 0) = cv::Vec3b (0, 0, 255);
+	_image.at<cv::Vec3b>(1, 0) = cv::Vec3b (0, 0, 255);
+	_image.at<cv::Vec3b>(0, 1) = cv::Vec3b (0, 0, 255);
+	_image.at<cv::Vec3b>(1, 1) = cv::Vec3b (0, 0, 255);
+	for (const auto& point: _lidar.getVisiblePoints()) {
+//		std::cout << "x: " << point.imagePosition.x << " y: " << point.imagePosition.y << std::endl;
+		_image.at<cv::Vec3b>(point.imagePosition.y, point.imagePosition.x) = cv::Vec3b(255, 255, 255);
+	}
 }

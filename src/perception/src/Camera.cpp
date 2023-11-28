@@ -11,14 +11,13 @@ Camera::Camera(Eigen::Matrix<double, 3, 4> projectionMatrix, double horizontalFo
 				_height(resolution.second) {
 	Eigen::Vector3d lidarTranslationMatrix(0., 0., 0.);
 	Eigen::Matrix3d lidarRotationMatrix;
-	lidarRotationMatrix = Eigen::AngleAxisd(0.26, Eigen::Vector3d::UnitX())
-						* Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitY())
-						* Eigen::AngleAxisd(0.0, Eigen::Vector3d::UnitZ());
+	lidarRotationMatrix = Eigen::AngleAxisd(0.26, Eigen::Vector3d::UnitX()).toRotationMatrix()
+						* Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitY()).toRotationMatrix();
 
 	_lidarTransformationMatrix = Eigen::Matrix4d::Identity();
 	_lidarTransformationMatrix.block<3, 3>(0, 0) = lidarRotationMatrix;
 	_lidarTransformationMatrix.block<3, 1>(0, 3) = lidarTranslationMatrix;
-//	_lidarTransformationMatrix.row(3) << 0.0, 0.0, 0.0, 1.0;
+	_lidarTransformationMatrix.row(3) << 0.0, 0.0, 0.0, 1.0;
 }
 
 point_t Camera::projectLidarPoint(const LidarPoint& lidarPoint) const {
@@ -27,14 +26,20 @@ point_t Camera::projectLidarPoint(const LidarPoint& lidarPoint) const {
 	if (!lidarPoint.position.allFinite()) {
 		throw projectionException();
 	}
-	Eigen::Vector4d point3dHomogenous = lidarPoint.position.homogeneous();
+	Eigen::Vector4d point3dHomogenous(lidarPoint.position[0],
+									  lidarPoint.position[2],
+									  lidarPoint.position[1],
+									  1);
 	point3dHomogenous = _lidarTransformationMatrix * point3dHomogenous;
-	Eigen::Vector3d point2dHomogenous = project3DTo2D(point3dHomogenous.head<3>() / point3dHomogenous[3]);
+	point3dHomogenous /= point3dHomogenous[3];
+	Eigen::Vector3d point2dHomogenous = project3DTo2D(point3dHomogenous.head<3>());
 	if (point2dHomogenous[2] >= 0) {
 		throw projectionException();
 	}
 	point.x = static_cast<int>(point2dHomogenous[0] / point2dHomogenous[2]);
 	point.y = static_cast<int>(point2dHomogenous[1] / point2dHomogenous[2]);
+//	std::cout << point.x << std::endl;
+//	std::cout << point.y << std::endl;
 	if (!isValidPixel(point)) {
 		throw projectionException();
 	}

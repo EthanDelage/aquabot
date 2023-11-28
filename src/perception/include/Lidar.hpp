@@ -28,7 +28,7 @@ public:
         float			intensity;
         uint16_t		ring;
 
-		double getDistance();
+		double getDistance() const;
 };
 
 class Lidar {

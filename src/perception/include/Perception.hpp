@@ -7,6 +7,7 @@
 # include "sensor_msgs/msg/image.hpp"
 # include "sensor_msgs/msg/camera_info.hpp"
 # include "sensor_msgs/msg/point_cloud2.hpp"
+# include "ros_gz_interfaces/msg/param_vec.hpp"
 # include "Camera.hpp"
 
 # define CAMERA_FOV			1.3962634
@@ -34,6 +35,7 @@ private:
 	rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr		_imageSubscriber;
 	rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr	_cameraSubscriber;
 	rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr	_pointCloudSubscriber;
+	rclcpp::Publisher<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_navigationPublisher;
 
 	void imageCallback(sensor_msgs::msg::Image::SharedPtr msg);
 	void cameraCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg);
@@ -46,6 +48,7 @@ private:
 	void setEnemyPixels(const cv::Rect& largestBoundingBox, cv::Mat& rgbRedMask);
 	void setEnemyBearing(const cv::Rect enemyBoundingBox);
 	double calculateEnemyRange();
+	void drawLidarPointsInImage();
 };
 
 #endif

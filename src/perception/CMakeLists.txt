@@ -8,6 +8,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(ros_gz_interfaces REQUIRED)
 find_package(cv_bridge REQUIRED)
 find_package(Eigen3 REQUIRED)
 
@@ -35,6 +36,7 @@ target_link_libraries(perception ${EIGEN3_LIBRARIES})
 ament_target_dependencies(perception
         rclcpp
         sensor_msgs
+        ros_gz_interfaces
         Eigen3
         cv_bridge)
 
