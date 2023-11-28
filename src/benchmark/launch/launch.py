@@ -44,7 +44,10 @@ def generate_launch_description():
             'headless': 'false'
         }.items(),
     )
-
+    ExecuteProcess(
+        cmd=['python3', 'src/benchmark/resource/error_log'],
+        output='screen',
+    )
     # Event triggered when benchmark scenario is created to launch simulation
     benchmark_exit_event = RegisterEventHandler(
         OnProcessExit(
@@ -54,6 +57,14 @@ def generate_launch_description():
                 navigation_node,
                 pathfinding_node,
                 task_info_node,
+            ]
+        )
+    )
+    benchmark_exit_event = RegisterEventHandler(
+        OnProcessExit(
+            target_action=aquabot_launch_file,
+            on_exit=[
+
             ]
         )
     )
