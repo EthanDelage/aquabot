@@ -2,8 +2,9 @@
 #include <cmath>
 #include <Eigen/Dense>
 
+Camera::Camera() {}
 
-Camera::Camera(Eigen::Matrix<double, 3, 4> projectionMatrix, float horizontalFov, std::pair<int, int> resolution):
+Camera::Camera(Eigen::Matrix<double, 3, 4> projectionMatrix, double horizontalFov, std::pair<int, int> resolution):
                 _projectionMatrix(projectionMatrix),
 				_horizontalFov(horizontalFov),
 				_width(resolution.first),
@@ -46,4 +47,16 @@ Eigen::Vector3d Camera::project3DTo2D(const Eigen::Vector3d& point3) const {
 
 bool Camera::isValidPixel(point_t pixel) const {
 	return ((0 <= pixel.x && pixel.x < _width) && (0 <= pixel.y && pixel.y < _height));
+}
+
+double Camera::getHorizontalFov() const {
+	return _horizontalFov;
+}
+
+int Camera::getWidth() const {
+	return _width;
+}
+
+int Camera::getHeight() const {
+	return _height;
 }

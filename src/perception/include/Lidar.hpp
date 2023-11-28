@@ -16,6 +16,8 @@ typedef struct point_s {
 	int	y;
 } point_t;
 
+bool operator==(const point_t& lhs, const point_t& rhs);
+
 class LidarPoint {
 
 public:
@@ -33,6 +35,8 @@ class Lidar {
 
 public:
 	Lidar();
+
+	std::vector<LidarPoint> getVisiblePoints();
 
 	void parsePoints(sensor_msgs::msg::PointCloud2::SharedPtr& pointCloud);
 	void setVisiblePoints(const Camera& camera);

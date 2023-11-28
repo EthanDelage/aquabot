@@ -1,8 +1,14 @@
 #include "Lidar.hpp"
 
+bool operator==(const point_t& lhs, const point_t& rhs) {
+    return lhs.x == rhs.x && lhs.y == rhs.y;
+}
+
 Lidar::Lidar() = default;
 
 LidarPoint::LidarPoint() = default;
+
+std::vector<LidarPoint> Lidar::getVisiblePoints() {return (_visiblePoints);}
 
 double LidarPoint::getDistance() {
 	Eigen::Vector3d translation(-1.6, 0., -2.);

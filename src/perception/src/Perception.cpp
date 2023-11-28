@@ -1,3 +1,4 @@
+#include <memory>
 #include <cv_bridge/cv_bridge.h>
 
 #include "Perception.hpp"
@@ -14,7 +15,10 @@ Perception::Perception(): Node("perception") {
 			"/wamv/sensors/lidars/lidar_wamv_sensor/points",
 	        10,
 			std::bind(&Perception::pointCloudCallback, this, _1));
-
+	_cameraSubscriber = create_subscription<sensor_msgs::msg::CameraInfo>(
+			"/wamv/sensors/cameras/main_camera_sensor/camera_info",
+			10,
+			std::bind(&Perception::cameraCallback, this, _1));
 }
 
 void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
@@ -31,9 +35,18 @@ void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
 }
 
 void Perception::pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg) {
-	Lidar lidar;
+	if (_imageReceived && _cameraReceived) {
+		_lidar.parsePoints(msg);
+		_lidar.setVisiblePoints(_camera);
+	}
+}
 
-	lidar.parsePoints(msg);
+void Perception::cameraCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg) {
+	if (!_cameraReceived) {
+		std::pair<int, int> resolution(msg->width, msg->height);
+		Eigen::Matrix<double, 3, 4>	projectionMatrix(msg->p.data());
+		_camera = Camera(projectionMatrix, CAMERA_FOV, resolution);
+	}
 }
 
 void Perception::detectRedBoat() {
@@ -42,21 +55,11 @@ void Perception::detectRedBoat() {
 	std::vector<std::vector<cv::Point>> redContours, greenContours;
 
 	cv::cvtColor(_image, rgbImage, cv::COLOR_BGR2RGB);
-	std::cout << _rgbLowerGreen << std::endl;
-	std::cout << _rgbUpperGreen << std::endl;
-	std::cout << _rgbLowerRed << std::endl;
-	std::cout << _rgbUpperRed << std::endl;
-	std::cout << "In range before" << std::endl;
     cv::inRange(rgbImage, _rgbLowerRed, _rgbUpperRed, rgbRedMask);
-	std::cout << "In range after" << std::endl;
     cv::inRange(rgbImage, _rgbLowerGreen, _rgbUpperGreen, rgbGreenMask);
-	std::cout << "In range after 2" << std::endl;
 
-	std::cout << "Find coutours" << std::endl;
 	cv::findContours(rgbRedMask, redContours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-	std::cout << "Find coutours 1" << std::endl;
 	cv::findContours(rgbGreenMask, greenContours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-	std::cout << "Find coutours 2" << std::endl;
 
 	cv::Rect	largestBoundingRect;
 	bool		foundLargestBoundingRect = false;
@@ -119,8 +122,29 @@ void Perception::setEnemyPixels(const cv::Rect& largestBoundingBox, cv::Mat& rgb
 	for (int i = x; i < x + w; ++i) {
 		for (int j = y; j < y + h; ++j) {
 			if (rgbRedMask.at<uchar>(j, i) == 255) {
-				_enemyPixels.push_back(std::make_pair(i, j));
+				_enemyPixels.push_back({i, j});
 			}
 		}
 	}
+}
+
+void Perception::setEnemyBearing(const cv::Rect boundingBox) {
+	int		cameraWidth = _camera.getWidth();
+	double	boxCenterX = boundingBox.x + boundingBox.width / 2.;
+	double	screenDistance = boxCenterX - cameraWidth / 2.;
+	_enemyBearing = (screenDistance / cameraWidth) * _camera.getHorizontalFov();
+	_enemyBearing = -_enemyBearing;
+}
+
+double Perception::calculateEnemyRange() {
+	auto begin = _enemyPixels.begin();
+	auto end = _enemyPixels.end();
+
+	_enemyRange	= LIDAR_MAX_RANGE;
+	for (auto& point: _lidar.getVisiblePoints()) {
+		if (std::find(begin, end, point.imagePosition) != end) {
+			_enemyRange = std::min(_enemyRange, point.getDistance());
+		}
+	}
+	return _enemyRange;
 }
