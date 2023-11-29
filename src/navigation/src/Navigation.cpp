@@ -8,8 +8,7 @@ Navigation::Navigation() : Node("navigation") {
 	std::vector<point_t>	path;
 	_gain = 0.2;
 	_sigma = 0.05;
-	_benchmark = false;
-	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/range_bearing", 10,
+	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/navigation/pinger", 10,
 				std::bind(&Navigation::pingerCallback, this, _1));
 	_alliesPos = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/ais_sensor/allies_position", 10,
 				std::bind(&Navigation::alliesPosCallback, this, _1));
@@ -20,7 +19,6 @@ Navigation::Navigation() : Node("navigation") {
 Navigation::Navigation(double gain, double sigma) : Navigation() {
 	_gain = gain;
 	_sigma = sigma;
-	_benchmark = true;
 }
 
 void Navigation::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
@@ -36,9 +34,12 @@ void Navigation::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg)
 		} else if (name == "desiredRange") {
 			_desiredRange = param.value.double_value;
 			std::cout << "Desired range: " << _desiredRange << std::endl;
+		} else if (name == "state") {
+			_state = param.value.integer_value;
+			std::cout << "State: " << _state << std::endl;
 		}
 	}
-	setHeading(_bearing, _range);
+	setHeading();
 }
 
 void Navigation::alliesPosCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
@@ -49,23 +50,17 @@ void Navigation::alliesPosCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 	std::cout << "ally longitude: " << longitude << std::endl;
 }
 
-void Navigation::setHeading(double bearing, double range) {
+void Navigation::setHeading() {
 	auto 	posMsg = std_msgs::msg::Float64();
 	auto 	thrustMsg = std_msgs::msg::Float64();
 	double	regulation;
 
-	regulation = regulator(bearing);
+	regulation = regulator(_bearing);
 	posMsg.data = (POS_MIN + regulation * 2 * POS_MAX);
 	thrustMsg.data = std::abs(std::abs(regulation - 0.5) - 0.5) * 2 * THRUST_MAX;
 	thrustMsg.data = calculateThrust(regulation);
-	if (range < _desiredRange) {
-		posMsg.data = 0;
-		thrustMsg.data = 0;
-	}
 	_publisherPos->publish(posMsg);
 	_publisherThrust->publish(thrustMsg);
-	if (range < MAX_BUOY_RANGE && _benchmark)
-		rclcpp::shutdown();
 }
 
 double Navigation::calculateThrust(double regulation) {
@@ -73,8 +68,17 @@ double Navigation::calculateThrust(double regulation) {
 	const double mean = 0.5;
 	double thrust;
 
-	thrust = amplitude * std::exp(-std::pow(((regulation - mean)) / (_sigma * 2), 2));
-	thrust += NAV_THRUST_MIN;
+	if (_state >= FOLLOW_STATE) {
+		thrust = std::pow(3 * (_range - _desiredRange), 3) + 6000;
+		thrust = std::min(thrust, 12000.);
+		thrust = std::max(thrust, 2000.);
+	} else {
+		if (_range < _desiredRange) {
+			return (0);
+		}
+		thrust = amplitude * std::exp(-std::pow(((regulation - mean)) / (_sigma * 2), 2));
+		thrust += NAV_THRUST_MIN;
+	}
 	return (thrust);
 }
 

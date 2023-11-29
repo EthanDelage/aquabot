@@ -8,6 +8,7 @@
 # include "rclcpp/rclcpp.hpp"
 # include "sensor_msgs/msg/imu.hpp"
 # include "std_msgs/msg/float64.hpp"
+# include "std_msgs/msg/u_int32.hpp"
 # include "geometry_msgs/msg/pose.hpp"
 # include "sensor_msgs/msg/nav_sat_fix.hpp"
 # include "geometry_msgs/msg/pose_array.hpp"
@@ -20,6 +21,7 @@
 # define LATITUDE_0				48.043601874279716
 # define LONGITUDE_1			(-4.9722961068569775)
 # define LATITUDE_1				48.04899798353722
+# define FOLLOW_STATE			2
 # define MIN_ALLY_RANGE			100
 
 typedef struct rectangle_s {
@@ -40,12 +42,18 @@ private:
 	std::vector<checkpoint_t>				_checkpoints;
 	Graph									_obstaclesGraph;
 
+	// Target attributes
+	checkpoint_t				_target;
+	double						_targetRange;
+	double						_targetBearing;
+	double						_targetDesiredRange;
+
 	// Buoy attributes
-	checkpoint_t				_buoy;
 	bool						_buoyPing;
-	double						_buoyRange;
-	double						_buoyBearing;
 	bool 						_buoyPosCalculate;
+
+	// State attributes
+	uint32_t 					_state;
 
 	// Boat attributes
 	point_t						_boatPos;
@@ -57,6 +65,8 @@ private:
 
 	// Publisher/Subscriber
 	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_pinger;
+	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_perception;
+	rclcpp::Subscription<std_msgs::msg::UInt32>::SharedPtr				_phase;
 	rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr		_gps;
 	rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr				_imu;
 	rclcpp::Subscription<geometry_msgs::msg::PoseArray>::SharedPtr		_allies;
@@ -64,6 +74,8 @@ private:
 
 	// Callback functions
 	void	pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
+	void	perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
+	void	phaseCallback(std_msgs::msg::UInt32::SharedPtr msg);
 	void 	gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg);
 	void 	imuCallback(sensor_msgs::msg::Imu::SharedPtr msg);
 	void	alliesCallback(geometry_msgs::msg::PoseArray::SharedPtr msg);

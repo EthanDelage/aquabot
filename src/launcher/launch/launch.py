@@ -24,8 +24,8 @@ def generate_launch_description():
         executable='pathfinding',
     )
     perception_node = Node(
-        package='pathfinding',
-        executable='pathfinding',
+        package='perception',
+        executable='perception',
     )
     aquabot_launch_file = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -42,7 +42,6 @@ def generate_launch_description():
 
     return LaunchDescription([
         world_arg,
-        node_arg,
         navigation_node,
         pathfinding_node,
         perception_node,

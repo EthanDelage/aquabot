@@ -12,6 +12,7 @@ Pathfinding::Pathfinding() :
 	_buoyPing = false;
 	_gpsPing = false;
 	_imuPing = false;
+	_state = 0;
 
 	if (init() == -1) {
 		std::cout << "Cannot open " <<  OBSTACLE_FILE << std::endl;
@@ -19,13 +20,17 @@ Pathfinding::Pathfinding() :
 	}
 	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/wamv/sensors/acoustics/receiver/range_bearing", 10,
 				std::bind(&Pathfinding::pingerCallback, this, _1));
+	_perception = create_subscription<ros_gz_interfaces::msg::ParamVec>("/perception/pinger", 10,
+				std::bind(&Pathfinding::perceptionCallback, this, _1));
+	_phase = create_subscription<std_msgs::msg::UInt32>("/vrx/patrolandfollow/current_phase", 10,
+				std::bind(&Pathfinding::phaseCallback, this, _1));
 	_gps = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/sensors/gps/gps/fix", 10,
 				std::bind(&Pathfinding::gpsCallback, this, _1));
 	_imu = create_subscription<sensor_msgs::msg::Imu>("/wamv/sensors/imu/imu/data", 10,
 				std::bind(&Pathfinding::imuCallback, this, _1));
 	_allies = create_subscription<geometry_msgs::msg::PoseArray>("/wamv/ais_sensor/allies_positions", 10,
 				std::bind(&Pathfinding::alliesCallback, this, _1));
-	_publisherRangeBearing = create_publisher<ros_gz_interfaces::msg::ParamVec>("/range_bearing", 5);
+	_publisherRangeBearing = create_publisher<ros_gz_interfaces::msg::ParamVec>("/navigation/pinger", 5);
 }
 
 int Pathfinding::init() {
@@ -41,11 +46,13 @@ std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
 	size_t									boatIndex;
 	std::vector<std::pair<size_t, double>>	reversePath;
 
+	_target.graphIndex = addCheckPoint(_target.position, graph);
+
 	boatIndex = addCheckPoint(boatPos, graph);
 
-	reversePath = djikstra(boatIndex, _buoy.graphIndex, graph);
-
-	return (convertDjikstraToPoint(reversePath, boatIndex, _buoy.graphIndex));
+	reversePath = djikstra(boatIndex, _target.graphIndex, graph);
+	_checkpoints.clear();
+	return (convertDjikstraToPoint(reversePath, boatIndex, _target.graphIndex));
 }
 
 std::vector<point_t> Pathfinding::calculatePathWithAllies(point_t boatPos, std::vector<std::pair<point_t, double>> allies) {
@@ -63,11 +70,11 @@ std::vector<point_t> Pathfinding::calculatePathWithAllies(point_t boatPos, std::
 	_obstaclesGraph.setNbVertices(_obstacles.size() * 4);
 	generateObstaclesGraph();
 
-	_buoy.graphIndex = addCheckPoint(_buoy.position, _obstaclesGraph);
+	_target.graphIndex = addCheckPoint(_target.position, _obstaclesGraph);
 	boatIndex = addCheckPoint(boatPos, _obstaclesGraph);
 
-	reversePath = djikstra(boatIndex, _buoy.graphIndex, _obstaclesGraph);
-	path = convertDjikstraToPoint(reversePath, boatIndex, _buoy.graphIndex);
+	reversePath = djikstra(boatIndex, _target.graphIndex, _obstaclesGraph);
+	path = convertDjikstraToPoint(reversePath, boatIndex, _target.graphIndex);
 
 	for (auto node : path)
 		std::cout << "[" << node.x << "," << node.y << "], ";

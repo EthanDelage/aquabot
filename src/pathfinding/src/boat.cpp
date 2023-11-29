@@ -44,6 +44,7 @@ void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBear
 	rcl_interfaces::msg::Parameter	rangeMsg;
 	rcl_interfaces::msg::Parameter	bearingMsg;
 	rcl_interfaces::msg::Parameter	desiredRangeMsg;
+	rcl_interfaces::msg::Parameter	stateMsg;
 
 	rangeMsg.name = "range";
 	rangeMsg.value.double_value = rangeBearing.first;
@@ -56,6 +57,11 @@ void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBear
 	desiredRangeMsg.name = "desiredRange";
 	desiredRangeMsg.value.double_value = desiredRange;
 	paramVecMsg.params.push_back(desiredRangeMsg);
+
+	stateMsg.name = "state";
+	stateMsg.value.integer_value = _state;
+	paramVecMsg.params.push_back(stateMsg);
+
 
 	if (rangeBearing.first < desiredRange)
 		_path.erase(_path.begin());

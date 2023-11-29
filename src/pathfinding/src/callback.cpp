@@ -5,15 +5,44 @@
 #include "geometry_msgs/msg/quaternion.hpp"
 
 void Pathfinding::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
+	if (_state >= FOLLOW_STATE)
+		return;
 	for (const auto &param: msg->params) {
 		std::string name = param.name;
 
 		if (name == "bearing")
-			_buoyBearing = param.value.double_value;
+			_targetBearing = param.value.double_value;
 		else if (name == "range")
-			_buoyRange = param.value.double_value;
+			_targetRange = param.value.double_value;
 	}
 	_buoyPing = true;
+}
+
+void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
+	if (_state < FOLLOW_STATE)
+		return;
+	for (const auto &param: msg->params) {
+		std::string name = param.name;
+
+		if (name == "bearing")
+			_targetBearing = param.value.double_value;
+		else if (name == "range")
+			_targetRange = param.value.double_value;
+		else if (name == "desiredRange")
+			_targetDesiredRange = param.value.double_value;
+		else if (name == "x")
+			_target.position.x = param.value.double_value;
+		else if (name == "y")
+			_target.position.y = param.value.double_value;
+	}
+	_path = calculatePath(_boatPos);
+	for (auto node : _path)
+		std::cout << "[" << node.x << "," << node.y << "], ";
+	std::cout << std::endl;
+}
+
+void Pathfinding::phaseCallback(std_msgs::msg::UInt32::SharedPtr msg) {
+	_state = msg->data;
 }
 
 void Pathfinding::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
@@ -37,8 +66,8 @@ void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 	if (_buoyPing && _gpsPing && !_buoyPosCalculate)
 		addBuoy();
 	if (_gpsPing && _pathCalculated && !_path.empty()) {
-		if (_path[0].x == _buoy.position.x && _path[0].y == _buoy.position.y)
-			publishRangeBearing(std::pair<double, double>(_buoyRange, _buoyBearing), MAX_BUOY_RANGE);
+		if (_path[0].x == _target.position.x && _path[0].y == _target.position.y)
+			publishRangeBearing(std::pair<double, double>(_targetRange, _targetBearing), _targetDesiredRange);
 		else
 			publishRangeBearing(calculateRangeBearing(), MAX_CHECKPOINT_RANGE);
 	}
