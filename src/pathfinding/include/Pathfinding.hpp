@@ -127,6 +127,9 @@ private:
 	static rectangle_t			calculateAllyBoundingBox(std::pair<point_t, double> const & ally, size_t id);
 	static rectangle_t			calculateEnemyBoundingBox(point_t const & target, size_t id);
 
+	// Scan
+	void	publishScan(bool value);
+
 public:
 	Pathfinding();
 

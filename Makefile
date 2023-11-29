@@ -28,6 +28,10 @@ re:	fclean
 launch:
 	ros2 launch launcher launch.py
 
+.PHONY: launch_headless
+launch_headless:
+	ros2 launch launcher launch.py headless:=true
+
 .PHONY: perception
 perception:
 	ros2 run perception perception

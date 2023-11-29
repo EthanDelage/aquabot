@@ -24,6 +24,7 @@ void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr
 			checkEnemyCollision(msg);
 		return;
 	}
+	bool scan = false;
 	for (const auto &param: msg->params) {
 		std::string name = param.name;
 
@@ -37,11 +38,28 @@ void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr
 			_target.position.x = param.value.double_value;
 		else if (name == "y")
 			_target.position.y = param.value.double_value;
+		else if (name == "scan")
+			scan = param.value.bool_value;
+	}
+	if (scan) {
+		publishScan(scan);
+		return;
 	}
 	_path = calculatePath(_boatPos);
 	for (auto node : _path)
 		std::cout << "[" << node.x << "," << node.y << "], ";
 	std::cout << std::endl;
+}
+
+void Pathfinding::publishScan(bool value) {
+	auto	paramVecMsg = ros_gz_interfaces::msg::ParamVec();
+	rcl_interfaces::msg::Parameter	scanMsg;
+
+	scanMsg.name = "scan";
+	scanMsg.value.bool_value = value;
+	paramVecMsg.params.push_back(scanMsg);
+
+	_publisherRangeBearing->publish(paramVecMsg);
 }
 
 void Pathfinding::phaseCallback(std_msgs::msg::UInt32::SharedPtr msg) {

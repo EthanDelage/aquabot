@@ -37,6 +37,19 @@ void Navigation::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg)
 		} else if (name == "state") {
 			_state = param.value.integer_value;
 			std::cout << "State: " << _state << std::endl;
+		} else if (name == "scan") {
+			auto 	posMsg = std_msgs::msg::Float64();
+			auto 	thrustMsg = std_msgs::msg::Float64();
+
+			if (!param.value.bool_value) {
+				posMsg.data = M_PI_2 / 2;
+			} else {
+				posMsg.data = -(M_PI_2 / 2);
+			}
+			thrustMsg.data = 500;
+			_publisherPos->publish(posMsg);
+			_publisherThrust->publish(thrustMsg);
+			return;
 		}
 	}
 	setHeading();
@@ -59,6 +72,9 @@ void Navigation::setHeading() {
 	posMsg.data = (POS_MIN + regulation * 2 * POS_MAX);
 	thrustMsg.data = std::abs(std::abs(regulation - 0.5) - 0.5) * 2 * THRUST_MAX;
 	thrustMsg.data = calculateThrust(regulation);
+	if (thrustMsg.data < 0) {
+		posMsg.data = -posMsg.data;
+	}
 	_publisherPos->publish(posMsg);
 	_publisherThrust->publish(thrustMsg);
 }
@@ -70,11 +86,19 @@ double Navigation::calculateThrust(double regulation) {
 
 	if (_state >= FOLLOW_STATE) {
 		thrust = std::pow(3 * (_range - _desiredRange), 3) + 6000;
+		thrust /= regulation * 10;
+//		if (regulation > 0.3) {
+//			thrust = 6000.;
+//		}
 		thrust = std::min(thrust, 12000.);
+//		thrust = std::max(thrust, -12000.);
 		thrust = std::max(thrust, 2000.);
+		if (_range < 15) {
+			thrust = -2000;
+		}
 	} else {
 		if (_range < _desiredRange) {
-			return (0);
+			return (-12000.);
 		}
 		thrust = amplitude * std::exp(-std::pow(((regulation - mean)) / (_sigma * 2), 2));
 		thrust += NAV_THRUST_MIN;

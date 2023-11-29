@@ -50,7 +50,7 @@ void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
 		cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
 		_image = cv_ptr->image;
 		detectRedBoat();
-		if (_enemyFound && _gpsPing && _imuPing) {
+		if (_gpsPing && _imuPing) {
 			publishPathfinding();
 		}
 		_imageReceived = true;
@@ -73,7 +73,7 @@ void Perception::pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg
 	}
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-	std::cout << "Time in ms: " << duration.count() << std::endl;
+//	std::cout << "Time in ms: " << duration.count() << std::endl;
 }
 
 void Perception::cameraCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg) {
@@ -116,11 +116,28 @@ void Perception::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 
 void Perception::publishPathfinding() {
 	auto	paramVecMsg = ros_gz_interfaces::msg::ParamVec();
+	rcl_interfaces::msg::Parameter	scanMsg;
 	rcl_interfaces::msg::Parameter	rangeMsg;
 	rcl_interfaces::msg::Parameter	bearingMsg;
 	rcl_interfaces::msg::Parameter	desiredRangeMsg;
-	rcl_interfaces::msg::Parameter	xMapPos;
-	rcl_interfaces::msg::Parameter	yMapPos;
+	rcl_interfaces::msg::Parameter	xMapPosMsg;
+	rcl_interfaces::msg::Parameter	yMapPosMsg;
+
+	scanMsg.name = "scan";
+	if (!_enemyFound) {
+		if (_enemyBearing < 0) {
+			scanMsg.value.bool_value = true;
+		} else {
+			scanMsg.value.bool_value = false;
+		}
+//		double angle_vec = atan2(_enemyMapPos[1], _enemyMapPos[0]);
+//		_enemyBearing = _boatOrientation - angle_vec;
+//		_enemyBearing = -convertToMinusPiPi(_enemyBearing);
+//		_enemyRangeMin = sqrt(pow(_enemyMapPos[0] - _boatMapPos[0], 2) + \
+//							  pow(_enemyMapPos[1] - _boatMapPos[1], 2));
+		paramVecMsg.params.push_back(scanMsg);
+	}
+//	scanMsg.value.bool_value = true;
 
 	rangeMsg.name = "range";
 	rangeMsg.value.double_value = _enemyRangeMin;
@@ -130,17 +147,28 @@ void Perception::publishPathfinding() {
 	bearingMsg.value.double_value = _enemyBearing;
 	paramVecMsg.params.push_back(bearingMsg);
 
+	xMapPosMsg.name = "x";
+	xMapPosMsg.value.double_value = _enemyMapPos[0];
+	paramVecMsg.params.push_back(xMapPosMsg);
+
+	yMapPosMsg.name = "y";
+	yMapPosMsg.value.double_value = _enemyMapPos[1];
+	paramVecMsg.params.push_back(yMapPosMsg);
+
 	desiredRangeMsg.name = "desiredRange";
-	desiredRangeMsg.value.double_value = DESIRED_RANGE;
+	if (_enemyFound) {
+		desiredRangeMsg.value.double_value = DESIRED_RANGE;
+	} else {
+		desiredRangeMsg.value.double_value = 0;
+	}
 	paramVecMsg.params.push_back(desiredRangeMsg);
 
-	xMapPos.name = "x";
-	xMapPos.value.double_value = _enemyMapPos[0];
-	paramVecMsg.params.push_back(xMapPos);
+	std::cout << "x: " << _enemyMapPos[0] << std::endl;
+	std::cout << "y: " << _enemyMapPos[1] << std::endl;
+	std::cout << "desiredRange: " << desiredRangeMsg.value.double_value << std::endl;
+	std::cout << "range: " << _enemyRangeMin << std::endl;
+	std::cout << "bearing: " << _enemyBearing << std::endl;
 
-	yMapPos.name = "y";
-	yMapPos.value.double_value = _enemyMapPos[1];
-	paramVecMsg.params.push_back(yMapPos);
 	_perceptionPublisher->publish(paramVecMsg);
 }
 
