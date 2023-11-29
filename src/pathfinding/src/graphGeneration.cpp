@@ -9,8 +9,6 @@ size_t Pathfinding::addCheckPoint(point_t cpPos, Graph& graph) {
 	cp.graphIndex = graph.addVertex();
 	_checkpoints.push_back(cp);
 	generateCheckpointAdjList(cp, graph);
-//	std::cout << std::endl;
-//	graph.printGraph();
 
 	return (cp.graphIndex);
 }
@@ -24,7 +22,6 @@ void Pathfinding::generateObstaclesGraph() {
 			generateAdjList(_obstacles[src], _obstacles[dest]);
 		}
 	}
-//	_obstaclesGraph.printGraph();
 }
 
 void Pathfinding::addObstacleAdjList(rectangle_t const & obstacle, size_t index) {
