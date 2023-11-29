@@ -12,6 +12,7 @@ Pathfinding::Pathfinding() :
 	_buoyPing = false;
 	_gpsPing = false;
 	_imuPing = false;
+	_state = 0;
 
 	if (init() == -1) {
 		std::cout << "Cannot open " <<  OBSTACLE_FILE << std::endl;
@@ -19,11 +20,15 @@ Pathfinding::Pathfinding() :
 	}
 	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/wamv/sensors/acoustics/receiver/range_bearing", 10,
 				std::bind(&Pathfinding::pingerCallback, this, _1));
+	_perception = create_subscription<ros_gz_interfaces::msg::ParamVec>("/perception/pinger", 10,
+				std::bind(&Pathfinding::perceptionCallback, this, _1));
+	_phase = create_subscription<std_msgs::msg::UInt32>("/vrx/patrolandfollow/current_phase", 10,
+				std::bind(&Pathfinding::phaseCallback, this, _1));
 	_gps = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/sensors/gps/gps/fix", 10,
 				std::bind(&Pathfinding::gpsCallback, this, _1));
 	_imu = create_subscription<sensor_msgs::msg::Imu>("/wamv/sensors/imu/imu/data", 10,
 				std::bind(&Pathfinding::imuCallback, this, _1));
-	_publisherRangeBearing = create_publisher<ros_gz_interfaces::msg::ParamVec>("/range_bearing", 5);
+	_publisherRangeBearing = create_publisher<ros_gz_interfaces::msg::ParamVec>("/navigation/pinger", 5);
 }
 int Pathfinding::init() {
 	if (parseObstacles() == -1)

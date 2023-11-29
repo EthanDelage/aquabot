@@ -23,6 +23,7 @@ find_package(OpenCV REQUIRED)
 add_executable(perception
         src/main.cpp
         src/Perception.cpp
+        src/detection.cpp
         src/Lidar.cpp
         src/Camera.cpp)
 

@@ -5,6 +5,8 @@
 #include "geometry_msgs/msg/quaternion.hpp"
 
 void Pathfinding::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
+	if (_state >= 2)
+		return;
 	for (const auto &param: msg->params) {
 		std::string name = param.name;
 
@@ -14,6 +16,24 @@ void Pathfinding::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg
 			_buoyRange = param.value.double_value;
 	}
 	_buoyPing = true;
+}
+
+void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
+	if (_state < 2)
+		return;
+	for (const auto &param: msg->params) {
+		std::string name = param.name;
+
+		if (name == "bearing")
+			_buoyBearing = param.value.double_value;
+		else if (name == "range")
+			_buoyRange = param.value.double_value;
+	}
+	_buoyPing = true;
+}
+
+void Pathfinding::phaseCallback(std_msgs::msg::UInt32::SharedPtr msg) {
+	_state = msg->data;
 }
 
 void Pathfinding::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {

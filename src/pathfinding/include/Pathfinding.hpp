@@ -9,6 +9,7 @@
 # include "rclcpp/rclcpp.hpp"
 # include "sensor_msgs/msg/imu.hpp"
 # include "std_msgs/msg/float64.hpp"
+# include "std_msgs/msg/u_int32.hpp"
 # include "sensor_msgs/msg/nav_sat_fix.hpp"
 # include "ros_gz_interfaces/msg/param_vec.hpp"
 
@@ -40,6 +41,9 @@ private:
 	double						_buoyBearing;
 	bool 						_buoyPosCalculate;
 
+	// State attributes
+	uint32_t 					_state;
+
 	// Boat attributes
 	point_t						_boatPos;
 	double						_orientation;
@@ -50,12 +54,16 @@ private:
 
 	// Publisher/Subscriber
 	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_pinger;
+	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_perception;
+	rclcpp::Subscription<std_msgs::msg::UInt32>::SharedPtr				_phase;
 	rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr		_gps;
 	rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr				_imu;
 	rclcpp::Publisher<ros_gz_interfaces::msg::ParamVec>::SharedPtr		_publisherRangeBearing;
 
 	// Callback functions
 	void	pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
+	void	perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
+	void	phaseCallback(std_msgs::msg::UInt32::SharedPtr msg);
 	void 	gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg);
 	void 	imuCallback(sensor_msgs::msg::Imu::SharedPtr msg);
 

@@ -61,6 +61,8 @@ void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBear
 	bearingMsg.value.double_value = rangeBearing.second;
 	desiredRangeMsg.name = "desiredRange";
 	desiredRangeMsg.value.double_value = desiredRange;
+	desiredRangeMsg.name = "state";
+	desiredRangeMsg.value.integer_value = _state;
 
 	paramVecMsg.params.push_back(rangeMsg);
 	paramVecMsg.params.push_back(bearingMsg);

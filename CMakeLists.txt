@@ -41,4 +41,5 @@ add_executable(autoComplete
 		src/perception/src/Lidar.cpp
 		src/perception/include/Lidar.hpp
 		src/perception/include/Camera.hpp
-		src/perception/src/Camera.cpp)
+		src/perception/src/Camera.cpp
+		src/perception/src/detection.cpp)

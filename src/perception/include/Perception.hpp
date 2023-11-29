@@ -7,6 +7,8 @@
 # include "sensor_msgs/msg/image.hpp"
 # include "sensor_msgs/msg/camera_info.hpp"
 # include "sensor_msgs/msg/point_cloud2.hpp"
+# include "sensor_msgs/msg/imu.hpp"
+# include "sensor_msgs/msg/nav_sat_fix.hpp"
 # include "ros_gz_interfaces/msg/param_vec.hpp"
 # include "Camera.hpp"
 
@@ -26,6 +28,7 @@ private:
 	std::vector<point_t>	_enemyPixels;
 	double 					_enemyBearing;
 	double 					_enemyRange;
+	double					_boatOrientation;
 	cv::Scalar				_rgbLowerRed{65, 6, 5};
     cv::Scalar				_rgbUpperRed{110, 16, 15};
     cv::Scalar				_rgbLowerGreen{7, 50, 0};
@@ -37,11 +40,16 @@ private:
 	rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr		_imageSubscriber;
 	rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr	_cameraSubscriber;
 	rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr	_pointCloudSubscriber;
+	rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr			_imuSubscriber;
+	rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr	_gpsSubscriber;
 	rclcpp::Publisher<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_navigationPublisher;
 
 	void imageCallback(sensor_msgs::msg::Image::SharedPtr msg);
 	void cameraCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg);
 	void pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg);
+	void imuCallback(sensor_msgs::msg::Imu::SharedPtr msg);
+
+	void calculateYaw(const geometry_msgs::msg::Quaternion& orientation);
 
 	void detectRedBoat();
 	static bool isEnemyContour(const std::vector<cv::Point>& redContour, const std::vector<std::vector<cv::Point>>& greenContours);

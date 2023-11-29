@@ -43,7 +43,7 @@ def generate_launch_description():
     return LaunchDescription([
         world_arg,
         navigation_node,
-        # pathfinding_node,
+        pathfinding_node,
         perception_node,
         aquabot_launch_file,
     ])
