@@ -1,33 +1,23 @@
 #include "Pathfinding.hpp"
-#include "rcl_interfaces/msg/parameter.hpp"
 
 #include <cmath>
 
-size_t Pathfinding::addBoat(point_t boatPos, Graph& graph) {
-	size_t	boatIndex;
+#include "rcl_interfaces/msg/parameter.hpp"
 
-	boatIndex = graph.addVertex();
-	generateNodeAdjList(boatPos, boatIndex, graph);
-	if (!isHitObstacle(boatPos, _buoyPos))
-		graph.addEdge(boatIndex, _buoyGraphIndex, calculateDist(boatPos, _buoyPos));
-	std::cout << std::endl;
-	graph.printGraph();
-	return (boatIndex);
+point_t	Pathfinding::calculateMapPos(double latitude, double longitude) {
+	point_t	pos;
+
+	pos.x = (longitude - LONGITUDE_0) / (LONGITUDE_1 - LONGITUDE_0);
+	pos.x = pos.x * 600 - 300;
+	pos.y = (latitude - LATITUDE_0) / (LATITUDE_1 - LATITUDE_0);
+	pos.y = pos.y * 600 - 300;
+	return (pos);
 }
 
-void	Pathfinding::calculateMapPos(double latitude, double longitude) {
-	double	x, y;
-
-	x = (longitude - LONGITUDE_0) / (LONGITUDE_1 - LONGITUDE_0);
-	_boatPos.x = x * 600 - 300;
-	y = (latitude - LATITUDE_0) / (LATITUDE_1 - LATITUDE_0);
-	_boatPos.y = y * 600 - 300;
-}
-
-void Pathfinding::calculateYaw(const geometry_msgs::msg::Quaternion& orientation) {
+double Pathfinding::calculateYaw(const geometry_msgs::msg::Quaternion& orientation) {
 	double siny_cosp = 2 * (orientation.w * orientation.z + orientation.x * orientation.y);
 	double cosy_cosp = 1 - 2 * (orientation.y * orientation.y + orientation.z * orientation.z);
-	_orientation = std::atan2(siny_cosp, cosy_cosp);
+	return (std::atan2(siny_cosp, cosy_cosp));
 }
 
 std::pair<double, double> Pathfinding::calculateRangeBearing() {
@@ -57,14 +47,16 @@ void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBear
 
 	rangeMsg.name = "range";
 	rangeMsg.value.double_value = rangeBearing.first;
+	paramVecMsg.params.push_back(rangeMsg);
+
 	bearingMsg.name = "bearing";
 	bearingMsg.value.double_value = rangeBearing.second;
+	paramVecMsg.params.push_back(bearingMsg);
+
 	desiredRangeMsg.name = "desiredRange";
 	desiredRangeMsg.value.double_value = desiredRange;
-
-	paramVecMsg.params.push_back(rangeMsg);
-	paramVecMsg.params.push_back(bearingMsg);
 	paramVecMsg.params.push_back(desiredRangeMsg);
+
 	if (rangeBearing.first < desiredRange)
 		_path.erase(_path.begin());
 	_publisherRangeBearing->publish(paramVecMsg);

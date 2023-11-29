@@ -28,8 +28,6 @@ add_executable(autoComplete
 		src/pathfinding/src/graphGeneration.cpp
 		src/pathfinding/src/djikstra.cpp
 		src/pathfinding/src/callback.cpp
-    src/pathfinding/src/buoy.cpp
-    src/pathfinding/src/parsing.cpp
-    src/pathfinding/src/boat.cpp
-		src/perception/src/Perception.cpp
-		src/perception/src/main.cpp)
+        src/pathfinding/src/buoy.cpp
+        src/pathfinding/src/parsing.cpp
+        src/pathfinding/src/boat.cpp)

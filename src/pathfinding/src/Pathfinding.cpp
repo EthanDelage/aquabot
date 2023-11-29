@@ -1,6 +1,6 @@
-#include <iterator>
-
 #include "Pathfinding.hpp"
+
+#include <iterator>
 
 using std::placeholders::_1;
 
@@ -23,8 +23,11 @@ Pathfinding::Pathfinding() :
 				std::bind(&Pathfinding::gpsCallback, this, _1));
 	_imu = create_subscription<sensor_msgs::msg::Imu>("/wamv/sensors/imu/imu/data", 10,
 				std::bind(&Pathfinding::imuCallback, this, _1));
+	_allies = create_subscription<geometry_msgs::msg::PoseArray>("/wamv/ais_sensor/allies_positions", 10,
+				std::bind(&Pathfinding::alliesCallback, this, _1));
 	_publisherRangeBearing = create_publisher<ros_gz_interfaces::msg::ParamVec>("/range_bearing", 5);
 }
+
 int Pathfinding::init() {
 	if (parseObstacles() == -1)
 		return (-1);
@@ -34,22 +37,44 @@ int Pathfinding::init() {
 }
 
 std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
-	Graph								graph(_obstaclesGraph);
-	size_t								boatIndex;
+	Graph									graph(_obstaclesGraph);
+	size_t									boatIndex;
 	std::vector<std::pair<size_t, double>>	reversePath;
-	std::pair<size_t, double>				current;
-	std::list<size_t>						path;
 
-	boatIndex = addBoat(boatPos, graph);
+	boatIndex = addCheckPoint(boatPos, graph);
 
-	reversePath = djikstra(boatIndex, _buoyGraphIndex, graph);
+	reversePath = djikstra(boatIndex, _buoy.graphIndex, graph);
 
-	current = reversePath[_buoyGraphIndex];
+	return (convertDjikstraToPoint(reversePath, boatIndex, _buoy.graphIndex));
+}
 
-	path.push_front(_buoyGraphIndex);
-	while (current.first != boatIndex) {
-		path.push_front(current.first);
-		current = reversePath[current.first];
-	}
-	return (convertNodeToPoint(path));
+std::vector<point_t> Pathfinding::calculatePathWithAllies(point_t boatPos, std::vector<std::pair<point_t, double>> allies) {
+	std::vector<rectangle_t>					obstaclesSave;
+	Graph										graphSave;
+	size_t                      				boatIndex;
+	std::vector<std::pair<size_t, double>>		reversePath;
+	std::vector<point_t>                    	path;
+
+	obstaclesSave = _obstacles;
+	graphSave = _obstaclesGraph;
+	for (auto ally : allies)
+		_obstacles.push_back(calculateAllyBoundingBox(ally, _obstacles.size()));
+
+	_obstaclesGraph.setNbVertices(_obstacles.size() * 4);
+	generateObstaclesGraph();
+
+	_buoy.graphIndex = addCheckPoint(_buoy.position, _obstaclesGraph);
+	boatIndex = addCheckPoint(boatPos, _obstaclesGraph);
+
+	reversePath = djikstra(boatIndex, _buoy.graphIndex, _obstaclesGraph);
+	path = convertDjikstraToPoint(reversePath, boatIndex, _buoy.graphIndex);
+
+	for (auto node : path)
+		std::cout << "[" << node.x << "," << node.y << "], ";
+	std::cout << std::endl;
+
+	_obstacles = obstaclesSave;
+	_obstaclesGraph = graphSave;
+	_checkpoints.clear();
+	return (path);
 }
