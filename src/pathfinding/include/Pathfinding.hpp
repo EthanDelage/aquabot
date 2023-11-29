@@ -52,6 +52,10 @@ private:
 	bool						_buoyPing;
 	bool 						_buoyPosCalculate;
 
+	// Enemy attributes
+	bool						_enemyPing;
+	point_t 					_enemyPos;
+
 	// State attributes
 	uint32_t 					_state;
 
@@ -119,7 +123,9 @@ private:
 	std::vector<point_t>		calculatePathWithAllies(point_t boatPos, std::vector<std::pair<point_t, double>> allies);
 	std::pair<double, double>	calculateRangeBearing();
 	void						publishRangeBearing(std::pair<double, double> const & rangeBearing, double desiredRange);
-	rectangle_t					calculateAllyBoundingBox(std::pair<point_t, double> const & ally, size_t id);
+	void						checkEnemyCollision(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
+	static rectangle_t			calculateAllyBoundingBox(std::pair<point_t, double> const & ally, size_t id);
+	static rectangle_t			calculateEnemyBoundingBox(point_t const & target, size_t id);
 
 public:
 	Pathfinding();

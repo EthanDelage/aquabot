@@ -29,6 +29,22 @@ rectangle_t Pathfinding::calculateAllyBoundingBox(std::pair<point_t, double> con
 	return (boundingBox);
 }
 
+rectangle_t Pathfinding::calculateEnemyBoundingBox(const point_t& target, size_t id) {
+	const double	thickness = 20;
+	rectangle_t		boundingBox;
+
+	boundingBox.point[0].x = target.x - thickness + thickness * std::cos(-M_PI_2);
+	boundingBox.point[0].y = target.y - thickness + thickness * std::sin(-M_PI_2);
+	boundingBox.point[1].x = target.x - thickness + thickness * std::cos(M_PI_2);
+	boundingBox.point[1].y = target.y - thickness + thickness * std::sin(M_PI_2);
+	boundingBox.point[2].x = target.x + thickness + thickness * std::cos(M_PI_2);
+	boundingBox.point[2].y = target.y + thickness + thickness * std::sin(M_PI_2);
+	boundingBox.point[3].x = target.x + thickness + thickness * std::cos(-M_PI_2);
+	boundingBox.point[3].y = target.y + thickness + thickness * std::sin(-M_PI_2);
+	boundingBox.id = id;
+	return (boundingBox);
+}
+
 bool Pathfinding::isHitObstacle(point_t const start, point_t const end, rectangle_t const & lhs, rectangle_t const & rhs) {
 	for (auto obstacle : _obstacles) {
 		if (!(areRectangleEqual(lhs, obstacle) || areRectangleEqual(rhs, obstacle))) {

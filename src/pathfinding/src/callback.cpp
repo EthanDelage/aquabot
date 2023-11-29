@@ -19,8 +19,11 @@ void Pathfinding::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg
 }
 
 void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
-	if (_state < FOLLOW_STATE)
+	if (_state < FOLLOW_STATE) {
+		if (!_enemyPing)
+			checkEnemyCollision(msg);
 		return;
+	}
 	for (const auto &param: msg->params) {
 		std::string name = param.name;
 
