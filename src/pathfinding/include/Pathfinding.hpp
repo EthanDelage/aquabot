@@ -5,12 +5,13 @@
 
 # include "Graph.hpp"
 # include "point.hpp"
-
 # include "rclcpp/rclcpp.hpp"
 # include "sensor_msgs/msg/imu.hpp"
 # include "std_msgs/msg/float64.hpp"
 # include "std_msgs/msg/u_int32.hpp"
+# include "geometry_msgs/msg/pose.hpp"
 # include "sensor_msgs/msg/nav_sat_fix.hpp"
+# include "geometry_msgs/msg/pose_array.hpp"
 # include "ros_gz_interfaces/msg/param_vec.hpp"
 
 # define OBSTACLE_FILE			"src/pathfinding/obstacles.txt"
@@ -21,22 +22,28 @@
 # define LONGITUDE_1			(-4.9722961068569775)
 # define LATITUDE_1				48.04899798353722
 # define FOLLOW_STATE			2
+# define MIN_ALLY_RANGE			100
 
 typedef struct rectangle_s {
 	size_t	id;
 	point_t point[4];
 } rectangle_t;
 
+typedef struct checkpoint_s {
+	size_t	graphIndex;
+	point_t position;
+} checkpoint_t;
+
 class Pathfinding : public rclcpp::Node {
 
 private:
 	// Cartography attributes
-	std::vector<rectangle_t>	_obstacles;
-	Graph						_obstaclesGraph;
-	size_t						_buoyGraphIndex;
+	std::vector<rectangle_t>				_obstacles;
+	std::vector<checkpoint_t>				_checkpoints;
+	Graph									_obstaclesGraph;
 
 	// Buoy attributes
-	point_t						_buoyPos;
+	checkpoint_t				_buoy;
 	bool						_buoyPing;
 	double						_buoyRange;
 	double						_buoyBearing;
@@ -59,6 +66,7 @@ private:
 	rclcpp::Subscription<std_msgs::msg::UInt32>::SharedPtr				_phase;
 	rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr		_gps;
 	rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr				_imu;
+	rclcpp::Subscription<geometry_msgs::msg::PoseArray>::SharedPtr		_allies;
 	rclcpp::Publisher<ros_gz_interfaces::msg::ParamVec>::SharedPtr		_publisherRangeBearing;
 
 	// Callback functions
@@ -67,6 +75,7 @@ private:
 	void	phaseCallback(std_msgs::msg::UInt32::SharedPtr msg);
 	void 	gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg);
 	void 	imuCallback(sensor_msgs::msg::Imu::SharedPtr msg);
+	void	alliesCallback(geometry_msgs::msg::PoseArray::SharedPtr msg);
 
 	// Parsing functions
 	int 				parseObstacles();
@@ -75,6 +84,7 @@ private:
 	// Djikstra algorithm functions
 	std::vector<std::pair<size_t, double>>	djikstra(size_t start, size_t end, Graph const & graph);
 	std::vector<point_t>					convertNodeToPoint(std::list<size_t> nodePath);
+	std::vector<point_t>					convertDjikstraToPoint(std::vector<std::pair<size_t, double>> reversePath, size_t start, size_t end);
 	static bool								isVisited(size_t index, std::vector<size_t> const & visited);
 	static std::pair<size_t, double>		getMinNode(std::vector<std::pair<size_t, double>> const & path, std::vector<size_t> const & visited);
 	static double							calculateDist(point_t a, point_t b);
@@ -93,25 +103,27 @@ private:
 	void	generateObstaclesGraph();
 	void 	addObstacleAdjList(rectangle_t const & obstacle, size_t index);
 	void	generateAdjList(rectangle_t const & lhs, rectangle_t const & rhs);
-	void	generateNodeAdjList(point_t nodePos, size_t nodeIndex, Graph& graph);
+	void	generateCheckpointAdjList(checkpoint_t checkpoint, Graph& graph);
 
 	// Buoy functions
 	void			calculateBuoyPos();
 	static double	convertToMinusPiPi(double angleRadians);
 
 	// Boat functions
-	void						calculateMapPos(double latitude, double longitude);
-	void						calculateYaw(geometry_msgs::msg::Quaternion const & orientation);
+	point_t						calculateMapPos(double latitude, double longitude);
+	double						calculateYaw(geometry_msgs::msg::Quaternion const & orientation);
 	std::vector<point_t>		calculatePath(point_t boatPos);
+	std::vector<point_t>		calculatePathWithAllies(point_t boatPos, std::vector<std::pair<point_t, double>> allies);
 	std::pair<double, double>	calculateRangeBearing();
 	void						publishRangeBearing(std::pair<double, double> const & rangeBearing, double desiredRange);
+	rectangle_t					calculateAllyBoundingBox(std::pair<point_t, double> const & ally, size_t id);
 
 public:
 	Pathfinding();
 
 	int						init();
-	void					addBuoy(point_t buoyPos);
-	size_t 					addBoat(point_t boatPos, Graph& graph);
+	void					addBuoy();
+	size_t					addCheckPoint(point_t checkpointPos, Graph& graph);
 
 };
 

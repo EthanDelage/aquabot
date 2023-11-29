@@ -69,15 +69,14 @@ double Navigation::calculateThrust(double regulation) {
 	const double mean = 0.5;
 	double thrust;
 
-//	if (_state >= FOLLOW_STATE) {
+	if (_state >= FOLLOW_STATE) {
 		thrust = std::pow(3 * (_range - _desiredRange), 3) + 6000;
 		thrust = std::min(thrust, 12000.);
 		thrust = std::max(thrust, 2000.);
-
-//	else {
-//		thrust = amplitude * std::exp(-std::pow(((regulation - mean)) / (_sigma * 2), 2));
-//		thrust += NAV_THRUST_MIN;
-//	}
+	} else {
+		thrust = amplitude * std::exp(-std::pow(((regulation - mean)) / (_sigma * 2), 2));
+		thrust += NAV_THRUST_MIN;
+	}
 	return (thrust);
 }
 

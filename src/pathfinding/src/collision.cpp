@@ -1,16 +1,33 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   segmentCollision.cpp                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: edelage <edelage@student.42lyon.fr>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/12 18:52:00 by edelage           #+#    #+#             */
-/*   Updated: 2023/11/12 18:52:00 by edelage          ###   ########lyon.fr   */
-/*                                                                            */
-/* ************************************************************************** */
 #include "Pathfinding.hpp"
+
 #include <cmath>
+
+rectangle_t Pathfinding::calculateAllyBoundingBox(std::pair<point_t, double> const & ally, size_t id) {
+	const double	backDist = 20;
+	const double	backThickness = 10;
+	const double	frontDist = 45;
+	const double	frontThickness = 25;
+	rectangle_t		boundingBox;
+
+	boundingBox.point[0].x = (ally.first.x - backDist * std::cos(ally.second))
+							 + backThickness * std::cos(ally.second - M_PI_2);
+	boundingBox.point[0].y = (ally.first.y - backDist * std::sin(ally.second))
+							 + backThickness * std::sin(ally.second - M_PI_2);
+	boundingBox.point[1].x = (ally.first.x - backDist * std::cos(ally.second))
+							 + backThickness * std::cos(ally.second + M_PI_2);
+	boundingBox.point[1].y = (ally.first.y - backDist * std::sin(ally.second))
+							 + backThickness * std::sin(ally.second + M_PI_2);
+	boundingBox.point[2].x = (ally.first.x + frontDist * std::cos(ally.second))
+							 + frontThickness * std::cos(ally.second + M_PI_2);
+	boundingBox.point[2].y = (ally.first.y + frontDist * std::sin(ally.second))
+							 + frontThickness * std::sin(ally.second + M_PI_2);
+	boundingBox.point[3].x = (ally.first.x + frontDist * std::cos(ally.second))
+							 + frontThickness * std::cos(ally.second - M_PI_2);
+	boundingBox.point[3].y = (ally.first.y + frontDist * std::sin(ally.second))
+							 + frontThickness * std::sin(ally.second - M_PI_2);
+	boundingBox.id = id;
+	return (boundingBox);
+}
 
 bool Pathfinding::isHitObstacle(point_t const start, point_t const end, rectangle_t const & lhs, rectangle_t const & rhs) {
 	for (auto obstacle : _obstacles) {
@@ -43,8 +60,9 @@ bool Pathfinding::isHitObstacle(point_t const start, point_t const end) {
 		if (isIntersect(start, end, obstacle.point[0], obstacle.point[1])
 			|| isIntersect(start, end, obstacle.point[1], obstacle.point[2])
 			|| isIntersect(start, end, obstacle.point[2], obstacle.point[3])
-			|| isIntersect(start, end, obstacle.point[3], obstacle.point[0]))
+			|| isIntersect(start, end, obstacle.point[3], obstacle.point[0])) {
 			return (true);
+		}
 	}
 	return (false);
 }
@@ -58,8 +76,7 @@ bool Pathfinding::isIntersect(point_t a1, point_t a2, point_t b1, point_t b2) {
 	if (a2.x < a1.x) {
 		std::swap(a1.x, a2.x);
 		std::swap(a1.y, a2.y);
-	}
-	if (b2.x < b1.x) {
+	} if (b2.x < b1.x) {
 		std::swap(b1.x, b2.x);
 		std::swap(b1.y, b2.y);
 	}
@@ -71,16 +88,13 @@ bool Pathfinding::isIntersect(point_t a1, point_t a2, point_t b1, point_t b2) {
 	const int            o3 = orientation(points[2], points[3], points[0]);
 	const int            o4 = orientation(points[2], points[3], points[1]);
 
-	if (o1 != o2 && o3 != o4)
+	if ((o1 != o2 && o3 != o4)
+		|| (o1 == 0 && onSegment(points[0], points[2], points[1]))
+		|| (o2 == 0 && onSegment(points[0], points[3], points[2]))
+		|| (o3 == 0 && onSegment(points[2], points[0], points[3]))
+		|| (o4 == 0 && onSegment(points[2], points[1], points[3])))
 		return (true);
-	if (o1 == 0 && onSegment(points[0], points[2], points[1]))
-		return (true);
-	if (o2 == 0 && onSegment(points[0], points[3], points[2]))
-		return (true);
-	if (o3 == 0 && onSegment(points[2], points[0], points[3]))
-		return (true);
-	if (o4 == 0 && onSegment(points[2], points[1], points[3]))
-		return (true);
+
 	return (false);
 }
 
