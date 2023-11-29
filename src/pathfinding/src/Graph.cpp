@@ -13,14 +13,21 @@
 
 Graph::Graph() : _nbVertices(0), _adjList(0) {}
 
-Graph::Graph(const Graph& other) :
-	_nbVertices(other._nbVertices),
-	_adjList(other._nbVertices) {
+Graph::Graph(const Graph& other) {
+	(*this) = other;
+}
+
+Graph& Graph::operator=(const Graph& other) {
+	if (this == &other)
+		return (*this);
+	_nbVertices = other._nbVertices;
+	_adjList = adjList_t(other._nbVertices);
 	for (size_t i = 0; i != other._nbVertices; ++i) {
 		for (auto edge : other._adjList[i]) {
 			_adjList[i].push_back(edge);
 		}
 	}
+	return (*this);
 }
 
 void Graph::addEdge(size_t right, size_t left, double range) {

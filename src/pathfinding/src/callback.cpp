@@ -46,12 +46,8 @@ void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 }
 
 void Pathfinding::alliesCallback(geometry_msgs::msg::PoseArray::SharedPtr msg) {
-	double									currentDist;
 	std::vector<std::pair<point_t, double>>	closeAllies;
-	size_t									minIndex;
-	double									minDist;
 
-	minDist = std::numeric_limits<double>::infinity();
 	for (const auto &pose : msg->poses)
 	{
 		std::pair<point_t, double>	allyInfo;
@@ -59,22 +55,16 @@ void Pathfinding::alliesCallback(geometry_msgs::msg::PoseArray::SharedPtr msg) {
 		allyInfo.first.y = pose.position.y;
 		allyInfo.first = calculateMapPos(allyInfo.first.x, allyInfo.first.y);
 		allyInfo.second = calculateYaw(pose.orientation);
-		//TODO refactor line 63
-		if (!isIntersect(_boatPos, {_boatPos.x + MIN_ALLY_RANGE * std::cos(_orientation), _boatPos.y + MIN_ALLY_RANGE * std::sin(_orientation)}, allyInfo.first, {allyInfo.first.x + MIN_ALLY_RANGE * std::cos(allyInfo.second), allyInfo.first.y + MIN_ALLY_RANGE * std::sin(allyInfo.second)}))
+		std::cout << calculateDist(_boatPos, allyInfo.first) << std::endl;
+		if (calculateDist(_boatPos, allyInfo.first) > MIN_ALLY_RANGE)
 			continue;
-		currentDist = calculateDist(_boatPos, allyInfo.first);
 
 
-		RCLCPP_INFO(this->get_logger(), "Pose - x: %f, y: %f, yaw: %f",
-					allyInfo.first.x, allyInfo.first.y, allyInfo.second);
+//		RCLCPP_INFO(this->get_logger(), "Pose - x: %f, y: %f, yaw: %f",
+//					allyInfo.first.x, allyInfo.first.y, allyInfo.second);
 		closeAllies.push_back(allyInfo);
-		if (currentDist < minDist) {
-			minDist = currentDist;
-			minIndex = closeAllies.size() - 1;
-		}
 	}
-
 	if (closeAllies.empty())
 		return;
-	_path = calculatePathWithAlly(_boatPos, closeAllies[minIndex]);
+	_path = calculatePathWithAllies(_boatPos, closeAllies);
 }

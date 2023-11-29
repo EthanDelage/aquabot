@@ -12,6 +12,29 @@
 #include "Pathfinding.hpp"
 #include <cmath>
 
+rectangle_t Pathfinding::calculateAllyBoundingBox(std::pair<point_t, double> const & ally, size_t id) {
+	rectangle_t    boundingBox;
+
+	boundingBox.point[0].x = (ally.first.x - 20 * std::cos(ally.second))
+							 + 10 * std::cos(ally.second - M_PI_2);
+	boundingBox.point[0].y = (ally.first.y - 20 * std::sin(ally.second))
+							 + 10 * std::sin(ally.second - M_PI_2);
+	boundingBox.point[1].x = (ally.first.x - 20 * std::cos(ally.second))
+							 + 10 * std::cos(ally.second + M_PI_2);
+	boundingBox.point[1].y = (ally.first.y - 20 * std::sin(ally.second))
+							 + 10 * std::sin(ally.second + M_PI_2);
+	boundingBox.point[2].x = (ally.first.x + 45 * std::cos(ally.second))
+							 + 25 * std::cos(ally.second + M_PI_2);
+	boundingBox.point[2].y = (ally.first.y + 45 * std::sin(ally.second))
+							 + 25 * std::sin(ally.second + M_PI_2);
+	boundingBox.point[3].x = (ally.first.x + 45 * std::cos(ally.second))
+							 + 25 * std::cos(ally.second - M_PI_2);
+	boundingBox.point[3].y = (ally.first.y + 45 * std::sin(ally.second))
+							 + 25 * std::sin(ally.second - M_PI_2);
+	boundingBox.id = id;
+	return (boundingBox);
+}
+
 bool Pathfinding::isHitObstacle(point_t const start, point_t const end, rectangle_t const & lhs, rectangle_t const & rhs) {
 	for (auto obstacle : _obstacles) {
 		if (!(areRectangleEqual(lhs, obstacle) || areRectangleEqual(rhs, obstacle))) {

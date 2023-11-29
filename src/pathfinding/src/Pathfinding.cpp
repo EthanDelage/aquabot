@@ -48,33 +48,33 @@ std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
 	return (convertDjikstraToPoint(reversePath, boatIndex, _buoy.graphIndex));
 }
 
-std::vector<point_t> Pathfinding::calculatePathWithAlly(point_t boatPos, std::pair<point_t, double> ally) {
-	Graph									graph(_obstaclesGraph);
-	size_t									boatIndex;
-	checkpoint_t							allyCheckpoint[2];
-	std::vector<std::pair<size_t, double>>	reversePath;
-	std::vector<point_t>					tmpPath;
-	std::vector<point_t>					path;
+std::vector<point_t> Pathfinding::calculatePathWithAllies(point_t boatPos, std::vector<std::pair<point_t, double>> allies) {
+	std::vector<rectangle_t>					obstaclesSave;
+	Graph										graphSave;
+	size_t                      				boatIndex;
+	std::vector<std::pair<size_t, double>>		reversePath;
+	std::vector<point_t>                    	path;
 
-	boatIndex = addCheckPoint(boatPos, graph);
+	obstaclesSave = _obstacles;
+	graphSave = _obstaclesGraph;
+	for (auto ally : allies)
+		_obstacles.push_back(calculateAllyBoundingBox(ally, _obstacles.size()));
 
-	calculateAllyCheckpoint(allyCheckpoint, ally);
+	_obstaclesGraph.setNbVertices(_obstacles.size() * 4);
+	generateObstaclesGraph();
 
-	allyCheckpoint[0].graphIndex = addCheckPoint(allyCheckpoint[0].position, graph);
-	allyCheckpoint[1].graphIndex = addCheckPoint(allyCheckpoint[1].position, graph);
+	_buoy.graphIndex = addCheckPoint(_buoy.position, _obstaclesGraph);
+	boatIndex = addCheckPoint(boatPos, _obstaclesGraph);
 
-	if (calculateDist(boatPos, allyCheckpoint[0].position) > calculateDist(boatPos, allyCheckpoint[1].position))
-		std::swap(allyCheckpoint[0], allyCheckpoint[1]);
-	reversePath = djikstra(boatIndex, allyCheckpoint[0].graphIndex, graph);
-	path = convertDjikstraToPoint(reversePath, boatIndex, allyCheckpoint[0].graphIndex);
-	reversePath = djikstra(allyCheckpoint[0].graphIndex, _buoy.graphIndex, graph);
-	tmpPath = convertDjikstraToPoint(reversePath, allyCheckpoint[0].graphIndex, _buoy.graphIndex);
-	path.insert(path.end(), tmpPath.begin(), tmpPath.end());
-	_checkpoints.clear();
-	_checkpoints.push_back(_buoy);
-	std::cout << _checkpoints.size() << std::endl;
+	reversePath = djikstra(boatIndex, _buoy.graphIndex, _obstaclesGraph);
+	path = convertDjikstraToPoint(reversePath, boatIndex, _buoy.graphIndex);
+
 	for (auto node : path)
 		std::cout << "[" << node.x << "," << node.y << "], ";
 	std::cout << std::endl;
+
+	_obstacles = obstaclesSave;
+	_obstaclesGraph = graphSave;
+	_checkpoints.clear();
 	return (path);
 }

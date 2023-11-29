@@ -24,7 +24,7 @@ void Pathfinding::generateObstaclesGraph() {
 			generateAdjList(_obstacles[src], _obstacles[dest]);
 		}
 	}
-	_obstaclesGraph.printGraph();
+//	_obstaclesGraph.printGraph();
 }
 
 void Pathfinding::addObstacleAdjList(rectangle_t const & obstacle, size_t index) {
@@ -68,10 +68,6 @@ void Pathfinding::generateCheckpointAdjList(checkpoint_t cp, Graph& graph) {
 			&& !isHitObstacle(cp.position, _checkpoints[i].position))
 			graph.addEdge(cp.graphIndex, _obstacles.size() * 4 + i,
 						calculateDist(cp.position, _checkpoints[i].position));
-		if (cp.graphIndex == 35) {
-			std::cout << i + (_obstacles.size() * 4) << ": " << isHitObstacle(cp.position, _checkpoints[i].position);
-			std::cout << _checkpoints.size() << std::endl;
-		}
 	}
 }
 

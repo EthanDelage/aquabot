@@ -105,10 +105,11 @@ private:
 	point_t						calculateMapPos(double latitude, double longitude);
 	double						calculateYaw(geometry_msgs::msg::Quaternion const & orientation);
 	std::vector<point_t>		calculatePath(point_t boatPos);
-	std::vector<point_t>		calculatePathWithAlly(point_t boatPos, std::pair<point_t, double> ally);
+	std::vector<point_t>		calculatePathWithAllies(point_t boatPos, std::vector<std::pair<point_t, double>> allies);
 	std::pair<double, double>	calculateRangeBearing();
 	void						publishRangeBearing(std::pair<double, double> const & rangeBearing, double desiredRange);
 	void						calculateAllyCheckpoint(checkpoint_t* allyCheckpoint, std::pair<point_t, double> ally);
+	rectangle_t					calculateAllyBoundingBox(std::pair<point_t, double> const & ally, size_t id);
 
 public:
 	Pathfinding();

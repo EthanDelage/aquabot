@@ -27,12 +27,15 @@ public:
 	Graph();
 	Graph(Graph const & other);
 
+	Graph&	operator=(Graph const & other);
+
 	size_t		getNbVertices() const;
 	adjList_t	getAdjList() const;
 	void 		setNbVertices(size_t nbVertices);
 	void		addEdge(size_t right, size_t left, double range);
 	size_t 		addVertex();
 	void 		printGraph();
+	void		clear();
 };
 
 #endif
