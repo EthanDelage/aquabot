@@ -21,7 +21,6 @@ void Pathfinding::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg
 void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
 	if (_state < FOLLOW_STATE)
 		return;
-	std::cout << "test" << std::endl;
 	for (const auto &param: msg->params) {
 		std::string name = param.name;
 
@@ -31,8 +30,15 @@ void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr
 			_targetRange = param.value.double_value;
 		else if (name == "desiredRange")
 			_targetDesiredRange = param.value.double_value;
+		else if (name == "x")
+			_target.position.x = param.value.double_value;
+		else if (name == "y")
+			_target.position.y = param.value.double_value;
 	}
-	calculatePath(_boatPos);
+	_path = calculatePath(_boatPos);
+	for (auto node : _path)
+		std::cout << "[" << node.x << "," << node.y << "], ";
+	std::cout << std::endl;
 }
 
 void Pathfinding::phaseCallback(std_msgs::msg::UInt32::SharedPtr msg) {

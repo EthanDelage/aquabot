@@ -46,10 +46,12 @@ std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
 	size_t									boatIndex;
 	std::vector<std::pair<size_t, double>>	reversePath;
 
+	_target.graphIndex = addCheckPoint(_target.position, graph);
+
 	boatIndex = addCheckPoint(boatPos, graph);
 
 	reversePath = djikstra(boatIndex, _target.graphIndex, graph);
-
+	_checkpoints.clear();
 	return (convertDjikstraToPoint(reversePath, boatIndex, _target.graphIndex));
 }
 

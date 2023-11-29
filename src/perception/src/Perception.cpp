@@ -37,6 +37,8 @@ Perception::Perception(): Node("perception") {
 	_enemyFound = false;
 	_imageReceived = false;
 	_cameraReceived = false;
+	_imuPing = false;
+	_gpsPing = false;
 	_enemyRangeMin = LIDAR_MAX_RANGE;
 }
 
@@ -48,8 +50,8 @@ void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
 		cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
 		_image = cv_ptr->image;
 		detectRedBoat();
-		if (_enemyFound) {
-			publishNavigation();
+		if (_enemyFound && _gpsPing && _imuPing) {
+			publishPathfinding();
 		}
 		_imageReceived = true;
 	} catch (const std::exception& e){
@@ -101,6 +103,7 @@ void Perception::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 		calculateEnemyPos();
 		publishAlert();
 	}
+	_imuPing = true;
 }
 
 void Perception::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
@@ -111,22 +114,33 @@ void Perception::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 }
 
 
-void Perception::publishNavigation() {
+void Perception::publishPathfinding() {
 	auto	paramVecMsg = ros_gz_interfaces::msg::ParamVec();
 	rcl_interfaces::msg::Parameter	rangeMsg;
 	rcl_interfaces::msg::Parameter	bearingMsg;
 	rcl_interfaces::msg::Parameter	desiredRangeMsg;
+	rcl_interfaces::msg::Parameter	xMapPos;
+	rcl_interfaces::msg::Parameter	yMapPos;
 
 	rangeMsg.name = "range";
 	rangeMsg.value.double_value = _enemyRangeMin;
+	paramVecMsg.params.push_back(rangeMsg);
+
 	bearingMsg.name = "bearing";
 	bearingMsg.value.double_value = _enemyBearing;
+	paramVecMsg.params.push_back(bearingMsg);
+
 	desiredRangeMsg.name = "desiredRange";
 	desiredRangeMsg.value.double_value = DESIRED_RANGE;
-
-	paramVecMsg.params.push_back(rangeMsg);
-	paramVecMsg.params.push_back(bearingMsg);
 	paramVecMsg.params.push_back(desiredRangeMsg);
+
+	xMapPos.name = "x";
+	xMapPos.value.double_value = _enemyMapPos[0];
+	paramVecMsg.params.push_back(xMapPos);
+
+	yMapPos.name = "y";
+	yMapPos.value.double_value = _enemyMapPos[1];
+	paramVecMsg.params.push_back(yMapPos);
 	_perceptionPublisher->publish(paramVecMsg);
 }
 

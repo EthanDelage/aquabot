@@ -8,8 +8,6 @@ void Pathfinding::addBuoy() {
 			  << ", " << _target.position.y << "]" << std::endl;
 	_targetDesiredRange = MAX_BUOY_RANGE;
 	_buoyPosCalculate = true;
-	_target.graphIndex = addCheckPoint(_target.position, _obstaclesGraph);
-	generateCheckpointAdjList(_target, _obstaclesGraph);
 }
 
 void Pathfinding::calculateBuoyPos() {

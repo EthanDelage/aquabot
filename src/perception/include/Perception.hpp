@@ -40,6 +40,7 @@ private:
 	bool					_cameraReceived;
 	bool					_enemyFound;
 	bool					_gpsPing;
+	bool					_imuPing;
 	bool					_lidarProcess;
 	Eigen::Vector2d			_boatMapPos;
 	Eigen::Vector2d 		_enemyMapPos;
@@ -75,7 +76,7 @@ private:
 	void setEnemyBearing(const cv::Rect enemyBoundingBox);
 	double calculateEnemyRange();
 	void drawLidarPointsInImage();
-	void publishNavigation();
+	void publishPathfinding();
 	void publishAlert();
 };
 
