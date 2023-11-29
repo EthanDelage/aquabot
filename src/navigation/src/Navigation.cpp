@@ -59,7 +59,6 @@ void Navigation::setHeading() {
 	posMsg.data = (POS_MIN + regulation * 2 * POS_MAX);
 	thrustMsg.data = std::abs(std::abs(regulation - 0.5) - 0.5) * 2 * THRUST_MAX;
 	thrustMsg.data = calculateThrust(regulation);
-	//TODO: do only when follow
 	_publisherPos->publish(posMsg);
 	_publisherThrust->publish(thrustMsg);
 }
@@ -74,6 +73,9 @@ double Navigation::calculateThrust(double regulation) {
 		thrust = std::min(thrust, 12000.);
 		thrust = std::max(thrust, 2000.);
 	} else {
+		if (_range < _desiredRange) {
+			return (0);
+		}
 		thrust = amplitude * std::exp(-std::pow(((regulation - mean)) / (_sigma * 2), 2));
 		thrust += NAV_THRUST_MIN;
 	}
