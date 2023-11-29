@@ -24,7 +24,6 @@ void Pathfinding::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 	_gpsPing = true;
 	if (_buoyPosCalculate && !_pathCalculated) {
 		_path = calculatePath(_boatPos);
-		std::cout << "boat pos: " << _boatPos.x << ", " << _boatPos.y << std::endl;
 		for (auto node : _path)
 			std::cout << "[" << node.x << "," << node.y << "], ";
 		std::cout << std::endl;
@@ -55,16 +54,11 @@ void Pathfinding::alliesCallback(geometry_msgs::msg::PoseArray::SharedPtr msg) {
 		allyInfo.first.y = pose.position.y;
 		allyInfo.first = calculateMapPos(allyInfo.first.x, allyInfo.first.y);
 		allyInfo.second = calculateYaw(pose.orientation);
-		std::cout << calculateDist(_boatPos, allyInfo.first) << std::endl;
 		if (calculateDist(_boatPos, allyInfo.first) > MIN_ALLY_RANGE)
 			continue;
-
-
-//		RCLCPP_INFO(this->get_logger(), "Pose - x: %f, y: %f, yaw: %f",
-//					allyInfo.first.x, allyInfo.first.y, allyInfo.second);
 		closeAllies.push_back(allyInfo);
 	}
-	if (closeAllies.empty())
-		return;
-	_path = calculatePathWithAllies(_boatPos, closeAllies);
+	if (!closeAllies.empty()) {
+		_path = calculatePathWithAllies(_boatPos, closeAllies);
+	}
 }

@@ -1,6 +1,6 @@
-#include <iterator>
-
 #include "Pathfinding.hpp"
+
+#include <iterator>
 
 using std::placeholders::_1;
 

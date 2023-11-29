@@ -30,7 +30,6 @@ bool Pathfinding::isVisited(size_t index, const std::vector<size_t>& visited) {
 std::pair<size_t, double> Pathfinding::getMinNode(
 	std::vector<std::pair<size_t, double>> const & path,
 	std::vector<size_t> const & visited) {
-
 	double					minDist = std::numeric_limits<double>::infinity();
 	std::pair<int, double>	min;
 	size_t					index = 0;

@@ -46,28 +46,17 @@ void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBear
 
 	rangeMsg.name = "range";
 	rangeMsg.value.double_value = rangeBearing.first;
+	paramVecMsg.params.push_back(rangeMsg);
+
 	bearingMsg.name = "bearing";
 	bearingMsg.value.double_value = rangeBearing.second;
+	paramVecMsg.params.push_back(bearingMsg);
+
 	desiredRangeMsg.name = "desiredRange";
 	desiredRangeMsg.value.double_value = desiredRange;
-
-	paramVecMsg.params.push_back(rangeMsg);
-	paramVecMsg.params.push_back(bearingMsg);
 	paramVecMsg.params.push_back(desiredRangeMsg);
+
 	if (rangeBearing.first < desiredRange)
 		_path.erase(_path.begin());
 	_publisherRangeBearing->publish(paramVecMsg);
-}
-
-void Pathfinding::calculateAllyCheckpoint(checkpoint_t *allyCheckpoint, std::pair<point_t, double> ally) {
-	const double	checkpointDist = 30;
-
-	allyCheckpoint[0].position.x = (ally.first.x - checkpointDist * std::cos(ally.second))
-		+ checkpointDist * std::cos(ally.second + M_PI_2);
-	allyCheckpoint[0].position.y = (ally.first.y - checkpointDist * std::sin(ally.second))
-		+ checkpointDist * std::sin(ally.second + M_PI_2);
-	allyCheckpoint[1].position.x = (ally.first.x - checkpointDist * std::cos(ally.second))
-		+ checkpointDist * std::cos(ally.second - M_PI_2);
-	allyCheckpoint[1].position.y = (ally.first.y - checkpointDist * std::sin(ally.second))
-		+ checkpointDist * std::sin(ally.second - M_PI_2);
 }

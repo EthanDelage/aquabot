@@ -108,7 +108,6 @@ private:
 	std::vector<point_t>		calculatePathWithAllies(point_t boatPos, std::vector<std::pair<point_t, double>> allies);
 	std::pair<double, double>	calculateRangeBearing();
 	void						publishRangeBearing(std::pair<double, double> const & rangeBearing, double desiredRange);
-	void						calculateAllyCheckpoint(checkpoint_t* allyCheckpoint, std::pair<point_t, double> ally);
 	rectangle_t					calculateAllyBoundingBox(std::pair<point_t, double> const & ally, size_t id);
 
 public:

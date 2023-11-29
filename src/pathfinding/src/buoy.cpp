@@ -4,7 +4,8 @@
 
 void Pathfinding::addBuoy() {
 	calculateBuoyPos();
-	std::cout << "Buoy pos: [" << _buoy.position.x << ", " << _buoy.position.y << "]" << std::endl;
+	std::cout << "Buoy position: [" << _buoy.position.x
+			  << ", " << _buoy.position.y << "]" << std::endl;
 	_buoyPosCalculate = true;
 	_buoy.graphIndex = addCheckPoint(_buoy.position, _obstaclesGraph);
 	generateCheckpointAdjList(_buoy, _obstaclesGraph);
