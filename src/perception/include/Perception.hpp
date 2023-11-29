@@ -51,7 +51,7 @@ private:
 	rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr	_pointCloudSubscriber;
 	rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr			_imuSubscriber;
 	rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr	_gpsSubscriber;
-	rclcpp::Publisher<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_navigationPublisher;
+	rclcpp::Publisher<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_perceptionPublisher;
 	rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr	_alertPublisher;
 
 	void imageCallback(sensor_msgs::msg::Image::SharedPtr msg);

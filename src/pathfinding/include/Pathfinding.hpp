@@ -42,11 +42,14 @@ private:
 	std::vector<checkpoint_t>				_checkpoints;
 	Graph									_obstaclesGraph;
 
+	// Target attributes
+	checkpoint_t				_target;
+	double						_targetRange;
+	double						_targetBearing;
+	double						_targetDesiredRange;
+
 	// Buoy attributes
-	checkpoint_t				_buoy;
 	bool						_buoyPing;
-	double						_buoyRange;
-	double						_buoyBearing;
 	bool 						_buoyPosCalculate;
 
 	// State attributes

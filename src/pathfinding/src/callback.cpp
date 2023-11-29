@@ -11,9 +11,9 @@ void Pathfinding::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg
 		std::string name = param.name;
 
 		if (name == "bearing")
-			_buoyBearing = param.value.double_value;
+			_targetBearing = param.value.double_value;
 		else if (name == "range")
-			_buoyRange = param.value.double_value;
+			_targetRange = param.value.double_value;
 	}
 	_buoyPing = true;
 }
@@ -21,15 +21,18 @@ void Pathfinding::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg
 void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
 	if (_state < FOLLOW_STATE)
 		return;
+	std::cout << "test" << std::endl;
 	for (const auto &param: msg->params) {
 		std::string name = param.name;
 
 		if (name == "bearing")
-			_buoyBearing = param.value.double_value;
+			_targetBearing = param.value.double_value;
 		else if (name == "range")
-			_buoyRange = param.value.double_value;
+			_targetRange = param.value.double_value;
+		else if (name == "desiredRange")
+			_targetDesiredRange = param.value.double_value;
 	}
-	_buoyPing = true;
+	calculatePath(_boatPos);
 }
 
 void Pathfinding::phaseCallback(std_msgs::msg::UInt32::SharedPtr msg) {
@@ -57,8 +60,8 @@ void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 	if (_buoyPing && _gpsPing && !_buoyPosCalculate)
 		addBuoy();
 	if (_gpsPing && _pathCalculated && !_path.empty()) {
-		if (_path[0].x == _buoy.position.x && _path[0].y == _buoy.position.y)
-			publishRangeBearing(std::pair<double, double>(_buoyRange, _buoyBearing), MAX_BUOY_RANGE);
+		if (_path[0].x == _target.position.x && _path[0].y == _target.position.y)
+			publishRangeBearing(std::pair<double, double>(_targetRange, _targetBearing), _targetDesiredRange);
 		else
 			publishRangeBearing(calculateRangeBearing(), MAX_CHECKPOINT_RANGE);
 	}

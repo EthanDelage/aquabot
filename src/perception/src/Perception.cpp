@@ -28,8 +28,8 @@ Perception::Perception(): Node("perception") {
 		"/wamv/sensors/gps/gps/fix",
 		10,
 		std::bind(&Perception::gpsCallback, this, _1));
-	_navigationPublisher = create_publisher<ros_gz_interfaces::msg::ParamVec>(
-			"/navigation/pinger",
+	_perceptionPublisher = create_publisher<ros_gz_interfaces::msg::ParamVec>(
+			"/perception/pinger",
 			10);
 	_alertPublisher = create_publisher<geometry_msgs::msg::PoseStamped>(
 			"/vrx/patrolandfollow/alert_position",
@@ -127,7 +127,7 @@ void Perception::publishNavigation() {
 	paramVecMsg.params.push_back(rangeMsg);
 	paramVecMsg.params.push_back(bearingMsg);
 	paramVecMsg.params.push_back(desiredRangeMsg);
-	_navigationPublisher->publish(paramVecMsg);
+	_perceptionPublisher->publish(paramVecMsg);
 }
 
 

@@ -48,9 +48,9 @@ std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
 
 	boatIndex = addCheckPoint(boatPos, graph);
 
-	reversePath = djikstra(boatIndex, _buoy.graphIndex, graph);
+	reversePath = djikstra(boatIndex, _target.graphIndex, graph);
 
-	return (convertDjikstraToPoint(reversePath, boatIndex, _buoy.graphIndex));
+	return (convertDjikstraToPoint(reversePath, boatIndex, _target.graphIndex));
 }
 
 std::vector<point_t> Pathfinding::calculatePathWithAllies(point_t boatPos, std::vector<std::pair<point_t, double>> allies) {
@@ -68,11 +68,11 @@ std::vector<point_t> Pathfinding::calculatePathWithAllies(point_t boatPos, std::
 	_obstaclesGraph.setNbVertices(_obstacles.size() * 4);
 	generateObstaclesGraph();
 
-	_buoy.graphIndex = addCheckPoint(_buoy.position, _obstaclesGraph);
+	_target.graphIndex = addCheckPoint(_target.position, _obstaclesGraph);
 	boatIndex = addCheckPoint(boatPos, _obstaclesGraph);
 
-	reversePath = djikstra(boatIndex, _buoy.graphIndex, _obstaclesGraph);
-	path = convertDjikstraToPoint(reversePath, boatIndex, _buoy.graphIndex);
+	reversePath = djikstra(boatIndex, _target.graphIndex, _obstaclesGraph);
+	path = convertDjikstraToPoint(reversePath, boatIndex, _target.graphIndex);
 
 	for (auto node : path)
 		std::cout << "[" << node.x << "," << node.y << "], ";

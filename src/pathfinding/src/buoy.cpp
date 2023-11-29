@@ -4,17 +4,18 @@
 
 void Pathfinding::addBuoy() {
 	calculateBuoyPos();
-	std::cout << "Buoy position: [" << _buoy.position.x
-			  << ", " << _buoy.position.y << "]" << std::endl;
+	std::cout << "Buoy position: [" << _target.position.x
+			  << ", " << _target.position.y << "]" << std::endl;
+	_targetDesiredRange = MAX_BUOY_RANGE;
 	_buoyPosCalculate = true;
-	_buoy.graphIndex = addCheckPoint(_buoy.position, _obstaclesGraph);
-	generateCheckpointAdjList(_buoy, _obstaclesGraph);
+	_target.graphIndex = addCheckPoint(_target.position, _obstaclesGraph);
+	generateCheckpointAdjList(_target, _obstaclesGraph);
 }
 
 void Pathfinding::calculateBuoyPos() {
-	double buoyOrientation = convertToMinusPiPi(_orientation + _buoyBearing);
-	_buoy.position.x = _buoyRange * std::cos(buoyOrientation) + _boatPos.x;
-	_buoy.position.y = _buoyRange * std::sin(buoyOrientation) + _boatPos.y;
+	double targetOrientation= convertToMinusPiPi(_orientation + _targetBearing);
+	_target.position.x = _targetRange * std::cos(targetOrientation) + _boatPos.x;
+	_target.position.y = _targetRange * std::sin(targetOrientation) + _boatPos.y;
 }
 
 double Pathfinding::convertToMinusPiPi(double angleRadians) {
