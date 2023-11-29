@@ -9,10 +9,15 @@ from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 
 def generate_launch_description():
     world = LaunchConfiguration('world')
+    headless = LaunchConfiguration('headless')
 
     world_arg = DeclareLaunchArgument(
         'world',
         default_value='aquabot_task_hard'
+    )
+    headless_arg = DeclareLaunchArgument(
+        'headless',
+        default_value='false'
     )
 
     navigation_node = Node(
@@ -37,6 +42,7 @@ def generate_launch_description():
         ),
         launch_arguments={
             'world': world,
+            'headless': headless,
         }.items(),
     )
 

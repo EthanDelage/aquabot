@@ -50,7 +50,7 @@ void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
 		cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
 		_image = cv_ptr->image;
 		detectRedBoat();
-		if (_enemyFound && _gpsPing && _imuPing) {
+		if ( _gpsPing && _imuPing) {
 			publishPathfinding();
 		}
 		_imageReceived = true;
@@ -116,31 +116,26 @@ void Perception::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 
 void Perception::publishPathfinding() {
 	auto	paramVecMsg = ros_gz_interfaces::msg::ParamVec();
-	rcl_interfaces::msg::Parameter	rangeMsg;
-	rcl_interfaces::msg::Parameter	bearingMsg;
+	rcl_interfaces::msg::Parameter	xMapPosMsg;
+	rcl_interfaces::msg::Parameter	yMapPosMsg;
 	rcl_interfaces::msg::Parameter	desiredRangeMsg;
-	rcl_interfaces::msg::Parameter	xMapPos;
-	rcl_interfaces::msg::Parameter	yMapPos;
 
-	rangeMsg.name = "range";
-	rangeMsg.value.double_value = _enemyRangeMin;
-	paramVecMsg.params.push_back(rangeMsg);
+	xMapPosMsg.name = "x";
+	xMapPosMsg.value.double_value = _enemyMapPos[0];
+	paramVecMsg.params.push_back(xMapPosMsg);
 
-	bearingMsg.name = "bearing";
-	bearingMsg.value.double_value = _enemyBearing;
-	paramVecMsg.params.push_back(bearingMsg);
+	yMapPosMsg.name = "y";
+	yMapPosMsg.value.double_value = _enemyMapPos[1];
+	paramVecMsg.params.push_back(yMapPosMsg);
 
 	desiredRangeMsg.name = "desiredRange";
-	desiredRangeMsg.value.double_value = DESIRED_RANGE;
+	if (!_enemyFound) {
+		desiredRangeMsg.value.double_value = 0;
+	} else {
+		desiredRangeMsg.value.double_value = DESIRED_RANGE;
+	}
 	paramVecMsg.params.push_back(desiredRangeMsg);
 
-	xMapPos.name = "x";
-	xMapPos.value.double_value = _enemyMapPos[0];
-	paramVecMsg.params.push_back(xMapPos);
-
-	yMapPos.name = "y";
-	yMapPos.value.double_value = _enemyMapPos[1];
-	paramVecMsg.params.push_back(yMapPos);
 	_perceptionPublisher->publish(paramVecMsg);
 }
 

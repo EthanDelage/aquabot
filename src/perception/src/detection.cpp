@@ -29,11 +29,6 @@ void Perception::detectRedBoat() {
 	}
 	if (foundLargestBoundingRect) {
 		_enemyFound = true;
-		cv::rectangle(
-				_image,
-				cv::Point(largestBoundingRect.x, largestBoundingRect.y),
-				cv::Point(largestBoundingRect.x + largestBoundingRect.width, largestBoundingRect.y + largestBoundingRect.height),
-				cv::Scalar(0, 255, 0), 1);
 		setEnemyPixels(largestBoundingRect, rgbRedMask);
 		setEnemyBearing(largestBoundingRect);
 	}
@@ -109,10 +104,6 @@ double Perception::calculateEnemyRange() {
 }
 
 void Perception::drawLidarPointsInImage() {
-	_image.at<cv::Vec3b>(0, 0) = cv::Vec3b (0, 0, 255);
-	_image.at<cv::Vec3b>(1, 0) = cv::Vec3b (0, 0, 255);
-	_image.at<cv::Vec3b>(0, 1) = cv::Vec3b (0, 0, 255);
-	_image.at<cv::Vec3b>(1, 1) = cv::Vec3b (0, 0, 255);
 	for (const auto& point: _lidar.getVisiblePoints()) {
 		_image.at<cv::Vec3b>(point.imagePosition.y, point.imagePosition.x) = cv::Vec3b(255, 255, 255);
 	}
