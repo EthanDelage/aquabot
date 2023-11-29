@@ -1,6 +1,6 @@
-#include <cmath>
-
 #include "Pathfinding.hpp"
+
+#include <cmath>
 
 #include "geometry_msgs/msg/quaternion.hpp"
 

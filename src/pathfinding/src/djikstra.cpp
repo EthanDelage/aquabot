@@ -1,6 +1,7 @@
 #include "Pathfinding.hpp"
-#include <algorithm>
+
 #include <limits>
+#include <algorithm>
 
 std::vector<std::pair<size_t, double>> Pathfinding::djikstra(size_t start, size_t end, Graph const & graph) {
 	adjList_t 								adjList;

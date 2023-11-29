@@ -1,7 +1,8 @@
 #include "Pathfinding.hpp"
-#include "rcl_interfaces/msg/parameter.hpp"
 
 #include <cmath>
+
+#include "rcl_interfaces/msg/parameter.hpp"
 
 point_t	Pathfinding::calculateMapPos(double latitude, double longitude) {
 	point_t	pos;

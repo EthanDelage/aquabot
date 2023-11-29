@@ -1,4 +1,5 @@
 #include "Pathfinding.hpp"
+
 #include <cmath>
 
 size_t Pathfinding::addCheckPoint(point_t cpPos, Graph& graph) {

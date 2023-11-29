@@ -1,4 +1,5 @@
 #include "Pathfinding.hpp"
+
 #include <cmath>
 
 rectangle_t Pathfinding::calculateAllyBoundingBox(std::pair<point_t, double> const & ally, size_t id) {
