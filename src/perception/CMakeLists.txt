@@ -10,6 +10,7 @@ find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(ros_gz_interfaces REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 include_directories(include)
@@ -21,11 +22,12 @@ set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ~/.local/lib/cmake/opencv4/)
 find_package(OpenCV REQUIRED)
 
 add_executable(perception
-        src/main.cpp
-        src/Perception.cpp
+        src/Camera.cpp
+        src/computePosition.cpp
         src/detection.cpp
         src/Lidar.cpp
-        src/Camera.cpp)
+        src/main.cpp
+        src/Perception.cpp)
 
 # Include directories for the target
 target_include_directories(perception PRIVATE ~/.local/include/opencv4/)
@@ -37,6 +39,7 @@ target_link_libraries(perception ${EIGEN3_LIBRARIES})
 ament_target_dependencies(perception
         rclcpp
         sensor_msgs
+        geometry_msgs
         ros_gz_interfaces
         Eigen3
         cv_bridge)

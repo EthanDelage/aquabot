@@ -1,4 +1,5 @@
 #include <memory>
+#include <numeric>
 #include <cv_bridge/cv_bridge.h>
 
 #include "Perception.hpp"
@@ -26,16 +27,23 @@ Perception::Perception(): Node("perception") {
 	_gpsSubscriber = create_subscription<sensor_msgs::msg::NavSatFix>(
 		"/wamv/sensors/gps/gps/fix",
 		10,
-		std::bind(&Perception::gpsCallback, this _1));
+		std::bind(&Perception::gpsCallback, this, _1));
 	_navigationPublisher = create_publisher<ros_gz_interfaces::msg::ParamVec>(
-			"/perception/pinger", 10);
+			"/navigation/pinger",
+			10);
+	_alertPublisher = create_publisher<geometry_msgs::msg::PoseStamped>(
+			"/vrx/patrolandfollow/alert_position",
+			10);
 	_enemyFound = false;
 	_imageReceived = false;
 	_cameraReceived = false;
-	_enemyRange = LIDAR_MAX_RANGE;
+	_enemyRangeMin = LIDAR_MAX_RANGE;
 }
 
 void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
+	if (_lidarProcess) {
+		return;
+	}
 	try {
 		cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
 		_image = cv_ptr->image;
@@ -50,18 +58,20 @@ void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
 }
 
 void Perception::pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg) {
+	auto start = std::chrono::high_resolution_clock::now();
 	if (_imageReceived && _cameraReceived) {
+		_lidarProcess = true;
 		_lidar.parsePoints(msg);
-		auto start = std::chrono::high_resolution_clock::now();
 		_lidar.setVisiblePoints(_camera);
-		auto end = std::chrono::high_resolution_clock::now();
-		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-		std::cout << "Time in ms: " << duration.count() << std::endl;
 		calculateEnemyRange();
+		_lidarProcess = false;
 		drawLidarPointsInImage();
 		cv::imshow("Image", _image);
 		cv::waitKey(1);
 	}
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+	std::cout << "Time in ms: " << duration.count() << std::endl;
 }
 
 void Perception::cameraCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg) {
@@ -86,30 +96,20 @@ void Perception::cameraCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg) {
 }
 
 void Perception::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
-	calculateYaw(msg->orient);
-}
-
-void Perception::calculateYaw(const geometry_msgs::msg::Quaternion& orientation) {
-	double siny_cosp = 2 * (orientation.w * orientation.z + orientation.x * orientation.y);
-	double cosy_cosp = 1 - 2 * (orientation.y * orientation.y + orientation.z * orientation.z);
-	_boatOrientation = std::atan2(siny_cosp, cosy_cosp);
-}
-
-void Perception::calculateEnemyPos() {
-	double buoyOrientation = convertToMinusPiPi(_orientation + _enemyBearing);
-	_buoyPos.x = _buoyRange * std::cos(buoyOrientation) + _boatPos.x;
-	_buoyPos.y = _buoyRange * std::sin(buoyOrientation) + _boatPos.y;
-}
-
-double Perception::convertToMinusPiPi(double angleRadians) {
-	while (angleRadians <= -M_PI) {
-		angleRadians += 2.0 * M_PI;
+	calculateYaw(msg->orientation);
+	if (_gpsPing && _enemyFound) {
+		calculateEnemyPos();
+		publishAlert();
 	}
-	while (angleRadians > M_PI) {
-		angleRadians -= 2.0 * M_PI;
-	}
-	return (angleRadians);
 }
+
+void Perception::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
+	double latitude = msg->latitude;
+	double longitude = msg->longitude;
+	calculateMapPos(latitude, longitude);
+	_gpsPing = true;
+}
+
 
 void Perception::publishNavigation() {
 	auto	paramVecMsg = ros_gz_interfaces::msg::ParamVec();
@@ -118,7 +118,7 @@ void Perception::publishNavigation() {
 	rcl_interfaces::msg::Parameter	desiredRangeMsg;
 
 	rangeMsg.name = "range";
-	rangeMsg.value.double_value = _enemyRange;
+	rangeMsg.value.double_value = _enemyRangeMin;
 	bearingMsg.name = "bearing";
 	bearingMsg.value.double_value = _enemyBearing;
 	desiredRangeMsg.name = "desiredRange";
@@ -128,4 +128,25 @@ void Perception::publishNavigation() {
 	paramVecMsg.params.push_back(bearingMsg);
 	paramVecMsg.params.push_back(desiredRangeMsg);
 	_navigationPublisher->publish(paramVecMsg);
+}
+
+
+void Perception::publishAlert() {
+	if (_enemyFound && _enemyRangeMin >= 130)
+		return;
+	if (_rangeHistory.size() != 0) {
+		double average = std::accumulate(_rangeHistory.begin(),
+										 _rangeHistory.end(), 0.0)
+												 / _rangeHistory.size();
+		if (std::abs(average - _enemyRangeMin) > ALLOW_ALERT_ERROR_THRESHOLD)
+			return;
+	}
+	_rangeHistory.push_back(_enemyRangeMin);
+	if (_rangeHistory.size() > 10) {
+		_rangeHistory.erase(_rangeHistory.begin());
+	}
+	auto poseStamped = geometry_msgs::msg::PoseStamped();
+	poseStamped.pose.position.x = _enemyGPSPos[1];
+	poseStamped.pose.position.y = _enemyGPSPos[0];
+	_alertPublisher->publish(poseStamped);
 }

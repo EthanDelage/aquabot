@@ -5,7 +5,8 @@
 #include "geometry_msgs/msg/quaternion.hpp"
 
 void Pathfinding::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
-	if (_state >= 2)
+//	if (_state >= FOLLOW_STATE)
+	if (true)
 		return;
 	for (const auto &param: msg->params) {
 		std::string name = param.name;
@@ -19,7 +20,8 @@ void Pathfinding::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg
 }
 
 void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
-	if (_state < 2)
+//	if (_state < FOLLOW_STATE)
+	if (false)
 		return;
 	for (const auto &param: msg->params) {
 		std::string name = param.name;

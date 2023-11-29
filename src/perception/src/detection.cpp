@@ -17,7 +17,6 @@ void Perception::detectRedBoat() {
 
 	for (const auto& contour : redContours) {
 		if (isEnemyContour(contour, greenContours)) {
-			_enemyFound = true;
 			cv::Rect boundingRect = cv::boundingRect(contour);
 			if (!foundLargestBoundingRect) {
 				largestBoundingRect = boundingRect;
@@ -29,6 +28,7 @@ void Perception::detectRedBoat() {
 		}
 	}
 	if (foundLargestBoundingRect) {
+		_enemyFound = true;
 		cv::rectangle(
 				_image,
 				cv::Point(largestBoundingRect.x, largestBoundingRect.y),
@@ -36,6 +36,9 @@ void Perception::detectRedBoat() {
 				cv::Scalar(0, 255, 0), 1);
 		setEnemyPixels(largestBoundingRect, rgbRedMask);
 		setEnemyBearing(largestBoundingRect);
+	}
+	else {
+		_enemyFound = false;
 	}
 }
 
@@ -93,13 +96,16 @@ double Perception::calculateEnemyRange() {
 	auto begin = _enemyPixels.begin();
 	auto end = _enemyPixels.end();
 
-	_enemyRange	= LIDAR_MAX_RANGE;
+	_enemyRangeMin = LIDAR_MAX_RANGE;
+	_enemyRangeMax = -1;
 	for (auto& point: _lidar.getVisiblePoints()) {
 		if (std::find(begin, end, point.imagePosition) != end) {
-			_enemyRange = std::min(_enemyRange, point.getDistance());
+			double distance = point.getDistance();
+			_enemyRangeMin = std::min(_enemyRangeMin, distance);
+			_enemyRangeMax = std::max(_enemyRangeMax, distance);
 		}
 	}
-	return _enemyRange;
+	return _enemyRangeMin;
 }
 
 void Perception::drawLidarPointsInImage() {

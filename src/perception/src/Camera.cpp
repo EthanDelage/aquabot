@@ -9,7 +9,7 @@ Camera::Camera(Eigen::Matrix<double, 3, 4> projectionMatrix, double horizontalFo
 				_horizontalFov(horizontalFov),
 				_width(resolution.first),
 				_height(resolution.second) {
-	Eigen::Vector3d lidarTranslationMatrix(0., 0., 0.);
+	Eigen::Vector3d lidarTranslationMatrix(0.1, 0., -0.2);
 	Eigen::Matrix3d lidarRotationMatrix;
 	lidarRotationMatrix = Eigen::AngleAxisd(0.26, Eigen::Vector3d::UnitX()).toRotationMatrix()
 						* Eigen::AngleAxisd(M_PI_2, Eigen::Vector3d::UnitY()).toRotationMatrix();
