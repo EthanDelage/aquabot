@@ -58,6 +58,7 @@ private:
 
 	// State attributes
 	uint32_t 					_state;
+	int 						_scan;
 
 	// Boat attributes
 	point_t						_boatPos;

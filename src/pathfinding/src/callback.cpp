@@ -24,7 +24,7 @@ void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr
 			checkEnemyCollision(msg);
 		return;
 	}
-	bool scan = false;
+	int scanValue = 0;
 	for (const auto &param: msg->params) {
 		std::string name = param.name;
 
@@ -39,10 +39,14 @@ void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr
 		else if (name == "y")
 			_target.position.y = param.value.double_value;
 		else if (name == "scan")
-			scan = param.value.bool_value;
+			_scan = param.value.bool_value;
+		else if (name == "scanOrientation")
+			scanValue = param.value.integer_value;
+		std::cout << "range: " << _targetRange << std::endl;
+		std::cout << "bearing: " << _targetBearing << std::endl;
 	}
-	if (scan) {
-		publishScan(scan);
+	if (_scan) {
+		publishScan(scanValue);
 		return;
 	}
 	_path = calculatePath(_boatPos);
@@ -54,10 +58,14 @@ void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr
 void Pathfinding::publishScan(bool value) {
 	auto	paramVecMsg = ros_gz_interfaces::msg::ParamVec();
 	rcl_interfaces::msg::Parameter	scanMsg;
+	rcl_interfaces::msg::Parameter	scanValue;
 
 	scanMsg.name = "scan";
-	scanMsg.value.bool_value = value;
+	scanMsg.value.bool_value = true;
+	scanValue.name = "scanValue";
+	scanValue.value.integer_value = value;
 	paramVecMsg.params.push_back(scanMsg);
+	paramVecMsg.params.push_back(scanValue);
 
 	_publisherRangeBearing->publish(paramVecMsg);
 }
@@ -82,13 +90,18 @@ void Pathfinding::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 }
 
 void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
+	if (_scan && _state >= 2)
+		return;
 	_orientation = calculateYaw(msg->orientation);
 	_imuPing = true;
 	if (_buoyPing && _gpsPing && !_buoyPosCalculate)
 		addBuoy();
 	if (_gpsPing && _pathCalculated && !_path.empty()) {
-		if (_path[0].x == _target.position.x && _path[0].y == _target.position.y)
-			publishRangeBearing(std::pair<double, double>(_targetRange, _targetBearing), _targetDesiredRange);
+		if (_path[0].x == _target.position.x && _path[0].y == _target.position.y) {
+					publishRangeBearing(std::pair<double, double>(_targetRange, _targetBearing), _targetDesiredRange);
+					std::cout << "test" << std::endl;
+
+		}
 		else
 			publishRangeBearing(calculateRangeBearing(), MAX_CHECKPOINT_RANGE);
 	}

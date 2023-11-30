@@ -14,6 +14,7 @@ Pathfinding::Pathfinding() :
 	_imuPing = false;
 	_enemyPing = false;
 	_state = 0;
+	_scan = 0;
 
 	if (init() == -1) {
 		std::cout << "Cannot open " <<  OBSTACLE_FILE << std::endl;

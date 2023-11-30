@@ -30,7 +30,6 @@ private:
 	std::vector<point_t>	_enemyPixels;
 	double 					_enemyBearing;
 	double 					_enemyRangeMin;
-	double					_enemyRangeMax;
 	double					_boatOrientation;
 	cv::Scalar				_rgbLowerRed{65, 6, 5};
     cv::Scalar				_rgbUpperRed{110, 16, 15};
@@ -41,7 +40,8 @@ private:
 	bool					_enemyFound;
 	bool					_gpsPing;
 	bool					_imuPing;
-	bool					_lidarProcess;
+	bool					_lidarPing;
+	bool					_calculatedEnemyPos;
 	Eigen::Vector2d			_boatMapPos;
 	Eigen::Vector2d 		_enemyMapPos;
 	Eigen::Vector2d			_enemyGPSPos;

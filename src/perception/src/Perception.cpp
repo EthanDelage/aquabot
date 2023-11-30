@@ -43,17 +43,14 @@ Perception::Perception(): Node("perception") {
 }
 
 void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
-	if (_lidarProcess) {
-		return;
-	}
 	try {
 		cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
 		_image = cv_ptr->image;
 		detectRedBoat();
-		if (_gpsPing && _imuPing) {
+		_imageReceived = true;
+		if (_gpsPing && _imuPing && _lidarPing) {
 			publishPathfinding();
 		}
-		_imageReceived = true;
 	} catch (const std::exception& e){
 		RCLCPP_ERROR(this->get_logger(), "imageCallback() exception: %s", e.what());
 	}
@@ -62,14 +59,13 @@ void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
 void Perception::pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg) {
 	auto start = std::chrono::high_resolution_clock::now();
 	if (_imageReceived && _cameraReceived) {
-		_lidarProcess = true;
 		_lidar.parsePoints(msg);
 		_lidar.setVisiblePoints(_camera);
 		calculateEnemyRange();
-		_lidarProcess = false;
 		drawLidarPointsInImage();
 		cv::imshow("Image", _image);
 		cv::waitKey(1);
+		_lidarPing = true;
 	}
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
@@ -101,7 +97,12 @@ void Perception::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 	calculateYaw(msg->orientation);
 	if (_gpsPing && _enemyFound) {
 		calculateEnemyPos();
+		_calculatedEnemyPos = true;
 		publishAlert();
+	}
+	else {
+		_calculatedEnemyPos = false;
+		_calculatedEnemyPos = false;
 	}
 	_imuPing = true;
 }
@@ -117,34 +118,41 @@ void Perception::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 void Perception::publishPathfinding() {
 	auto	paramVecMsg = ros_gz_interfaces::msg::ParamVec();
 	rcl_interfaces::msg::Parameter	scanMsg;
+	rcl_interfaces::msg::Parameter	scanOrientation;
 	rcl_interfaces::msg::Parameter	rangeMsg;
 	rcl_interfaces::msg::Parameter	bearingMsg;
 	rcl_interfaces::msg::Parameter	desiredRangeMsg;
 	rcl_interfaces::msg::Parameter	xMapPosMsg;
 	rcl_interfaces::msg::Parameter	yMapPosMsg;
 
+	if (_enemyFound && !_calculatedEnemyPos)
+		return;
 	scanMsg.name = "scan";
+	scanMsg.value.bool_value = false;
+	scanOrientation.name = "scanOrientation";
+	scanOrientation.value.integer_value = 0;
 	if (!_enemyFound) {
+		scanMsg.value.bool_value = true;
+		double angle_vec = atan2(_enemyMapPos[1], _enemyMapPos[0]);
+		_enemyBearing = _boatOrientation - angle_vec;
+		_enemyBearing = -convertToMinusPiPi(_enemyBearing);
 		if (_enemyBearing < 0) {
-			scanMsg.value.bool_value = true;
+			scanOrientation.value.integer_value = -1;
 		} else {
-			scanMsg.value.bool_value = false;
+			scanOrientation.value.integer_value = 1;
 		}
-//		double angle_vec = atan2(_enemyMapPos[1], _enemyMapPos[0]);
-//		_enemyBearing = _boatOrientation - angle_vec;
-//		_enemyBearing = -convertToMinusPiPi(_enemyBearing);
 //		_enemyRangeMin = sqrt(pow(_enemyMapPos[0] - _boatMapPos[0], 2) + \
 //							  pow(_enemyMapPos[1] - _boatMapPos[1], 2));
-		paramVecMsg.params.push_back(scanMsg);
 	}
-//	scanMsg.value.bool_value = true;
+	paramVecMsg.params.push_back(scanMsg);
+	paramVecMsg.params.push_back(scanOrientation);
 
 	rangeMsg.name = "range";
 	rangeMsg.value.double_value = _enemyRangeMin;
 	paramVecMsg.params.push_back(rangeMsg);
 
 	bearingMsg.name = "bearing";
-	bearingMsg.value.double_value = _enemyBearing;
+	bearingMsg.value.double_value = convertToMinusPiPi(_enemyBearing);
 	paramVecMsg.params.push_back(bearingMsg);
 
 	xMapPosMsg.name = "x";
@@ -168,7 +176,9 @@ void Perception::publishPathfinding() {
 	std::cout << "desiredRange: " << desiredRangeMsg.value.double_value << std::endl;
 	std::cout << "range: " << _enemyRangeMin << std::endl;
 	std::cout << "bearing: " << _enemyBearing << std::endl;
-
+	if (!_enemyFound) {
+		std::cout << "scan: " << scanMsg.value.bool_value << std::endl;
+	}
 	_perceptionPublisher->publish(paramVecMsg);
 }
 

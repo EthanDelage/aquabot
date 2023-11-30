@@ -46,7 +46,7 @@ pathfinding:
 
 .PHONY: headless
 headless:
-	ros2 launch aquabot_gz competition.launch.py world:=aquabot_task_hard headless:=true > /dev/null &
+	ros2 launch aquabot_gz competition.launch.py world:=aquabot_task_hard headless:=true
 
 .PHONY: teleop
 teleop:
