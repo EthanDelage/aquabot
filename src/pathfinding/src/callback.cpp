@@ -42,8 +42,8 @@ void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr
 			_scan = param.value.bool_value;
 		else if (name == "scanOrientation")
 			scanValue = param.value.integer_value;
-		std::cout << "range: " << _targetRange << std::endl;
-		std::cout << "bearing: " << _targetBearing << std::endl;
+//		std::cout << "range: " << _targetRange << std::endl;
+//		std::cout << "bearing: " << _targetBearing << std::endl;
 	}
 	if (_scan) {
 		publishScan(scanValue);
@@ -99,8 +99,6 @@ void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 	if (_gpsPing && _pathCalculated && !_path.empty()) {
 		if (_path[0].x == _target.position.x && _path[0].y == _target.position.y) {
 					publishRangeBearing(std::pair<double, double>(_targetRange, _targetBearing), _targetDesiredRange);
-					std::cout << "test" << std::endl;
-
 		}
 		else
 			publishRangeBearing(calculateRangeBearing(), MAX_CHECKPOINT_RANGE);
@@ -109,6 +107,7 @@ void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 
 void Pathfinding::alliesCallback(geometry_msgs::msg::PoseArray::SharedPtr msg) {
 	std::vector<std::pair<point_t, double>>	closeAllies;
+	std::cout << "ally detected" << std::endl;
 
 	for (const auto &pose : msg->poses)
 	{
@@ -122,6 +121,6 @@ void Pathfinding::alliesCallback(geometry_msgs::msg::PoseArray::SharedPtr msg) {
 		closeAllies.push_back(allyInfo);
 	}
 	if (!closeAllies.empty()) {
-		_path = calculatePathWithAllies(_boatPos, closeAllies);
+		std::cout << "recalculate with allies" << std::endl;_path = calculatePathWithAllies(_boatPos, closeAllies);
 	}
 }
