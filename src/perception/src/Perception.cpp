@@ -39,7 +39,11 @@ Perception::Perception(): Node("perception") {
 	_cameraReceived = false;
 	_imuPing = false;
 	_gpsPing = false;
+	_state = 0;
 	_enemyRangeMin = LIDAR_MAX_RANGE;
+}
+void Perception::stateCallback(std_msgs::msg::UInt32::SharedPtr msg) {
+	_state = msg->data;
 }
 
 void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
@@ -141,7 +145,7 @@ void Perception::publishPathfinding() {
 		} else {
 			scanOrientation.value.integer_value = 1;
 		}
-//		_enemyRangeMin = sqrt(pow(_enemyMapPos[0] - _boatMapPos[0], 2) + \
+//		_enemyRangeMin = sqrt(pow(_enemyMapPos[0] - _boatMapPos[0], 2) + 
 //							  pow(_enemyMapPos[1] - _boatMapPos[1], 2));
 	}
 	paramVecMsg.params.push_back(scanMsg);
