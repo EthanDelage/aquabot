@@ -100,6 +100,8 @@ double Perception::calculateEnemyRange() {
 	_enemyRangeMax = -1;
 	for (auto& point: _lidar.getVisiblePoints()) {
 		if (std::find(begin, end, point.imagePosition) != end) {
+			if (point.position[2] <= 0.2)
+				continue;
 			double distance = point.getDistance();
 			_enemyRangeMin = std::min(_enemyRangeMin, distance);
 			_enemyRangeMax = std::max(_enemyRangeMax, distance);

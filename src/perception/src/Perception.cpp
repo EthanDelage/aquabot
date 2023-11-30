@@ -39,18 +39,16 @@ Perception::Perception(): Node("perception") {
 	_cameraReceived = false;
 	_imuPing = false;
 	_gpsPing = false;
+	_lidarPing = false;
 	_enemyRangeMin = LIDAR_MAX_RANGE;
 }
 
 void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
-	if (_lidarProcess) {
-		return;
-	}
 	try {
 		cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
 		_image = cv_ptr->image;
 		detectRedBoat();
-		if (_enemyFound && _gpsPing && _imuPing) {
+		if (_enemyFound && _gpsPing && _imuPing && _lidarPing) {
 			publishPathfinding();
 		}
 		_imageReceived = true;
@@ -62,18 +60,17 @@ void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
 void Perception::pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg) {
 	auto start = std::chrono::high_resolution_clock::now();
 	if (_imageReceived && _cameraReceived) {
-		_lidarProcess = true;
 		_lidar.parsePoints(msg);
 		_lidar.setVisiblePoints(_camera);
 		calculateEnemyRange();
-		_lidarProcess = false;
+		_lidarPing = true;
 		drawLidarPointsInImage();
 		cv::imshow("Image", _image);
 		cv::waitKey(1);
 	}
 	auto end = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-	std::cout << "Time in ms: " << duration.count() << std::endl;
+//	std::cout << "Time in ms: " << duration.count() << std::endl;
 }
 
 void Perception::cameraCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg) {
@@ -122,6 +119,8 @@ void Perception::publishPathfinding() {
 	rcl_interfaces::msg::Parameter	xMapPos;
 	rcl_interfaces::msg::Parameter	yMapPos;
 
+	if (_enemyRangeMin != 130.0)
+		std::cout << "enemy detected" << std::endl;
 	rangeMsg.name = "range";
 	rangeMsg.value.double_value = _enemyRangeMin;
 	paramVecMsg.params.push_back(rangeMsg);
@@ -146,7 +145,7 @@ void Perception::publishPathfinding() {
 
 
 void Perception::publishAlert() {
-	if (_enemyFound && _enemyRangeMin >= 130)
+	if (_enemyFound && _enemyRangeMin >= 129.0)
 		return;
 	if (_rangeHistory.size() != 0) {
 		double average = std::accumulate(_rangeHistory.begin(),
