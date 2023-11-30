@@ -20,7 +20,7 @@
 # define FOLLOW_STATE	2
 # define POS_MAX		M_PI_4
 # define POS_MIN		(-POS_MAX)
-# define BUOY_EXIT_RANGE 20
+# define BUOY_EXIT_RANGE 10
 # define BUOY_FREE_RANGE 35
 
 class Navigation : public rclcpp::Node {

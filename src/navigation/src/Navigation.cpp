@@ -9,6 +9,7 @@ Navigation::Navigation() : Node("navigation") {
 	_gain = 0.2;
 	_sigma = 0.05;
 	_buoyRange = 0;
+	_exitBuoy = false;
 	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/navigation/pinger", 10,
 				std::bind(&Navigation::pingerCallback, this, _1));
 	_buoyPinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/wamv/sensors/acoustics/receiver/range_bearing", 10,
@@ -54,10 +55,12 @@ void Navigation::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg)
 	std::cout << "isFollowingEnemy: " << _isFollowingEnemy << std::endl;
 	if (_state >= FOLLOW_STATE && (_buoyRange < BUOY_EXIT_RANGE || _exitBuoy)) {
 		_exitBuoy = true;
-		return (goOutsideBuoy());
+		goOutsideBuoy();
+		return;
 	}
 	if (scan) {
-		return (spin(scanValue));
+		spin(scanValue);
+		return;
 	}
 	setHeading();
 }
@@ -142,9 +145,9 @@ void Navigation::spin(double scanValue) {
 	auto 	thrustMsg = std_msgs::msg::Float64();
 
 	if (scanValue > 0) {
-		posMsg.data = -(M_PI / 8);
-	} else {
 		posMsg.data = M_PI / 8;
+	} else {
+		posMsg.data = -(M_PI / 8);
 	}
 	thrustMsg.data = 200;
 	_publisherPos->publish(posMsg);
