@@ -40,6 +40,7 @@ Perception::Perception(): Node("perception") {
 	_imuPing = false;
 	_gpsPing = false;
 	_state = 0;
+	_lidarPing = false;
 	_enemyRangeMin = LIDAR_MAX_RANGE;
 }
 void Perception::stateCallback(std_msgs::msg::UInt32::SharedPtr msg) {
@@ -51,29 +52,25 @@ void Perception::imageCallback(sensor_msgs::msg::Image::SharedPtr msg) {
 		cv_bridge::CvImagePtr cv_ptr = cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::BGR8);
 		_image = cv_ptr->image;
 		detectRedBoat();
-		_imageReceived = true;
 		if (_gpsPing && _imuPing && _lidarPing) {
 			publishPathfinding();
 		}
+		_imageReceived = true;
 	} catch (const std::exception& e){
 		RCLCPP_ERROR(this->get_logger(), "imageCallback() exception: %s", e.what());
 	}
 }
 
 void Perception::pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg) {
-	auto start = std::chrono::high_resolution_clock::now();
 	if (_imageReceived && _cameraReceived) {
 		_lidar.parsePoints(msg);
 		_lidar.setVisiblePoints(_camera);
 		calculateEnemyRange();
+		_lidarPing = true;
 		drawLidarPointsInImage();
 		cv::imshow("Image", _image);
 		cv::waitKey(1);
-		_lidarPing = true;
 	}
-	auto end = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-//	std::cout << "Time in ms: " << duration.count() << std::endl;
 }
 
 void Perception::cameraCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg) {
@@ -101,12 +98,7 @@ void Perception::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
 	calculateYaw(msg->orientation);
 	if (_gpsPing && _enemyFound) {
 		calculateEnemyPos();
-		_calculatedEnemyPos = true;
 		publishAlert();
-	}
-	else {
-		_calculatedEnemyPos = false;
-		_calculatedEnemyPos = false;
 	}
 	_imuPing = true;
 }
@@ -129,24 +121,20 @@ void Perception::publishPathfinding() {
 	rcl_interfaces::msg::Parameter	xMapPosMsg;
 	rcl_interfaces::msg::Parameter	yMapPosMsg;
 
-	if (_enemyFound && !_calculatedEnemyPos)
-		return;
 	scanMsg.name = "scan";
 	scanMsg.value.bool_value = false;
 	scanOrientation.name = "scanOrientation";
-	scanOrientation.value.integer_value = 0;
+	scanOrientation.value.double_value = 0;
 	if (!_enemyFound) {
 		scanMsg.value.bool_value = true;
 		double angle_vec = atan2(_enemyMapPos[1], _enemyMapPos[0]);
 		_enemyBearing = _boatOrientation - angle_vec;
-		_enemyBearing = -convertToMinusPiPi(_enemyBearing);
+		_enemyBearing = convertToMinusPiPi(_enemyBearing);
 		if (_enemyBearing < 0) {
-			scanOrientation.value.integer_value = -1;
+			scanOrientation.value.double_value = -1;
 		} else {
-			scanOrientation.value.integer_value = 1;
+			scanOrientation.value.double_value = 1;
 		}
-//		_enemyRangeMin = sqrt(pow(_enemyMapPos[0] - _boatMapPos[0], 2) + 
-//							  pow(_enemyMapPos[1] - _boatMapPos[1], 2));
 	}
 	paramVecMsg.params.push_back(scanMsg);
 	paramVecMsg.params.push_back(scanOrientation);
@@ -156,7 +144,7 @@ void Perception::publishPathfinding() {
 	paramVecMsg.params.push_back(rangeMsg);
 
 	bearingMsg.name = "bearing";
-	bearingMsg.value.double_value = convertToMinusPiPi(_enemyBearing);
+	bearingMsg.value.double_value = _enemyBearing;
 	paramVecMsg.params.push_back(bearingMsg);
 
 	xMapPosMsg.name = "x";
@@ -188,7 +176,7 @@ void Perception::publishPathfinding() {
 
 
 void Perception::publishAlert() {
-	if (_enemyFound && _enemyRangeMin >= 130)
+	if (_enemyFound && _enemyRangeMin >= 129.0)
 		return;
 	if (_rangeHistory.size() != 0) {
 		double average = std::accumulate(_rangeHistory.begin(),

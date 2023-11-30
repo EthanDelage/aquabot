@@ -43,7 +43,6 @@ private:
 	bool					_gpsPing;
 	bool					_imuPing;
 	bool					_lidarPing;
-	bool					_calculatedEnemyPos;
 	Eigen::Vector2d			_boatMapPos;
 	Eigen::Vector2d 		_enemyMapPos;
 	Eigen::Vector2d			_enemyGPSPos;

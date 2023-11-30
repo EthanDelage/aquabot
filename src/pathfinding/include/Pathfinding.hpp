@@ -129,7 +129,7 @@ private:
 	static rectangle_t			calculateEnemyBoundingBox(point_t const & target, size_t id);
 
 	// Scan
-	void	publishScan(bool value);
+	void	publishScan(double value);
 
 public:
 	Pathfinding();
