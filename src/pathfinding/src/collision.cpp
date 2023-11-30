@@ -30,7 +30,7 @@ rectangle_t Pathfinding::calculateAllyBoundingBox(std::pair<point_t, double> con
 }
 
 rectangle_t Pathfinding::calculateEnemyBoundingBox(const point_t& target, size_t id) {
-	const double	thickness = 20;
+	const double	thickness = 30;
 	rectangle_t		boundingBox;
 
 	boundingBox.point[0].x = target.x - thickness + thickness * std::cos(-M_PI_2);
