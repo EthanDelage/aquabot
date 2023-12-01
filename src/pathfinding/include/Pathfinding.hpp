@@ -80,7 +80,6 @@ private:
 
 	// Callback functions
 	void	pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
-	void	buoyPingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
 	void	perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
 	void	taskInfoCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
 	void	phaseCallback(std_msgs::msg::UInt32::SharedPtr msg);
