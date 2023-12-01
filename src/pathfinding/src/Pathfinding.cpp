@@ -24,6 +24,8 @@ Pathfinding::Pathfinding() :
 				std::bind(&Pathfinding::pingerCallback, this, _1));
 	_perception = create_subscription<ros_gz_interfaces::msg::ParamVec>("/perception/pinger", 10,
 				std::bind(&Pathfinding::perceptionCallback, this, _1));
+	_taskInfo = create_subscription<ros_gz_interfaces::msg::ParamVec>("/vrx/task/info", 10,
+				std::bind(&Pathfinding::taskInfoCallback, this, _1));
 	_phase = create_subscription<std_msgs::msg::UInt32>("/vrx/patrolandfollow/current_phase", 10,
 				std::bind(&Pathfinding::phaseCallback, this, _1));
 	_gps = create_subscription<sensor_msgs::msg::NavSatFix>("/wamv/sensors/gps/gps/fix", 10,

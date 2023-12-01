@@ -49,14 +49,15 @@ private:
 	std::vector<double>		_rangeHistory;
 	uint32_t 				_state;
 
-	rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr		_imageSubscriber;
-	rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr	_cameraSubscriber;
-	rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr	_pointCloudSubscriber;
-	rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr			_imuSubscriber;
-	rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr	_gpsSubscriber;
-	rclcpp::Subscription<std_msgs::msg::UInt32>::SharedPtr			_stateSubscriber;
-	rclcpp::Publisher<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_perceptionPublisher;
-	rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr	_alertPublisher;
+	rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr			_imageSubscriber;
+	rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr		_cameraSubscriber;
+	rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr		_pointCloudSubscriber;
+	rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr				_imuSubscriber;
+	rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr		_gpsSubscriber;
+	rclcpp::Subscription<std_msgs::msg::UInt32>::SharedPtr				_stateSubscriber;
+	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_taskInfo;
+	rclcpp::Publisher<ros_gz_interfaces::msg::ParamVec>::SharedPtr		_perceptionPublisher;
+	rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr		_alertPublisher;
 
 	void imageCallback(sensor_msgs::msg::Image::SharedPtr msg);
 	void cameraCallback(sensor_msgs::msg::CameraInfo::SharedPtr msg);
@@ -64,6 +65,7 @@ private:
 	void imuCallback(sensor_msgs::msg::Imu::SharedPtr msg);
 	void gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg);
 	void stateCallback(std_msgs::msg::UInt32::SharedPtr msg);
+	void taskInfoCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
 
 	//	computePosition
 	void calculateMapPos(double latitude, double longitude);

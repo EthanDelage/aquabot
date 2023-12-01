@@ -43,6 +43,7 @@ private:
 
 	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_pinger;
 	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_buoyPinger;
+	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_taskInfo;
 	rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr		_alliesPos;
 	rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr				_publisherThrust;
 	rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr				_publisherPos;
@@ -50,6 +51,7 @@ private:
 
 	void	pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
 	void	buoyPingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
+	void	taskInfoCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
 	void	setHeading();
 	double	calculateThrust(double regulation);
 	double	regulator(double bearing);

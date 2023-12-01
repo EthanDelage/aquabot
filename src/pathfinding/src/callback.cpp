@@ -50,6 +50,15 @@ void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr
 	_path = calculatePath(_boatPos);
 }
 
+void Pathfinding::taskInfoCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
+	for (const auto & param: msg->params) {
+		if (param.name == "state" && param.value.string_value == "finished") {
+			rclcpp::shutdown();
+			exit(0);
+		}
+	}
+}
+
 void Pathfinding::publishScan(double value) {
 	auto	paramVecMsg = ros_gz_interfaces::msg::ParamVec();
 	rcl_interfaces::msg::Parameter	scanMsg;
