@@ -45,6 +45,7 @@ void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBear
 	rcl_interfaces::msg::Parameter	bearingMsg;
 	rcl_interfaces::msg::Parameter	desiredRangeMsg;
 	rcl_interfaces::msg::Parameter	stateMsg;
+	rcl_interfaces::msg::Parameter	isFollowingEnemyMsg;
 
 	rangeMsg.name = "range";
 	rangeMsg.value.double_value = rangeBearing.first;
@@ -62,8 +63,42 @@ void Pathfinding::publishRangeBearing(const std::pair<double, double>& rangeBear
 	stateMsg.value.integer_value = _state;
 	paramVecMsg.params.push_back(stateMsg);
 
+	isFollowingEnemyMsg.name = "isFollowingEnemy";
+	isFollowingEnemyMsg.value.bool_value = (_path.size() == 1);
+	paramVecMsg.params.push_back(isFollowingEnemyMsg);
 
-	if (rangeBearing.first < desiredRange)
+
+	if (rangeBearing.first < desiredRange) {
 		_path.erase(_path.begin());
+		for (auto node : _path)
+			std::cout << "[" << node.x << "," << node.y << "], ";
+		std::cout << std::endl;
+	}
 	_publisherRangeBearing->publish(paramVecMsg);
+}
+
+void Pathfinding::checkEnemyCollision(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
+	double	range = 130.0;
+
+	for (const auto &param: msg->params) {
+		std::string name = param.name;
+
+		if (name == "range") {
+			range = param.value.double_value;
+		} else if (name == "x") {
+			_enemyPos.x = param.value.double_value;
+		} else if (name == "y") {
+			_enemyPos.y = param.value.double_value;
+		}
+	}
+	if (range >= 129.0)
+		return;
+	std::cout << "enemy detected: " << _enemyPos.x << ", " << _enemyPos.y << std::endl;
+	_enemyPing = true;
+	if (!_buoyPing)
+		return;
+	_path = calculatePath(_boatPos);
+	for (auto node : _path)
+		std::cout << "[" << node.x << "," << node.y << "], ";
+	std::cout << std::endl;
 }

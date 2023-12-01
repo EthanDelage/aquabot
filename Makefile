@@ -28,6 +28,10 @@ re:	fclean
 launch:
 	ros2 launch launcher launch.py
 
+.PHONY: launch_headless
+launch_headless:
+	ros2 launch launcher launch.py headless:=true
+
 .PHONY: perception
 perception:
 	ros2 run perception perception
@@ -42,7 +46,7 @@ pathfinding:
 
 .PHONY: headless
 headless:
-	ros2 launch aquabot_gz competition.launch.py world:=aquabot_task_hard headless:=true > /dev/null &
+	ros2 launch aquabot_gz competition.launch.py world:=aquabot_task_hard headless:=true
 
 .PHONY: teleop
 teleop:

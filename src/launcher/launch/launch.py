@@ -8,13 +8,6 @@ from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 
 
 def generate_launch_description():
-    world = LaunchConfiguration('world')
-
-    world_arg = DeclareLaunchArgument(
-        'world',
-        default_value='aquabot_task_hard'
-    )
-
     navigation_node = Node(
         package='navigation',
         executable='navigation',
@@ -27,23 +20,9 @@ def generate_launch_description():
         package='perception',
         executable='perception',
     )
-    aquabot_launch_file = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            PathJoinSubstitution([
-                FindPackageShare('aquabot_gz'),
-                'launch',
-                'competition.launch.py'
-            ])
-        ),
-        launch_arguments={
-            'world': world,
-        }.items(),
-    )
 
     return LaunchDescription([
-        world_arg,
         navigation_node,
         pathfinding_node,
         perception_node,
-        aquabot_launch_file,
     ])

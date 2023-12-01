@@ -19,8 +19,12 @@ void Pathfinding::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg
 }
 
 void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
-	if (_state < FOLLOW_STATE)
+	if (_state < FOLLOW_STATE) {
+		if (!_enemyPing)
+			checkEnemyCollision(msg);
 		return;
+	}
+	int scanValue = 0;
 	for (const auto &param: msg->params) {
 		std::string name = param.name;
 
@@ -34,11 +38,31 @@ void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr
 			_target.position.x = param.value.double_value;
 		else if (name == "y")
 			_target.position.y = param.value.double_value;
+		else if (name == "scan")
+			_scan = param.value.bool_value;
+		else if (name == "scanOrientation")
+			scanValue = param.value.integer_value;
+	}
+	if (_scan) {
+		publishScan(scanValue);
+		return;
 	}
 	_path = calculatePath(_boatPos);
-	for (auto node : _path)
-		std::cout << "[" << node.x << "," << node.y << "], ";
-	std::cout << std::endl;
+}
+
+void Pathfinding::publishScan(double value) {
+	auto	paramVecMsg = ros_gz_interfaces::msg::ParamVec();
+	rcl_interfaces::msg::Parameter	scanMsg;
+	rcl_interfaces::msg::Parameter	scanValue;
+
+	scanMsg.name = "scan";
+	scanMsg.value.bool_value = true;
+	scanValue.name = "scanValue";
+	scanValue.value.double_value = value;
+	paramVecMsg.params.push_back(scanMsg);
+	paramVecMsg.params.push_back(scanValue);
+
+	_publisherRangeBearing->publish(paramVecMsg);
 }
 
 void Pathfinding::phaseCallback(std_msgs::msg::UInt32::SharedPtr msg) {
@@ -53,21 +77,21 @@ void Pathfinding::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 	_gpsPing = true;
 	if (_buoyPosCalculate && !_pathCalculated) {
 		_path = calculatePath(_boatPos);
-		for (auto node : _path)
-			std::cout << "[" << node.x << "," << node.y << "], ";
-		std::cout << std::endl;
 		_pathCalculated = true;
 	}
 }
 
 void Pathfinding::imuCallback(sensor_msgs::msg::Imu::SharedPtr msg) {
+	if (_scan && _state >= 2)
+		return;
 	_orientation = calculateYaw(msg->orientation);
 	_imuPing = true;
 	if (_buoyPing && _gpsPing && !_buoyPosCalculate)
 		addBuoy();
 	if (_gpsPing && _pathCalculated && !_path.empty()) {
-		if (_path[0].x == _target.position.x && _path[0].y == _target.position.y)
+		if (_path[0].x == _target.position.x && _path[0].y == _target.position.y) {
 			publishRangeBearing(std::pair<double, double>(_targetRange, _targetBearing), _targetDesiredRange);
+		}
 		else
 			publishRangeBearing(calculateRangeBearing(), MAX_CHECKPOINT_RANGE);
 	}

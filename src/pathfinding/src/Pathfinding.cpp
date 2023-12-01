@@ -12,7 +12,9 @@ Pathfinding::Pathfinding() :
 	_buoyPing = false;
 	_gpsPing = false;
 	_imuPing = false;
+	_enemyPing = false;
 	_state = 0;
+	_scan = 0;
 
 	if (init() == -1) {
 		std::cout << "Cannot open " <<  OBSTACLE_FILE << std::endl;
@@ -46,6 +48,9 @@ std::vector<point_t> Pathfinding::calculatePath(point_t boatPos) {
 	size_t									boatIndex;
 	std::vector<std::pair<size_t, double>>	reversePath;
 
+	if (_state < FOLLOW_STATE && _enemyPing)
+		return (calculatePathWithAllies(_boatPos, std::vector<std::pair<point_t, double>>()));
+
 	_target.graphIndex = addCheckPoint(_target.position, graph);
 
 	boatIndex = addCheckPoint(boatPos, graph);
@@ -66,6 +71,8 @@ std::vector<point_t> Pathfinding::calculatePathWithAllies(point_t boatPos, std::
 	graphSave = _obstaclesGraph;
 	for (auto ally : allies)
 		_obstacles.push_back(calculateAllyBoundingBox(ally, _obstacles.size()));
+	if (_state < FOLLOW_STATE && _enemyPing)
+		_obstacles.push_back(calculateEnemyBoundingBox(_enemyPos, _obstacles.size()));
 
 	_obstaclesGraph.setNbVertices(_obstacles.size() * 4);
 	generateObstaclesGraph();
