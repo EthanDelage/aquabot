@@ -48,9 +48,6 @@ void Pathfinding::perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr
 		return;
 	}
 	_path = calculatePath(_boatPos);
-	for (auto node : _path)
-		std::cout << "[" << node.x << "," << node.y << "], ";
-	std::cout << std::endl;
 }
 
 void Pathfinding::publishScan(double value) {
@@ -80,9 +77,6 @@ void Pathfinding::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 	_gpsPing = true;
 	if (_buoyPosCalculate && !_pathCalculated) {
 		_path = calculatePath(_boatPos);
-		for (auto node : _path)
-			std::cout << "[" << node.x << "," << node.y << "], ";
-		std::cout << std::endl;
 		_pathCalculated = true;
 	}
 }

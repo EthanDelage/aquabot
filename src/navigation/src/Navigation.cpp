@@ -28,34 +28,33 @@ void Navigation::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg)
 	double scanValue;
 	for (const auto &param: msg->params) {
 		std::string name = param.name;
-
 		if (name == "bearing") {
 			_bearing = param.value.double_value;
-			std::cout << "Bearing: " << _bearing << std::endl;
 		} else if (name == "range") {
 			_range = param.value.double_value;
-			std::cout << "Range: " << _range << std::endl;
 		} else if (name == "desiredRange") {
 			_desiredRange = param.value.double_value;
-			std::cout << "Desired range: " << _desiredRange << std::endl;
 		} else if (name == "state") {
 			_state = param.value.integer_value;
-			std::cout << "State: " << _state << std::endl;
 		} else if (name == "scan") {
 			scan = param.value.bool_value;
 		} else if (name == "scanOrientation") {
 			scanValue = param.value.integer_value;
 		} else if (name == "isFollowingEnemy") {
 			_isFollowingEnemy = param.value.bool_value;
-
 		}
 	}
-	std::cout << "Buoy Range:" << _buoyRange << std::endl;
-	std::cout << "ExitBuoy:" << _exitBuoy << std::endl;
-	std::cout << "isFollowingEnemy: " << _isFollowingEnemy << std::endl;
+	if (_state >= FOLLOW_STATE && !scan && std::abs(_buoyBearing - _bearing) > 0.2 && _buoyRange > BUOY_EXIT_RANGE) {
+		setHeading();
+		return;
+	}
 	if (_state >= FOLLOW_STATE && (_buoyRange < BUOY_EXIT_RANGE || _exitBuoy)) {
 		_exitBuoy = true;
 		goOutsideBuoy();
+		return;
+	}
+	if (_state >= FOLLOW_STATE && _buoyRange < BUOY_FREE_RANGE && !scan) {
+		orbitBuoy();
 		return;
 	}
 	if (scan) {
@@ -64,11 +63,15 @@ void Navigation::pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg)
 	}
 	setHeading();
 }
+
 void Navigation::buoyPingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
 	for (const auto &param: msg->params) {
 		std::string name = param.name;
 		if (name == "range") {
 			_buoyRange = param.value.double_value;
+		}
+		if (name == "bearing") {
+			_buoyBearing = param.value.double_value;
 		}
 	}
 }
@@ -87,9 +90,6 @@ void Navigation::setHeading() {
 	}
 	_publisherThrust->publish(thrustMsg);
 	_publisherPos->publish(posMsg);
-	std::cout << "Thrust: " << thrustMsg.data << std::endl;
-	std::cout << "Pos: " << posMsg.data << std::endl;
-	std::cout << "State: " << _state << std::endl;
 }
 
 double Navigation::calculateThrust(double regulation) {
@@ -132,7 +132,7 @@ void Navigation::goOutsideBuoy() {
 
 	posMsg.data = 0;
 	thrustMsg.data = THRUST_MIN;
-	if (_buoyRange > BUOY_FREE_RANGE) {
+	if (_buoyRange > (BUOY_FREE_RANGE + BUOY_EXIT_RANGE) / 2.) {
 		_exitBuoy = false;
 	}
 	_publisherPos->publish(posMsg);
@@ -149,11 +149,31 @@ void Navigation::spin(double scanValue) {
 	} else {
 		posMsg.data = -(M_PI / 8);
 	}
-	thrustMsg.data = 200;
+	thrustMsg.data = 500;
 	_publisherPos->publish(posMsg);
 	_publisherThrust->publish(thrustMsg);
-	std::cout << " >>>>>>>>>>>>>>>>>>> SPIN" << std::endl;
-	std::cout << "Thrust: " << thrustMsg.data << std::endl;
-	std::cout << "Pos: " << posMsg.data << std::endl;
-	std::cout << "State: " << _state << std::endl;
+}
+
+void Navigation::orbitBuoy() {
+	auto 	posMsg = std_msgs::msg::Float64();
+	auto 	thrustMsg = std_msgs::msg::Float64();
+	double	pos;
+
+	thrustMsg.data = 2000;
+	pos = -convertToMinusPiPi(_buoyBearing + M_PI_2);
+	pos = std::min(pos, M_PI_4);
+	pos = std::max(pos, -M_PI_4);
+	posMsg.data = pos * 0.5;
+	_publisherPos->publish(posMsg);
+	_publisherThrust->publish(thrustMsg);
+}
+
+double Navigation::convertToMinusPiPi(double angleRadians) {
+	while (angleRadians <= -M_PI) {
+		angleRadians += 2.0 * M_PI;
+	}
+	while (angleRadians > M_PI) {
+		angleRadians -= 2.0 * M_PI;
+	}
+	return (angleRadians);
 }

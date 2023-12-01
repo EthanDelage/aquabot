@@ -67,9 +67,9 @@ void Perception::pointCloudCallback(sensor_msgs::msg::PointCloud2::SharedPtr msg
 		_lidar.setVisiblePoints(_camera);
 		calculateEnemyRange();
 		_lidarPing = true;
-		drawLidarPointsInImage();
-		cv::imshow("Image", _image);
-		cv::waitKey(1);
+//		drawLidarPointsInImage();
+//		cv::imshow("Image", _image);
+//		cv::waitKey(1);
 	}
 }
 
@@ -163,14 +163,6 @@ void Perception::publishPathfinding() {
 	}
 	paramVecMsg.params.push_back(desiredRangeMsg);
 
-	std::cout << "x: " << _enemyMapPos[0] << std::endl;
-	std::cout << "y: " << _enemyMapPos[1] << std::endl;
-	std::cout << "desiredRange: " << desiredRangeMsg.value.double_value << std::endl;
-	std::cout << "range: " << _enemyRangeMin << std::endl;
-	std::cout << "bearing: " << _enemyBearing << std::endl;
-	if (!_enemyFound) {
-		std::cout << "scan: " << scanMsg.value.bool_value << std::endl;
-	}
 	_perceptionPublisher->publish(paramVecMsg);
 }
 

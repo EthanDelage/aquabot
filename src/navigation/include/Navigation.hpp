@@ -33,6 +33,7 @@ private:
 	double		_bearing;
 	double		_range;
 	double 		_buoyRange;
+	double 		_buoyBearing;
 	bool		_exitBuoy;
 	double		_desiredRange;
 	double		_gain;
@@ -54,6 +55,8 @@ private:
 	double	regulator(double bearing);
 	void	goOutsideBuoy();
 	void	spin(double scanValue);
+	void	orbitBuoy();
+	double	convertToMinusPiPi(double angleRadians);
 };
 
 

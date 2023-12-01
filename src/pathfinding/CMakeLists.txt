@@ -14,7 +14,6 @@ find_package(ros_gz_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
-
 include_directories(include)
 
 add_executable(pathfinding
