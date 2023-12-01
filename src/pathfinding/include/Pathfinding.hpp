@@ -71,6 +71,7 @@ private:
 	// Publisher/Subscriber
 	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_pinger;
 	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_perception;
+	rclcpp::Subscription<ros_gz_interfaces::msg::ParamVec>::SharedPtr	_taskInfo;
 	rclcpp::Subscription<std_msgs::msg::UInt32>::SharedPtr				_phase;
 	rclcpp::Subscription<sensor_msgs::msg::NavSatFix>::SharedPtr		_gps;
 	rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr				_imu;
@@ -79,7 +80,9 @@ private:
 
 	// Callback functions
 	void	pingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
+	void	buoyPingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
 	void	perceptionCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
+	void	taskInfoCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg);
 	void	phaseCallback(std_msgs::msg::UInt32::SharedPtr msg);
 	void 	gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg);
 	void 	imuCallback(sensor_msgs::msg::Imu::SharedPtr msg);

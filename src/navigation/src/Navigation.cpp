@@ -12,6 +12,8 @@ Navigation::Navigation() : Node("navigation") {
 	_exitBuoy = false;
 	_pinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/navigation/pinger", 10,
 				std::bind(&Navigation::pingerCallback, this, _1));
+	_taskInfo = create_subscription<ros_gz_interfaces::msg::ParamVec>("/vrx/task/info", 10,
+				std::bind(&Navigation::taskInfoCallback, this, _1));
 	_buoyPinger = create_subscription<ros_gz_interfaces::msg::ParamVec>("/wamv/sensors/acoustics/receiver/range_bearing", 10,
 				std::bind(&Navigation::buoyPingerCallback, this, _1));
 	_publisherThrust = create_publisher<std_msgs::msg::Float64>("/wamv/thrusters/main/thrust", 5);
@@ -72,6 +74,15 @@ void Navigation::buoyPingerCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr 
 		}
 		if (name == "bearing") {
 			_buoyBearing = param.value.double_value;
+		}
+	}
+}
+
+void Navigation::taskInfoCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
+	for (const auto & param: msg->params) {
+		if (param.name == "state" && param.value.string_value == "finished") {
+			rclcpp::shutdown();
+			exit(0);
 		}
 	}
 }

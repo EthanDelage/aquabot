@@ -25,9 +25,13 @@ Perception::Perception(): Node("perception") {
 			10,
 			std::bind(&Perception::imuCallback, this, _1));
 	_gpsSubscriber = create_subscription<sensor_msgs::msg::NavSatFix>(
-		"/wamv/sensors/gps/gps/fix",
-		10,
-		std::bind(&Perception::gpsCallback, this, _1));
+			"/wamv/sensors/gps/gps/fix",
+			10,
+			std::bind(&Perception::gpsCallback, this, _1));
+	_taskInfo = create_subscription<ros_gz_interfaces::msg::ParamVec>(
+			"/vrx/task/info",
+			10,
+			std::bind(&Perception::taskInfoCallback, this, _1));
 	_perceptionPublisher = create_publisher<ros_gz_interfaces::msg::ParamVec>(
 			"/perception/pinger",
 			10);
@@ -110,6 +114,14 @@ void Perception::gpsCallback(sensor_msgs::msg::NavSatFix::SharedPtr msg) {
 	_gpsPing = true;
 }
 
+void Perception::taskInfoCallback(ros_gz_interfaces::msg::ParamVec::SharedPtr msg) {
+	for (const auto & param: msg->params) {
+		if (param.name == "state" && param.value.string_value == "finished") {
+			rclcpp::shutdown();
+			exit(0);
+		}
+	}
+}
 
 void Perception::publishPathfinding() {
 	auto	paramVecMsg = ros_gz_interfaces::msg::ParamVec();
