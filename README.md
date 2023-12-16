@@ -13,12 +13,16 @@ The navigation module is able to control the drone autonomously in the environme
 Secondly, it is capable to maneuvere the surface drone while tracking the threat.
 
 <video src="assets/navigation.mp4"></video>
+https://github.com/EthanDelage/aquabot/assets/50496792/67a0170c-d944-461a-99a4-69b9b991643f
+
 
 
 ### Perception
 The perception module is able to detect the threat using the camera and estimate the distance using the lidar. The threat is recognized using color detection, and the distance is calculated by projecting the 3D points of the lidar onto the camera rendering. Using the distance and angle of the threat, the module is then able to calculate its GPS position.
 
 <video src="assets/perception.mp4"></video>
+https://github.com/EthanDelage/aquabot/assets/50496792/6377734d-59ac-47a8-b206-32733cc76101
+
 
 Please refer to the report for further information :
 
