@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="aquabot_regatta_no_obstacles_world">
+    <include>
+      <name>aquabot_lighthouse_island_1</name>
+      <pose>350 -150 0 0 0 0</pose>
+      <uri>aquabot_lighthouse_island</uri>
+    </include>
+    <include>
+
+      <name>aquabot_lighthouse_island_2</name>
+      <pose>-350 150 0 0 0 1.57</pose>
+      <uri>aquabot_lighthouse_island</uri>
+    </include>
+
+    <include>
+      <name>aquabot_island_1</name>
+      <pose>-350 0 0 0 0 -3.14</pose>
+      <uri>aquabot_island</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_island_2</name>
+      <pose>310 340 4 0.2 0 1.0</pose>
+      <uri>aquabot_island</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_island_3</name>
+      <pose>-310 -340 4 0.0 0 2.0</pose>
+      <uri>aquabot_island</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_island_0</name>
+      <pose>50 -350 0 0 0 0</pose>
+      <uri>aquabot_rock_island_1</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_island_1</name>
+      <pose>150 350 0 0 0 1</pose>
+      <uri>aquabot_rock_island_1</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_0</name>
+      <pose>-150 350 0 -2 1 -2</pose>
+      <uri>aquabot_rock</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_1</name>
+      <pose>-80 350 1 -2 2 -3</pose>
+      <uri>aquabot_rock</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_2</name>
+      <pose>-80 -350 -6 0 0 0</pose>
+      <uri>aquabot_rock</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_3</name>
+      <pose>-40 -350 -6 0 2 0</pose>
+      <uri>aquabot_rock</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_4</name>
+      <pose>350 60 -6 0 1 0</pose>
+      <uri>aquabot_rock</uri>
+    </include>
+  </model>
+</sdf>

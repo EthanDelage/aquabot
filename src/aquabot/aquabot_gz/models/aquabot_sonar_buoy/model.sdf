@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<sdf version="1.5">
+  <model name="aquabot_sonar_buoy">
+    <link name="link">
+      <inertial>
+          <pose>0 0 0.0 0 0 0</pose>
+          <mass>100</mass>
+          <inertia>
+              <ixx>23.16</ixx>
+              <ixy>0</ixy>
+              <ixz>0</ixz>
+              <iyy>23.16</iyy>
+              <iyz>0</iyz>
+              <izz>2.25</izz>
+          </inertia>
+      </inertial>
+      <collision name="collision_inner">
+          <pose>0 0 0 0 1.57 0</pose>
+          <geometry>
+              <cylinder>
+                  <radius>1.3</radius>
+                  <length>7.5</length>
+              </cylinder>
+          </geometry>
+      </collision>
+      <collision name="collision_outer">
+          <pose>0 0 0.0 0 1.57 0</pose>
+          <geometry>
+              <cylinder>
+                  <radius>1.65</radius>
+                  <length>1.5</length>
+              </cylinder>
+          </geometry>
+      </collision>
+      <visual name="visual">
+        <pose>0.0 0.0 0.0 0 -1.57 0 </pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>mesh/sonar_buoy.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

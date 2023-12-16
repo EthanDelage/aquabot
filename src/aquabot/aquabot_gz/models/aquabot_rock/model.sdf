@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<sdf version="1.5">
+  <model name="aquabot_rock">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>20 20 20</scale>
+            <uri>mesh/rock.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <pose>0.0 0.0 0.0 0 0 0 </pose>
+        <geometry>
+          <mesh>
+            <scale>20 20 20</scale>
+            <uri>mesh/rock.dae</uri>
+          </mesh>
+        </geometry>
+        <material> <!-- rock material -->
+          <ambient>0.5 0.5 0.5 1</ambient>
+          <diffuse>0.2 0.2 0.2 1</diffuse>
+          <specular>0.4 0.4 0.4 1</specular>
+          <emissive>0 0 0 1</emissive>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

@@ -1,6 +1,0 @@
-[submodule "src/aquabot"]
-	path = src/aquabot
-	url = git@github.com:sirehna/Aquabot.git
-[submodule "src/aquabot-competitor"]
-	path = src/aquabot-competitor
-	url = git@github.com:sirehna/Aquabot-Competitor.git

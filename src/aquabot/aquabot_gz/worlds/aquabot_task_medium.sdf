@@ -1,0 +1,2015 @@
+<?xml version="1.0" ?>
+
+<sdf version="1.9">
+  <world name="aquabot_task_medium">
+
+    <physics name="4ms" type="dart">
+      <max_step_size>0.004</max_step_size>
+      <real_time_factor>0.0</real_time_factor>
+      <real_time_update_rate>0.0</real_time_update_rate>
+    </physics>
+
+    <gui fullscreen="0">
+
+      <!-- 3D scene -->
+      <plugin filename="MinimalScene" name="3D View">
+        <gz-gui>
+          <title>3D View</title>
+          <property type="bool" key="showTitleBar">false</property>
+          <property type="string" key="state">docked</property>
+        </gz-gui>
+
+        <engine>ogre2</engine>
+        <scene>scene</scene>
+        <ambient_light>0.4 0.4 0.4</ambient_light>
+        <background_color>0.52 0.75 1.0</background_color>
+        <camera_pose>-19 41 15 0 0.1 -1.20</camera_pose>
+        <camera_clip>
+          <near>0.25</near>
+          <far>10000</far>
+        </camera_clip>
+      </plugin>
+
+      <!-- Plugins that add functionality to the scene -->
+      <plugin filename="EntityContextMenuPlugin" name="Entity context menu">
+        <gz-gui>
+          <property key="state" type="string">floating</property>
+          <property key="width" type="double">5</property>
+          <property key="height" type="double">5</property>
+          <property key="showTitleBar" type="bool">false</property>
+        </gz-gui>
+      </plugin>
+      <plugin filename="GzSceneManager" name="Scene Manager">
+        <gz-gui>
+          <property key="resizable" type="bool">false</property>
+          <property key="width" type="double">5</property>
+          <property key="height" type="double">5</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+        </gz-gui>
+      </plugin>
+      <plugin filename="InteractiveViewControl" name="Interactive view control">
+        <gz-gui>
+          <property key="resizable" type="bool">false</property>
+          <property key="width" type="double">5</property>
+          <property key="height" type="double">5</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+        </gz-gui>
+      </plugin>
+      <plugin filename="CameraTracking" name="Camera Tracking">
+        <gz-gui>
+          <property key="resizable" type="bool">false</property>
+          <property key="width" type="double">5</property>
+          <property key="height" type="double">5</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+        </gz-gui>
+      </plugin>
+      <plugin filename="MarkerManager" name="Marker manager">
+        <gz-gui>
+          <property key="resizable" type="bool">false</property>
+          <property key="width" type="double">5</property>
+          <property key="height" type="double">5</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+        </gz-gui>
+      </plugin>
+      <plugin filename="SelectEntities" name="Select Entities">
+        <gz-gui>
+          <anchors target="Select entities">
+            <line own="right" target="right"/>
+            <line own="top" target="top"/>
+          </anchors>
+          <property key="resizable" type="bool">false</property>
+          <property key="width" type="double">5</property>
+          <property key="height" type="double">5</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+        </gz-gui>
+      </plugin>
+      <plugin filename="VisualizationCapabilities" name="Visualization Capabilities">
+        <gz-gui>
+          <property key="resizable" type="bool">false</property>
+          <property key="width" type="double">5</property>
+          <property key="height" type="double">5</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+        </gz-gui>
+      </plugin>
+
+      <plugin filename="Spawn" name="Spawn Entities">
+        <gz-gui>
+          <anchors target="Select entities">
+            <line own="right" target="right"/>
+            <line own="top" target="top"/>
+          </anchors>
+          <property key="resizable" type="bool">false</property>
+          <property key="width" type="double">5</property>
+          <property key="height" type="double">5</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+        </gz-gui>
+      </plugin>
+
+      <!-- World control -->
+      <plugin filename="WorldControl" name="World control">
+        <gz-gui>
+          <title>World control</title>
+          <property type="bool" key="showTitleBar">false</property>
+          <property type="bool" key="resizable">false</property>
+          <property type="double" key="height">72</property>
+          <property type="double" key="width">121</property>
+          <property type="double" key="z">1</property>
+
+          <property type="string" key="state">floating</property>
+          <anchors target="3D View">
+            <line own="left" target="left"/>
+            <line own="bottom" target="bottom"/>
+          </anchors>
+        </gz-gui>
+
+        <play_pause>true</play_pause>
+        <step>true</step>
+        <start_paused>true</start_paused>
+        <use_event>true</use_event>
+
+      </plugin>
+
+      <!-- World statistics -->
+      <plugin filename="WorldStats" name="World stats">
+        <gz-gui>
+          <title>World stats</title>
+          <property type="bool" key="showTitleBar">false</property>
+          <property type="bool" key="resizable">false</property>
+          <property type="double" key="height">110</property>
+          <property type="double" key="width">290</property>
+          <property type="double" key="z">1</property>
+
+          <property type="string" key="state">floating</property>
+          <anchors target="3D View">
+            <line own="right" target="right"/>
+            <line own="bottom" target="bottom"/>
+          </anchors>
+        </gz-gui>
+
+        <sim_time>true</sim_time>
+        <real_time>true</real_time>
+        <real_time_factor>true</real_time_factor>
+        <iterations>true</iterations>
+      </plugin>
+
+      <!-- Insert simple shapes -->
+      <plugin filename="Shapes" name="Shapes">
+        <gz-gui>
+          <property key="resizable" type="bool">false</property>
+          <property key="x" type="double">0</property>
+          <property key="y" type="double">0</property>
+          <property key="width" type="double">250</property>
+          <property key="height" type="double">50</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+          <property key="cardBackground" type="string">#666666</property>
+        </gz-gui>
+      </plugin>
+
+      <!-- Insert lights -->
+      <plugin filename="Lights" name="Lights">
+        <gz-gui>
+          <property key="resizable" type="bool">false</property>
+          <property key="x" type="double">250</property>
+          <property key="y" type="double">0</property>
+          <property key="width" type="double">150</property>
+          <property key="height" type="double">50</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+          <property key="cardBackground" type="string">#666666</property>
+        </gz-gui>
+      </plugin>
+
+      <!-- Translate / rotate -->
+      <plugin filename="TransformControl" name="Transform control">
+        <gz-gui>
+          <property key="resizable" type="bool">false</property>
+          <property key="x" type="double">0</property>
+          <property key="y" type="double">50</property>
+          <property key="width" type="double">250</property>
+          <property key="height" type="double">50</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+          <property key="cardBackground" type="string">#777777</property>
+        </gz-gui>
+
+        <!-- disable legacy features used to connect this plugin to GzScene3D -->
+        <legacy>false</legacy>
+      </plugin>
+
+      <!-- Screenshot -->
+      <plugin filename="Screenshot" name="Screenshot">
+        <gz-gui>
+          <property key="resizable" type="bool">false</property>
+          <property key="x" type="double">250</property>
+          <property key="y" type="double">50</property>
+          <property key="width" type="double">50</property>
+          <property key="height" type="double">50</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+          <property key="cardBackground" type="string">#777777</property>
+        </gz-gui>
+      </plugin>
+
+      <!-- Video recorder -->
+      <plugin filename="VideoRecorder" name="VideoRecorder">
+        <gz-gui>
+          <property key="resizable" type="bool">false</property>
+          <property key="x" type="double">300</property>
+          <property key="y" type="double">50</property>
+          <property key="width" type="double">50</property>
+          <property key="height" type="double">50</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+          <property key="cardBackground" type="string">#777777</property>
+        </gz-gui>
+
+        <record_video>
+          <use_sim_time>true</use_sim_time>
+          <lockstep>true</lockstep>
+          <bitrate>4000000</bitrate>
+        </record_video>
+
+        <!-- disable legacy features used to connect this plugin to GzScene3D -->
+        <legacy>false</legacy>
+      </plugin>
+
+      <!-- Inspector -->
+      <plugin filename="ComponentInspector" name="Component inspector">
+        <gz-gui>
+          <property type="string" key="state">docked_collapsed</property>
+        </gz-gui>
+      </plugin>
+
+      <!-- Entity tree -->
+      <plugin filename="EntityTree" name="Entity tree">
+        <gz-gui>
+          <property type="string" key="state">docked_collapsed</property>
+        </gz-gui>
+      </plugin>
+
+      <!-- View angle -->
+      <plugin filename="ViewAngle" name="View angle">
+        <gz-gui>
+          <property type="string" key="state">docked_collapsed</property>
+        </gz-gui>
+
+        <!-- disable legacy features used to connect this plugin to GzScene3D -->
+        <legacy>false</legacy>
+      </plugin>
+
+    </gui>
+
+    <plugin
+      filename="gz-sim-physics-system"
+      name="gz::sim::systems::Physics">
+    </plugin>
+    <plugin
+      filename="gz-sim-user-commands-system"
+      name="gz::sim::systems::UserCommands">
+    </plugin>
+    <plugin
+      filename="gz-sim-sensors-system"
+      name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+      <disable_on_drained_battery>true</disable_on_drained_battery>
+    </plugin>
+    <plugin
+      filename="gz-sim-imu-system"
+      name="gz::sim::systems::Imu">
+    </plugin>
+    <plugin
+      filename="gz-sim-magnetometer-system"
+      name="gz::sim::systems::Magnetometer">
+    </plugin>
+    <plugin
+      filename="gz-sim-forcetorque-system"
+      name="gz::sim::systems::ForceTorque">
+    </plugin>
+    <plugin
+      filename="gz-sim-particle-emitter2-system"
+      name="gz::sim::systems::ParticleEmitter2">
+    </plugin>
+    <plugin
+      filename="gz-sim-scene-broadcaster-system"
+      name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+    <plugin
+      filename="gz-sim-contact-system"
+      name="gz::sim::systems::Contact">
+    </plugin>
+    <plugin
+      filename="gz-sim-navsat-system"
+      name="gz::sim::systems::NavSat">
+    </plugin>
+
+    <scene>
+      <sky></sky>
+      <grid>false</grid>
+      <ambient>1.0 1.0 1.0</ambient>
+      <background>0.8 0.8 0.8</background>
+    </scene>
+
+    <!-- Estimated latitude/longitude of ar-men light house
+         from satellite imagery -->
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <world_frame_orientation>ENU</world_frame_orientation>
+      <latitude_deg>48.04630</latitude_deg>
+      <longitude_deg>-4.97632</longitude_deg>
+      <elevation>0.0</elevation>
+      <heading_deg>0.0</heading_deg>
+    </spherical_coordinates>
+
+    <light type="directional" name="sun">
+      <cast_shadows>false</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <include>
+      <name>Coast Waves</name>
+      <pose>0 0 0 0 0 0</pose>
+      <uri>coast_waves</uri>
+    </include>
+
+    <!-- Aquabot regatta world from model file -->
+    <include>
+      <name>aquabot_regatta_world</name>
+      <pose>0 0 0 0 0 0</pose>
+      <uri>aquabot_regatta_world</uri>
+    </include>    
+    
+    <!-- The projectile for the ball shooter -->
+    <include>
+      <name>blue_projectile</name>
+      <pose>-13 -102 0.03 0 0 0</pose>
+      <uri>blue_projectile</uri>
+      <plugin name="vrx::PolyhedraBuoyancyDrag"
+              filename="libPolyhedraBuoyancyDrag.so">
+        <fluid_density>1000</fluid_density>
+        <fluid_level>0.0</fluid_level>
+        <linear_drag>25.0</linear_drag>
+        <angular_drag>2.0</angular_drag>
+        <buoyancy name="collision_outer">
+          <link_name>link</link_name>
+          <pose>0 0 -0.02 0 0 0</pose>
+          <geometry>
+            <sphere>
+              <radius>0.0285</radius>
+            </sphere>
+          </geometry>
+        </buoyancy>
+        <wavefield>
+          <topic>/vrx/wavefield/parameters</topic>
+        </wavefield>
+      </plugin>
+    </include>
+    
+    <!-- Load the plugin for the wind --> 
+    <plugin
+      filename="libUSVWind.so"
+      name="vrx::USVWind">
+      <wind_obj>
+        <name>wamv</name>
+        <link_name>wamv/base_link</link_name>
+        <coeff_vector>.5 .5 .33</coeff_vector>
+      </wind_obj>
+      <!-- Wind -->
+      <wind_direction>240</wind_direction>
+      <!-- in degrees -->
+      <wind_mean_velocity>5.0</wind_mean_velocity>
+      <var_wind_gain_constants>0</var_wind_gain_constants>
+      <var_wind_time_constants>2</var_wind_time_constants>
+      <random_seed>10</random_seed>
+      <!-- set to zero/empty to randomize -->
+      <update_rate>10</update_rate>
+      <topic_wind_speed>/vrx/debug/wind/speed</topic_wind_speed>
+      <topic_wind_direction>/vrx/debug/wind/direction</topic_wind_direction>
+     </plugin>
+
+    <!-- The wave field -->
+    <plugin filename="libPublisherPlugin.so" name="vrx::PublisherPlugin">
+      <message type="gz.msgs.Param" topic="/vrx/wavefield/parameters"
+               every="2.0">
+        params {
+          key: "direction"
+          value {
+            type: DOUBLE
+            double_value: 1.570797
+          }
+        }
+        params {
+          key: "gain"
+          value {
+            type: DOUBLE
+            double_value: 0.3
+          }
+        }
+        params {
+          key: "period"
+          value {
+            type: DOUBLE
+            double_value: 10.0
+          }
+        }
+        params {
+          key: "steepness"
+          value {
+            type: DOUBLE
+            double_value: 0.0
+          }
+        }
+      </message>
+    </plugin>
+
+    <!-- GENERATED SCENARIO -->
+    <generation_seed>SYUNDvxp5Ws1JAEc</generation_seed>
+    <include>
+      <name>platform</name>
+      <uri>platform</uri>
+    </include>
+    <include>
+      <name>aquabot_sonar_buoy</name>
+      <pose>36.491415 291.927743 0 0 1.57 0</pose>
+      <uri>aquabot_sonar_buoy</uri>
+      <plugin name="vrx::PolyhedraBuoyancyDrag" filename="libPolyhedraBuoyancyDrag.so">
+        <fluid_density>1000</fluid_density>
+        <fluid_level>0.0</fluid_level>
+        <linear_drag>25.0</linear_drag>
+        <angular_drag>2.0</angular_drag>
+        <buoyancy name="collision_outer">
+          <link_name>link</link_name>
+          <pose>0 0 0 0 -1.57 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>1.00</radius>
+              <length>0.05</length>
+            </cylinder>
+          </geometry>
+        </buoyancy>
+        <wavefield>
+          <topic>/vrx/wavefield/parameters</topic>
+        </wavefield>
+      </plugin>
+    </include>
+    <plugin filename="libPublisherPlugin.so" name="vrx::PublisherPlugin">
+      <message type="gz.msgs.Vector3d" topic="/pinger/set_pinger_position" at="1.0">x: 36.491415, y: 291.927743, z: 0</message>
+    </plugin>
+    <actor name="ennemy">
+      <skin>
+        <filename>../models/aquabot_redboat/mesh/redboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>60</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-13.255268 259.457005 -0.1 0 0 -0.952369</pose>
+          </waypoint>
+          <waypoint>
+            <time>29.508768</time>
+            <pose>12.406491 223.391775 -0.1 0 0 -0.952369</pose>
+          </waypoint>
+          <waypoint>
+            <time>36.175435</time>
+            <pose>18.204035 215.243863 -0.1 0 0 -1.439327</pose>
+          </waypoint>
+          <waypoint>
+            <time>59.864905</time>
+            <pose>22.862231 180.016303 -0.1 0 0 -1.439327</pose>
+          </waypoint>
+          <waypoint>
+            <time>66.531572</time>
+            <pose>24.173135 170.102599 -0.1 0 0 -1.631363</pose>
+          </waypoint>
+          <waypoint>
+            <time>74.143018</time>
+            <pose>22.790974 147.310129 -0.1 0 0 -1.631363</pose>
+          </waypoint>
+          <waypoint>
+            <time>77.476352</time>
+            <pose>22.185675 137.328465 -0.1 0 0 -2.077548</pose>
+          </waypoint>
+          <waypoint>
+            <time>90.042731</time>
+            <pose>3.888772 104.367150 -0.1 0 0 -2.077548</pose>
+          </waypoint>
+          <waypoint>
+            <time>93.376064</time>
+            <pose>-0.964629 95.623896 -0.1 0 0 -2.321649</pose>
+          </waypoint>
+          <waypoint>
+            <time>103.609814</time>
+            <pose>-21.910930 73.177979 -0.1 0 0 -2.321649</pose>
+          </waypoint>
+          <waypoint>
+            <time>106.943147</time>
+            <pose>-28.733552 65.866904 -0.1 0 0 -2.621728</pose>
+          </waypoint>
+          <waypoint>
+            <time>121.603922</time>
+            <pose>-66.905220 44.018132 -0.1 0 0 -2.621728</pose>
+          </waypoint>
+          <waypoint>
+            <time>124.937256</time>
+            <pose>-75.584085 39.050507 -0.1 0 0 -2.258749</pose>
+          </waypoint>
+          <waypoint>
+            <time>133.859176</time>
+            <pose>-92.579192 18.372685 -0.1 0 0 -2.258749</pose>
+          </waypoint>
+          <waypoint>
+            <time>137.192510</time>
+            <pose>-98.928761 10.647210 -0.1 0 0 -1.450661</pose>
+          </waypoint>
+          <waypoint>
+            <time>152.022023</time>
+            <pose>-93.596971 -33.520675 -0.1 0 0 -1.450661</pose>
+          </waypoint>
+          <waypoint>
+            <time>155.355356</time>
+            <pose>-92.398507 -43.448600 -0.1 0 0 -1.737491</pose>
+          </waypoint>
+          <waypoint>
+            <time>170.057201</time>
+            <pose>-99.716642 -86.942773 -0.1 0 0 -1.737491</pose>
+          </waypoint>
+          <waypoint>
+            <time>173.390534</time>
+            <pose>-101.375875 -96.804159 -0.1 0 0 -1.940659</pose>
+          </waypoint>
+          <waypoint>
+            <time>182.502309</time>
+            <pose>-111.257257 -122.290986 -0.1 0 0 -1.940659</pose>
+          </waypoint>
+          <waypoint>
+            <time>185.835643</time>
+            <pose>-114.872134 -131.614755 -0.1 0 0 -1.097999</pose>
+          </waypoint>
+          <waypoint>
+            <time>200.740811</time>
+            <pose>-94.509665 -171.424882 -0.1 0 0 -1.097999</pose>
+          </waypoint>
+          <waypoint>
+            <time>204.074144</time>
+            <pose>-89.955883 -180.327862 -0.1 0 0 -0.431581</pose>
+          </waypoint>
+          <waypoint>
+            <time>219.060892</time>
+            <pose>-49.118251 -199.135080 -0.1 0 0 -0.431581</pose>
+          </waypoint>
+          <waypoint>
+            <time>222.394226</time>
+            <pose>-40.035197 -203.318157 -0.1 0 0 0.357790</pose>
+          </waypoint>
+          <waypoint>
+            <time>233.371758</time>
+            <pose>-9.188117 -191.785000 -0.1 0 0 0.357790</pose>
+          </waypoint>
+          <waypoint>
+            <time>236.705092</time>
+            <pose>0.178614 -188.282951 -0.1 0 0 0.098016</pose>
+          </waypoint>
+          <waypoint>
+            <time>249.695488</time>
+            <pose>38.962752 -184.469272 -0.1 0 0 0.098016</pose>
+          </waypoint>
+          <waypoint>
+            <time>253.028821</time>
+            <pose>48.914755 -183.490683 -0.1 0 0 0.860730</pose>
+          </waypoint>
+          <waypoint>
+            <time>265.159801</time>
+            <pose>72.638730 -155.893236 -0.1 0 0 0.860730</pose>
+          </waypoint>
+          <waypoint>
+            <time>268.493134</time>
+            <pose>79.157569 -148.310049 -0.1 0 0 0.371113</pose>
+          </waypoint>
+          <waypoint>
+            <time>275.974402</time>
+            <pose>100.073497 -140.170745 -0.1 0 0 0.371113</pose>
+          </waypoint>
+          <waypoint>
+            <time>279.307735</time>
+            <pose>109.392741 -136.544219 -0.1 0 0 0.797167</pose>
+          </waypoint>
+          <waypoint>
+            <time>289.029617</time>
+            <pose>129.771838 -115.679723 -0.1 0 0 0.797167</pose>
+          </waypoint>
+          <waypoint>
+            <time>292.362950</time>
+            <pose>136.759203 -108.525931 -0.1 0 0 1.355077</pose>
+          </waypoint>
+          <waypoint>
+            <time>306.692647</time>
+            <pose>145.961025 -66.533212 -0.1 0 0 1.355077</pose>
+          </waypoint>
+          <waypoint>
+            <time>310.025980</time>
+            <pose>148.101526 -56.764985 -0.1 0 0 1.036560</pose>
+          </waypoint>
+          <waypoint>
+            <time>321.006251</time>
+            <pose>164.874453 -28.414218 -0.1 0 0 1.036560</pose>
+          </waypoint>
+          <waypoint>
+            <time>324.339584</time>
+            <pose>169.966291 -19.807640 -0.1 0 0 0.738808</pose>
+          </waypoint>
+          <waypoint>
+            <time>335.199277</time>
+            <pose>194.051090 2.131338 -0.1 0 0 0.738808</pose>
+          </waypoint>
+          <waypoint>
+            <time>338.532610</time>
+            <pose>201.443809 8.865408 -0.1 0 0 1.485670</pose>
+          </waypoint>
+          <waypoint>
+            <time>346.694698</time>
+            <pose>203.525708 33.263006 -0.1 0 0 1.485670</pose>
+          </waypoint>
+          <waypoint>
+            <time>350.028032</time>
+            <pose>204.375940 43.226796 -0.1 0 0 1.883011</pose>
+          </waypoint>
+          <waypoint>
+            <time>359.803027</time>
+            <pose>195.368270 71.134084 -0.1 0 0 1.883011</pose>
+          </waypoint>
+          <waypoint>
+            <time>363.136360</time>
+            <pose>192.296599 80.650640 -0.1 0 0 1.259356</pose>
+          </waypoint>
+          <waypoint>
+            <time>375.539567</time>
+            <pose>203.698736 116.070227 -0.1 0 0 1.259356</pose>
+          </waypoint>
+          <waypoint>
+            <time>378.872901</time>
+            <pose>206.763034 125.589160 -0.1 0 0 1.711854</pose>
+          </waypoint>
+          <waypoint>
+            <time>389.811885</time>
+            <pose>202.149297 158.080170 -0.1 0 0 1.711854</pose>
+          </waypoint>
+          <waypoint>
+            <time>393.145218</time>
+            <pose>200.743396 167.980849 -0.1 0 0 2.547495</pose>
+          </waypoint>
+          <waypoint>
+            <time>404.367780</time>
+            <pose>172.844541 186.826724 -0.1 0 0 2.547495</pose>
+          </waypoint>
+          <waypoint>
+            <time>407.701113</time>
+            <pose>164.558004 192.424339 -0.1 0 0 2.171039</pose>
+          </waypoint>
+          <waypoint>
+            <time>421.672428</time>
+            <pose>140.883208 227.011658 -0.1 0 0 2.171039</pose>
+          </waypoint>
+          <waypoint>
+            <time>425.005761</time>
+            <pose>135.234778 235.263642 -0.1 0 0 1.990545</pose>
+          </waypoint>
+          <waypoint>
+            <time>438.349502</time>
+            <pose>118.920827 271.819816 -0.1 0 0 1.990545</pose>
+          </waypoint>
+          <waypoint>
+            <time>441.682836</time>
+            <pose>114.845520 280.951732 -0.1 0 0 2.711319</pose>
+          </waypoint>
+          <waypoint>
+            <time>448.590743</time>
+            <pose>96.010735 289.596008 -0.1 0 0 2.711319</pose>
+          </waypoint>
+          <waypoint>
+            <time>451.924076</time>
+            <pose>86.922220 293.767207 -0.1 0 0 3.059610</pose>
+          </waypoint>
+          <waypoint>
+            <time>468.353021</time>
+            <pose>37.800924 297.803335 -0.1 0 0 3.059610</pose>
+          </waypoint>
+          <waypoint>
+            <time>471.686355</time>
+            <pose>27.834511 298.622241 -0.1 0 0 3.406971</pose>
+          </waypoint>
+          <waypoint>
+            <time>486.432278</time>
+            <pose>-14.854644 287.019813 -0.1 0 0 3.406971</pose>
+          </waypoint>
+          <waypoint>
+            <time>489.765611</time>
+            <pose>-24.504577 284.397071 -0.1 0 0 3.792598</pose>
+          </waypoint>
+          <waypoint>
+            <time>503.707568</time>
+            <pose>-57.776019 259.051170 -0.1 0 0 3.792598</pose>
+          </waypoint>
+          <waypoint>
+            <time>507.040901</time>
+            <pose>-65.730770 252.991309 -0.1 0 0 3.478079</pose>
+          </waypoint>
+          <waypoint>
+            <time>518.377315</time>
+            <pose>-97.832800 241.762404 -0.1 0 0 3.478079</pose>
+          </waypoint>
+          <waypoint>
+            <time>521.710649</time>
+            <pose>-107.272007 238.460682 -0.1 0 0 2.939624</pose>
+          </waypoint>
+          <waypoint>
+            <time>538.176265</time>
+            <pose>-155.664793 248.369614 -0.1 0 0 2.939624</pose>
+          </waypoint>
+          <waypoint>
+            <time>541.509598</time>
+            <pose>-165.461529 250.375599 -0.1 0 0 3.699181</pose>
+          </waypoint>
+          <waypoint>
+            <time>555.063399</time>
+            <pose>-199.964101 228.859975 -0.1 0 0 3.699181</pose>
+          </waypoint>
+          <waypoint>
+            <time>558.396732</time>
+            <pose>-208.449439 223.568563 -0.1 0 0 3.416598</pose>
+          </waypoint>
+          <waypoint>
+            <time>574.055897</time>
+            <pose>-253.661701 210.811746 -0.1 0 0 3.416598</pose>
+          </waypoint>
+          <waypoint>
+            <time>577.389230</time>
+            <pose>-263.285940 208.096229 -0.1 0 0 3.804050</pose>
+          </waypoint>
+          <waypoint>
+            <time>584.776646</time>
+            <pose>-280.760498 194.465201 -0.1 0 0 3.804050</pose>
+          </waypoint>
+          <waypoint>
+            <time>588.109979</time>
+            <pose>-288.645330 188.314638 -0.1 0 0 4.674189</pose>
+          </waypoint>
+          <waypoint>
+            <time>599.744865</time>
+            <pose>-289.978377 153.435445 -0.1 0 0 4.674189</pose>
+          </waypoint>
+          <waypoint>
+            <time>603.078198</time>
+            <pose>-290.360288 143.442741 -0.1 0 0 5.062122</pose>
+          </waypoint>
+          <waypoint>
+            <time>616.376094</time>
+            <pose>-276.690833 105.964050 -0.1 0 0 5.062122</pose>
+          </waypoint>
+          <waypoint>
+            <time>619.709427</time>
+            <pose>-273.264362 96.569408 -0.1 0 0 5.499080</pose>
+          </waypoint>
+          <waypoint>
+            <time>631.365577</time>
+            <pose>-248.505990 71.874965 -0.1 0 0 5.499080</pose>
+          </waypoint>
+          <waypoint>
+            <time>634.698910</time>
+            <pose>-241.425787 64.813044 -0.1 0 0 5.270660</pose>
+          </waypoint>
+          <waypoint>
+            <time>646.873704</time>
+            <pose>-222.078081 33.834071 -0.1 0 0 5.270660</pose>
+          </waypoint>
+          <waypoint>
+            <time>650.207038</time>
+            <pose>-216.780878 25.352347 -0.1 0 0 4.404451</pose>
+          </waypoint>
+          <waypoint>
+            <time>663.518088</time>
+            <pose>-228.884404 -12.702366 -0.1 0 0 4.404451</pose>
+          </waypoint>
+          <waypoint>
+            <time>666.851421</time>
+            <pose>-231.915351 -22.231971 -0.1 0 0 4.706562</pose>
+          </waypoint>
+          <waypoint>
+            <time>682.450863</time>
+            <pose>-232.188037 -69.029502 -0.1 0 0 4.706562</pose>
+          </waypoint>
+          <waypoint>
+            <time>685.784197</time>
+            <pose>-232.246306 -79.029332 -0.1 0 0 5.194153</pose>
+          </waypoint>
+          <waypoint>
+            <time>701.519273</time>
+            <pose>-210.374106 -120.861622 -0.1 0 0 5.194153</pose>
+          </waypoint>
+          <waypoint>
+            <time>704.852606</time>
+            <pose>-205.740679 -129.723414 -0.1 0 0 5.869377</pose>
+          </waypoint>
+          <waypoint>
+            <time>712.243917</time>
+            <pose>-185.438314 -138.639541 -0.1 0 0 5.869377</pose>
+          </waypoint>
+          <waypoint>
+            <time>715.577251</time>
+            <pose>-176.282354 -142.660536 -0.1 0 0 5.406988</pose>
+          </waypoint>
+          <waypoint>
+            <time>731.463516</time>
+            <pose>-145.777050 -179.277296 -0.1 0 0 5.406988</pose>
+          </waypoint>
+          <waypoint>
+            <time>734.796849</time>
+            <pose>-139.376279 -186.960403 -0.1 0 0 4.596873</pose>
+          </waypoint>
+          <waypoint>
+            <time>746.861534</time>
+            <pose>-143.547986 -222.913240 -0.1 0 0 4.596873</pose>
+          </waypoint>
+          <waypoint>
+            <time>750.194867</time>
+            <pose>-144.700581 -232.846594 -0.1 0 0 3.848778</pose>
+          </waypoint>
+          <waypoint>
+            <time>761.392866</time>
+            <pose>-170.238520 -254.672500 -0.1 0 0 3.848778</pose>
+          </waypoint>
+          <waypoint>
+            <time>764.726199</time>
+            <pose>-177.840456 -261.169466 -0.1 0 0 3.219176</pose>
+          </waypoint>
+          <waypoint>
+            <time>776.504065</time>
+            <pose>-213.067768 -263.908005 -0.1 0 0 3.219176</pose>
+          </waypoint>
+          <waypoint>
+            <time>779.837398</time>
+            <pose>-223.037688 -264.683057 -0.1 0 0 2.894570</pose>
+          </waypoint>
+          <waypoint>
+            <time>792.023524</time>
+            <pose>-258.486327 -255.743880 -0.1 0 0 2.894570</pose>
+          </waypoint>
+          <waypoint>
+            <time>795.356857</time>
+            <pose>-268.182775 -253.298701 -0.1 0 0 2.284708</pose>
+          </waypoint>
+          <waypoint>
+            <time>802.095836</time>
+            <pose>-281.420733 -238.018618 -0.1 0 0 2.284708</pose>
+          </waypoint>
+          <waypoint>
+            <time>805.429169</time>
+            <pose>-287.968688 -230.460558 -0.1 0 0 1.585478</pose>
+          </waypoint>
+          <waypoint>
+            <time>821.772849</time>
+            <pose>-288.688521 -181.434803 -0.1 0 0 1.585478</pose>
+          </waypoint>
+          <waypoint>
+            <time>825.106182</time>
+            <pose>-288.835332 -171.435881 -0.1 0 0 1.208389</pose>
+          </waypoint>
+          <waypoint>
+            <time>834.514609</time>
+            <pose>-278.828740 -145.043938 -0.1 0 0 1.208389</pose>
+          </waypoint>
+          <waypoint>
+            <time>837.847943</time>
+            <pose>-275.283481 -135.693476 -0.1 0 0 1.795290</pose>
+          </waypoint>
+          <waypoint>
+            <time>849.568348</time>
+            <pose>-283.110813 -101.414560 -0.1 0 0 1.795290</pose>
+          </waypoint>
+          <waypoint>
+            <time>852.901682</time>
+            <pose>-285.336939 -91.665490 -0.1 0 0 1.606116</pose>
+          </waypoint>
+          <waypoint>
+            <time>866.073820</time>
+            <pose>-286.732374 -52.173720 -0.1 0 0 1.606116</pose>
+          </waypoint>
+          <waypoint>
+            <time>869.407154</time>
+            <pose>-287.085502 -42.179957 -0.1 0 0 1.056129</pose>
+          </waypoint>
+          <waypoint>
+            <time>881.839064</time>
+            <pose>-268.726869 -9.715637 -0.1 0 0 1.056129</pose>
+          </waypoint>
+          <waypoint>
+            <time>885.172397</time>
+            <pose>-263.804420 -1.011069 -0.1 0 0 0.647580</pose>
+          </waypoint>
+          <waypoint>
+            <time>896.703900</time>
+            <pose>-236.213712 19.858356 -0.1 0 0 0.647580</pose>
+          </waypoint>
+          <waypoint>
+            <time>900.037234</time>
+            <pose>-228.238254 25.890939 -0.1 0 0 1.241156</pose>
+          </waypoint>
+          <waypoint>
+            <time>913.267230</time>
+            <pose>-215.390501 63.443975 -0.1 0 0 1.241156</pose>
+          </waypoint>
+          <waypoint>
+            <time>916.600563</time>
+            <pose>-212.153475 72.905564 -0.1 0 0 0.754643</pose>
+          </waypoint>
+          <waypoint>
+            <time>928.584136</time>
+            <pose>-185.962790 97.532827 -0.1 0 0 0.754643</pose>
+          </waypoint>
+          <waypoint>
+            <time>931.917469</time>
+            <pose>-178.677627 104.383112 -0.1 0 0 0.410980</pose>
+          </waypoint>
+          <waypoint>
+            <time>946.655905</time>
+            <pose>-138.144133 122.047463 -0.1 0 0 0.410980</pose>
+          </waypoint>
+          <waypoint>
+            <time>949.989238</time>
+            <pose>-128.976834 126.042539 -0.1 0 0 0.410980</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    <actor name="ally_0">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-215.516407 230.456481 -0.1 0 0 3.936324</pose>
+          </waypoint>
+          <waypoint>
+            <time>11.208203</time>
+            <pose>-239.069647 206.459413 -0.1 0 0 3.936324</pose>
+          </waypoint>
+          <waypoint>
+            <time>14.541536</time>
+            <pose>-246.074409 199.322656 -0.1 0 0 4.265705</pose>
+          </waypoint>
+          <waypoint>
+            <time>26.230246</time>
+            <pose>-261.222189 167.697061 -0.1 0 0 4.265705</pose>
+          </waypoint>
+          <waypoint>
+            <time>29.563580</time>
+            <pose>-265.541964 158.678217 -0.1 0 0 3.900821</pose>
+          </waypoint>
+          <waypoint>
+            <time>38.850213</time>
+            <pose>-285.750622 139.500518 -0.1 0 0 3.900821</pose>
+          </waypoint>
+          <waypoint>
+            <time>42.183546</time>
+            <pose>-293.004294 132.616897 -0.1 0 0 4.713947</pose>
+          </waypoint>
+          <waypoint>
+            <time>49.092417</time>
+            <pose>-292.971994 111.890309 -0.1 0 0 4.713947</pose>
+          </waypoint>
+          <waypoint>
+            <time>52.425751</time>
+            <pose>-292.956410 101.890321 -0.1 0 0 4.897097</pose>
+          </waypoint>
+          <waypoint>
+            <time>60.809469</time>
+            <pose>-288.337171 77.166988 -0.1 0 0 4.897097</pose>
+          </waypoint>
+          <waypoint>
+            <time>64.142802</time>
+            <pose>-286.500581 67.337088 -0.1 0 0 4.589186</pose>
+          </waypoint>
+          <waypoint>
+            <time>71.475751</time>
+            <pose>-289.204044 45.504988 -0.1 0 0 4.589186</pose>
+          </waypoint>
+          <waypoint>
+            <time>74.809085</time>
+            <pose>-290.432956 35.580787 -0.1 0 0 4.986823</pose>
+          </waypoint>
+          <waypoint>
+            <time>87.114206</time>
+            <pose>-280.428805 0.046845 -0.1 0 0 4.986823</pose>
+          </waypoint>
+          <waypoint>
+            <time>90.447539</time>
+            <pose>-277.718781 -9.578942 -0.1 0 0 5.720239</pose>
+          </waypoint>
+          <waypoint>
+            <time>106.721250</time>
+            <pose>-236.431421 -35.633823 -0.1 0 0 5.720239</pose>
+          </waypoint>
+          <waypoint>
+            <time>110.054583</time>
+            <pose>-227.974559 -40.970627 -0.1 0 0 4.574304</pose>
+          </waypoint>
+          <waypoint>
+            <time>122.249786</time>
+            <pose>-233.010444 -77.207992 -0.1 0 0 4.574304</pose>
+          </waypoint>
+          <waypoint>
+            <time>125.583119</time>
+            <pose>-234.386910 -87.112806 -0.1 0 0 4.165555</pose>
+          </waypoint>
+          <waypoint>
+            <time>132.318534</time>
+            <pose>-244.893862 -104.372478 -0.1 0 0 4.165555</pose>
+          </waypoint>
+          <waypoint>
+            <time>135.651868</time>
+            <pose>-250.093716 -112.914229 -0.1 0 0 4.415097</pose>
+          </waypoint>
+          <waypoint>
+            <time>146.666752</time>
+            <pose>-259.773543 -144.509324 -0.1 0 0 4.415097</pose>
+          </waypoint>
+          <waypoint>
+            <time>150.000085</time>
+            <pose>-262.702860 -154.070658 -0.1 0 0 5.509647</pose>
+          </waypoint>
+          <waypoint>
+            <time>163.978233</time>
+            <pose>-232.701156 -183.369044 -0.1 0 0 5.509647</pose>
+          </waypoint>
+          <waypoint>
+            <time>167.311567</time>
+            <pose>-225.546727 -190.355755 -0.1 0 0 4.728047</pose>
+          </waypoint>
+          <waypoint>
+            <time>175.317137</time>
+            <pose>-225.170686 -214.369522 -0.1 0 0 4.728047</pose>
+          </waypoint>
+          <waypoint>
+            <time>178.650470</time>
+            <pose>-225.014111 -224.368296 -0.1 0 0 5.035421</pose>
+          </waypoint>
+          <waypoint>
+            <time>190.518305</time>
+            <pose>-213.712031 -258.130295 -0.1 0 0 5.035421</pose>
+          </waypoint>
+          <waypoint>
+            <time>193.851639</time>
+            <pose>-210.537602 -267.613069 -0.1 0 0 5.708830</pose>
+          </waypoint>
+          <waypoint>
+            <time>205.989484</time>
+            <pose>-179.966873 -287.396296 -0.1 0 0 5.708830</pose>
+          </waypoint>
+          <waypoint>
+            <time>209.322817</time>
+            <pose>-171.571443 -292.829229 -0.1 0 0 6.498378</pose>
+          </waypoint>
+          <waypoint>
+            <time>219.407679</time>
+            <pose>-142.014673 -286.368790 -0.1 0 0 6.498378</pose>
+          </waypoint>
+          <waypoint>
+            <time>222.741012</time>
+            <pose>-132.245321 -284.233431 -0.1 0 0 6.715820</pose>
+          </waypoint>
+          <waypoint>
+            <time>237.991777</time>
+            <pose>-90.708448 -265.051127 -0.1 0 0 6.715820</pose>
+          </waypoint>
+          <waypoint>
+            <time>241.325111</time>
+            <pose>-81.629806 -260.858484 -0.1 0 0 6.254309</pose>
+          </waypoint>
+          <waypoint>
+            <time>248.569149</time>
+            <pose>-59.906751 -261.485944 -0.1 0 0 6.254309</pose>
+          </waypoint>
+          <waypoint>
+            <time>251.902482</time>
+            <pose>-49.910919 -261.774669 -0.1 0 0 6.043395</pose>
+          </waypoint>
+          <waypoint>
+            <time>264.651013</time>
+            <pose>-12.759619 -270.857956 -0.1 0 0 6.043395</pose>
+          </waypoint>
+          <waypoint>
+            <time>267.984346</time>
+            <pose>-3.045741 -273.232946 -0.1 0 0 7.020869</pose>
+          </waypoint>
+          <waypoint>
+            <time>275.118931</time>
+            <pose>12.793653 -258.837311 -0.1 0 0 7.020869</pose>
+          </waypoint>
+          <waypoint>
+            <time>278.452264</time>
+            <pose>20.193941 -252.111559 -0.1 0 0 6.448627</pose>
+          </waypoint>
+          <waypoint>
+            <time>291.141472</time>
+            <pose>57.741776 -245.842274 -0.1 0 0 6.448627</pose>
+          </waypoint>
+          <waypoint>
+            <time>294.474805</time>
+            <pose>67.605233 -244.195392 -0.1 0 0 5.557447</pose>
+          </waypoint>
+          <waypoint>
+            <time>309.732838</time>
+            <pose>101.844692 -274.575116 -0.1 0 0 5.557447</pose>
+          </waypoint>
+          <waypoint>
+            <time>313.066172</time>
+            <pose>109.324786 -281.211997 -0.1 0 0 5.956643</pose>
+          </waypoint>
+          <waypoint>
+            <time>319.803254</time>
+            <pose>128.468014 -287.695156 -0.1 0 0 5.956643</pose>
+          </waypoint>
+          <waypoint>
+            <time>323.136587</time>
+            <pose>137.939586 -290.902854 -0.1 0 0 6.432461</pose>
+          </waypoint>
+          <waypoint>
+            <time>335.603455</time>
+            <pose>174.924259 -285.340572 -0.1 0 0 6.432461</pose>
+          </waypoint>
+          <waypoint>
+            <time>338.936788</time>
+            <pose>184.813050 -283.853355 -0.1 0 0 6.207947</pose>
+          </waypoint>
+          <waypoint>
+            <time>347.787403</time>
+            <pose>211.289777 -285.849182 -0.1 0 0 6.207947</pose>
+          </waypoint>
+          <waypoint>
+            <time>351.120736</time>
+            <pose>221.261486 -286.600854 -0.1 0 0 7.385481</pose>
+          </waypoint>
+          <waypoint>
+            <time>363.691780</time>
+            <pose>238.290816 -252.951452 -0.1 0 0 7.385481</pose>
+          </waypoint>
+          <waypoint>
+            <time>367.025113</time>
+            <pose>242.806306 -244.028989 -0.1 0 0 6.708159</pose>
+          </waypoint>
+          <waypoint>
+            <time>376.521133</time>
+            <pose>268.760336 -232.283441 -0.1 0 0 6.708159</pose>
+          </waypoint>
+          <waypoint>
+            <time>379.854467</time>
+            <pose>277.870831 -228.160469 -0.1 0 0 7.685584</pose>
+          </waypoint>
+          <waypoint>
+            <time>386.752530</time>
+            <pose>281.339240 -207.759008 -0.1 0 0 7.685584</pose>
+          </waypoint>
+          <waypoint>
+            <time>390.085863</time>
+            <pose>283.015270 -197.900462 -0.1 0 0 8.021984</pose>
+          </waypoint>
+          <waypoint>
+            <time>397.943330</time>
+            <pose>279.073643 -174.659947 -0.1 0 0 8.021984</pose>
+          </waypoint>
+          <waypoint>
+            <time>401.276663</time>
+            <pose>277.401506 -164.800740 -0.1 0 0 7.820573</pose>
+          </waypoint>
+          <waypoint>
+            <time>408.939265</time>
+            <pose>278.169351 -141.825762 -0.1 0 0 7.820573</pose>
+          </waypoint>
+          <waypoint>
+            <time>412.272598</time>
+            <pose>278.503373 -131.831342 -0.1 0 0 8.822990</pose>
+          </waypoint>
+          <waypoint>
+            <time>427.224751</time>
+            <pose>241.527078 -106.437336 -0.1 0 0 8.822990</pose>
+          </waypoint>
+          <waypoint>
+            <time>430.558085</time>
+            <pose>233.283829 -100.776166 -0.1 0 0 9.455246</pose>
+          </waypoint>
+          <waypoint>
+            <time>443.626001</time>
+            <pose>194.098276 -101.970454 -0.1 0 0 9.455246</pose>
+          </waypoint>
+          <waypoint>
+            <time>446.959334</time>
+            <pose>184.102918 -102.275090 -0.1 0 0 9.817566</pose>
+          </waypoint>
+          <waypoint>
+            <time>460.268060</time>
+            <pose>147.217298 -117.557458 -0.1 0 0 9.817566</pose>
+          </waypoint>
+          <waypoint>
+            <time>463.601393</time>
+            <pose>137.978843 -121.385114 -0.1 0 0 9.063370</pose>
+          </waypoint>
+          <waypoint>
+            <time>470.625063</time>
+            <pose>118.269023 -113.934586 -0.1 0 0 9.063370</pose>
+          </waypoint>
+          <waypoint>
+            <time>473.958396</time>
+            <pose>108.915023 -110.398672 -0.1 0 0 10.162770</pose>
+          </waypoint>
+          <waypoint>
+            <time>481.943027</time>
+            <pose>91.193431 -126.514940 -0.1 0 0 10.162770</pose>
+          </waypoint>
+          <waypoint>
+            <time>485.276360</time>
+            <pose>83.795221 -133.242977 -0.1 0 0 9.786225</pose>
+          </waypoint>
+          <waypoint>
+            <time>500.286614</time>
+            <pose>41.674075 -149.167131 -0.1 0 0 9.786225</pose>
+          </waypoint>
+          <waypoint>
+            <time>503.619948</time>
+            <pose>32.320215 -152.703414 -0.1 0 0 10.134069</pose>
+          </waypoint>
+          <waypoint>
+            <time>516.271606</time>
+            <pose>3.519066 -177.423323 -0.1 0 0 10.134069</pose>
+          </waypoint>
+          <waypoint>
+            <time>519.604939</time>
+            <pose>-4.069174 -183.936280 -0.1 0 0 11.146812</pose>
+          </waypoint>
+          <waypoint>
+            <time>529.888296</time>
+            <pose>0.578757 -214.434209 -0.1 0 0 11.146812</pose>
+          </waypoint>
+          <waypoint>
+            <time>533.221630</time>
+            <pose>2.085377 -224.320062 -0.1 0 0 10.177444</pose>
+          </waypoint>
+          <waypoint>
+            <time>546.824302</time>
+            <pose>-27.699133 -252.215890 -0.1 0 0 10.177444</pose>
+          </waypoint>
+          <waypoint>
+            <time>550.157635</time>
+            <pose>-34.997824 -259.051759 -0.1 0 0 9.168217</pose>
+          </waypoint>
+          <waypoint>
+            <time>562.791042</time>
+            <pose>-71.657509 -249.434368 -0.1 0 0 9.168217</pose>
+          </waypoint>
+          <waypoint>
+            <time>566.124375</time>
+            <pose>-81.330192 -246.896813 -0.1 0 0 9.696439</pose>
+          </waypoint>
+          <waypoint>
+            <time>573.790157</time>
+            <pose>-103.484144 -253.067738 -0.1 0 0 9.696439</pose>
+          </waypoint>
+          <waypoint>
+            <time>577.123490</time>
+            <pose>-113.117409 -255.751058 -0.1 0 0 9.215631</pose>
+          </waypoint>
+          <waypoint>
+            <time>588.516431</time>
+            <pose>-146.551419 -248.654666 -0.1 0 0 9.215631</pose>
+          </waypoint>
+          <waypoint>
+            <time>591.849764</time>
+            <pose>-156.333503 -246.578411 -0.1 0 0 8.178537</pose>
+          </waypoint>
+          <waypoint>
+            <time>604.122794</time>
+            <pose>-168.074632 -211.681546 -0.1 0 0 8.178537</pose>
+          </waypoint>
+          <waypoint>
+            <time>607.456127</time>
+            <pose>-171.263502 -202.203619 -0.1 0 0 7.628291</pose>
+          </waypoint>
+          <waypoint>
+            <time>618.641190</time>
+            <pose>-163.754544 -169.499395 -0.1 0 0 7.628291</pose>
+          </waypoint>
+          <waypoint>
+            <time>621.974523</time>
+            <pose>-161.516751 -159.752997 -0.1 0 0 6.701673</pose>
+          </waypoint>
+          <waypoint>
+            <time>633.660272</time>
+            <pose>-129.484792 -145.506451 -0.1 0 0 6.701673</pose>
+          </waypoint>
+          <waypoint>
+            <time>636.993605</time>
+            <pose>-120.347748 -141.442655 -0.1 0 0 7.179482</pose>
+          </waypoint>
+          <waypoint>
+            <time>651.369208</time>
+            <pose>-93.414775 -107.759774 -0.1 0 0 7.179482</pose>
+          </waypoint>
+          <waypoint>
+            <time>654.702541</time>
+            <pose>-87.169710 -99.949578 -0.1 0 0 8.343598</pose>
+          </waypoint>
+          <waypoint>
+            <time>663.275826</time>
+            <pose>-99.265433 -77.251464 -0.1 0 0 8.343598</pose>
+          </waypoint>
+          <waypoint>
+            <time>666.609159</time>
+            <pose>-103.968307 -68.426331 -0.1 0 0 8.583448</pose>
+          </waypoint>
+          <waypoint>
+            <time>673.854990</time>
+            <pose>-118.455737 -52.220375 -0.1 0 0 8.583448</pose>
+          </waypoint>
+          <waypoint>
+            <time>677.188324</time>
+            <pose>-125.120457 -44.765074 -0.1 0 0 9.719131</pose>
+          </waypoint>
+          <waypoint>
+            <time>691.051643</time>
+            <pose>-164.921627 -56.831200 -0.1 0 0 9.719131</pose>
+          </waypoint>
+          <waypoint>
+            <time>694.384976</time>
+            <pose>-174.491526 -59.732412 -0.1 0 0 8.999023</pose>
+          </waypoint>
+          <waypoint>
+            <time>710.343828</time>
+            <pose>-218.094005 -39.958979 -0.1 0 0 8.999023</pose>
+          </waypoint>
+          <waypoint>
+            <time>713.677162</time>
+            <pose>-227.201276 -35.828893 -0.1 0 0 9.283144</pose>
+          </waypoint>
+          <waypoint>
+            <time>723.085945</time>
+            <pose>-255.144986 -31.844430 -0.1 0 0 9.283144</pose>
+          </waypoint>
+          <waypoint>
+            <time>726.419279</time>
+            <pose>-265.044852 -30.432818 -0.1 0 0 8.432489</pose>
+          </waypoint>
+          <waypoint>
+            <time>741.457797</time>
+            <pose>-289.712918 7.341511 -0.1 0 0 8.432489</pose>
+          </waypoint>
+          <waypoint>
+            <time>744.791131</time>
+            <pose>-295.180669 15.714306 -0.1 0 0 7.366160</pose>
+          </waypoint>
+          <waypoint>
+            <time>759.062892</time>
+            <pose>-275.113011 53.535433 -0.1 0 0 7.366160</pose>
+          </waypoint>
+          <waypoint>
+            <time>762.396226</time>
+            <pose>-270.425980 62.368990 -0.1 0 0 6.519574</pose>
+          </waypoint>
+          <waypoint>
+            <time>772.792939</time>
+            <pose>-240.103238 69.673521 -0.1 0 0 6.519574</pose>
+          </waypoint>
+          <waypoint>
+            <time>776.126272</time>
+            <pose>-230.381338 72.015457 -0.1 0 0 6.002802</pose>
+          </waypoint>
+          <waypoint>
+            <time>786.981085</time>
+            <pose>-199.088559 63.004102 -0.1 0 0 6.002802</pose>
+          </waypoint>
+          <waypoint>
+            <time>790.314418</time>
+            <pose>-189.479064 60.236863 -0.1 0 0 7.157009</pose>
+          </waypoint>
+          <waypoint>
+            <time>806.176861</time>
+            <pose>-158.932791 96.726301 -0.1 0 0 7.157009</pose>
+          </waypoint>
+          <waypoint>
+            <time>809.510194</time>
+            <pose>-152.513799 104.394191 -0.1 0 0 7.739839</pose>
+          </waypoint>
+          <waypoint>
+            <time>824.602456</time>
+            <pose>-147.357019 149.376354 -0.1 0 0 7.739839</pose>
+          </waypoint>
+          <waypoint>
+            <time>827.935790</time>
+            <pose>-146.218074 159.311282 -0.1 0 0 8.747449</pose>
+          </waypoint>
+          <waypoint>
+            <time>841.093029</time>
+            <pose>-176.976384 184.048761 -0.1 0 0 8.747449</pose>
+          </waypoint>
+          <waypoint>
+            <time>844.426362</time>
+            <pose>-184.768878 190.315901 -0.1 0 0 9.127997</pose>
+          </waypoint>
+          <waypoint>
+            <time>855.633497</time>
+            <pose>-216.920448 200.148264 -0.1 0 0 9.127997</pose>
+          </waypoint>
+          <waypoint>
+            <time>858.966830</time>
+            <pose>-226.483276 203.072700 -0.1 0 0 9.677796</pose>
+          </waypoint>
+          <waypoint>
+            <time>871.090687</time>
+            <pose>-261.696824 193.967914 -0.1 0 0 9.677796</pose>
+          </waypoint>
+          <waypoint>
+            <time>874.424020</time>
+            <pose>-271.378437 191.464643 -0.1 0 0 10.799584</pose>
+          </waypoint>
+          <waypoint>
+            <time>890.712172</time>
+            <pose>-280.894191 143.535682 -0.1 0 0 10.799584</pose>
+          </waypoint>
+          <waypoint>
+            <time>894.045505</time>
+            <pose>-282.841568 133.727129 -0.1 0 0 10.600760</pose>
+          </waypoint>
+          <waypoint>
+            <time>905.233037</time>
+            <pose>-295.750968 102.746569 -0.1 0 0 10.600760</pose>
+          </waypoint>
+          <waypoint>
+            <time>908.566370</time>
+            <pose>-299.597334 93.515888 -0.1 0 0 10.600760</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    <actor name="ally_1">
+      <skin>
+        <filename>../models/aquabot_greenboat/mesh/greenboat.dae</filename>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>20</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="square">
+          <waypoint>
+            <time>0.000000</time>
+            <pose>-145.891899 173.087470 -0.1 0 0 7.297320</pose>
+          </waypoint>
+          <waypoint>
+            <time>15.721635</time>
+            <pose>-120.972076 213.131581 -0.1 0 0 7.297320</pose>
+          </waypoint>
+          <waypoint>
+            <time>19.054969</time>
+            <pose>-115.688525 221.621815 -0.1 0 0 6.485105</pose>
+          </waypoint>
+          <waypoint>
+            <time>29.977514</time>
+            <pose>-83.586617 228.193386 -0.1 0 0 6.485105</pose>
+          </waypoint>
+          <waypoint>
+            <time>33.310848</time>
+            <pose>-73.789783 230.198893 -0.1 0 0 7.641099</pose>
+          </waypoint>
+          <waypoint>
+            <time>49.784779</time>
+            <pose>-63.348005 278.505032 -0.1 0 0 7.641099</pose>
+          </waypoint>
+          <waypoint>
+            <time>53.118112</time>
+            <pose>-61.235216 288.279290 -0.1 0 0 6.556388</pose>
+          </waypoint>
+          <waypoint>
+            <time>62.233446</time>
+            <pose>-34.903433 295.657694 -0.1 0 0 6.556388</pose>
+          </waypoint>
+          <waypoint>
+            <time>65.566779</time>
+            <pose>-25.274315 298.355860 -0.1 0 0 5.831851</pose>
+          </waypoint>
+          <waypoint>
+            <time>72.238120</time>
+            <pose>-7.264376 289.626412 -0.1 0 0 5.831851</pose>
+          </waypoint>
+          <waypoint>
+            <time>75.571454</time>
+            <pose>1.734284 285.264747 -0.1 0 0 5.031731</pose>
+          </waypoint>
+          <waypoint>
+            <time>89.298226</time>
+            <pose>14.662512 246.166415 -0.1 0 0 5.031731</pose>
+          </waypoint>
+          <waypoint>
+            <time>92.631560</time>
+            <pose>17.801931 236.671993 -0.1 0 0 5.346429</pose>
+          </waypoint>
+          <waypoint>
+            <time>102.496387</time>
+            <pose>35.333832 212.829471 -0.1 0 0 5.346429</pose>
+          </waypoint>
+          <waypoint>
+            <time>105.829721</time>
+            <pose>41.257875 204.773063 -0.1 0 0 4.747152</pose>
+          </waypoint>
+          <waypoint>
+            <time>114.562006</time>
+            <pose>42.168372 178.592034 -0.1 0 0 4.747152</pose>
+          </waypoint>
+          <waypoint>
+            <time>117.895340</time>
+            <pose>42.515932 168.598076 -0.1 0 0 3.653605</pose>
+          </waypoint>
+          <waypoint>
+            <time>125.590004</time>
+            <pose>22.392218 157.288485 -0.1 0 0 3.653605</pose>
+          </waypoint>
+          <waypoint>
+            <time>128.923337</time>
+            <pose>13.674612 152.389163 -0.1 0 0 2.779936</pose>
+          </waypoint>
+          <waypoint>
+            <time>137.373131</time>
+            <pose>-10.034971 161.358381 -0.1 0 0 2.779936</pose>
+          </waypoint>
+          <waypoint>
+            <time>140.706465</time>
+            <pose>-19.388091 164.896620 -0.1 0 0 3.315566</pose>
+          </waypoint>
+          <waypoint>
+            <time>151.898896</time>
+            <pose>-52.458531 159.084502 -0.1 0 0 3.315566</pose>
+          </waypoint>
+          <waypoint>
+            <time>155.232229</time>
+            <pose>-62.307579 157.353535 -0.1 0 0 3.528345</pose>
+          </waypoint>
+          <waypoint>
+            <time>162.176867</time>
+            <pose>-81.602678 149.495349 -0.1 0 0 3.528345</pose>
+          </waypoint>
+          <waypoint>
+            <time>165.510200</time>
+            <pose>-90.864068 145.723525 -0.1 0 0 3.152057</pose>
+          </waypoint>
+          <waypoint>
+            <time>173.524124</time>
+            <pose>-114.904522 145.471946 -0.1 0 0 3.152057</pose>
+          </waypoint>
+          <waypoint>
+            <time>176.857457</time>
+            <pose>-124.903975 145.367303 -0.1 0 0 3.811140</pose>
+          </waypoint>
+          <waypoint>
+            <time>186.541341</time>
+            <pose>-147.683445 127.336936 -0.1 0 0 3.811140</pose>
+          </waypoint>
+          <waypoint>
+            <time>189.874674</time>
+            <pose>-155.524470 121.130622 -0.1 0 0 4.187483</pose>
+          </waypoint>
+          <waypoint>
+            <time>200.968489</time>
+            <pose>-172.202867 92.329831 -0.1 0 0 4.187483</pose>
+          </waypoint>
+          <waypoint>
+            <time>204.301822</time>
+            <pose>-177.214187 83.676122 -0.1 0 0 4.425654</pose>
+          </waypoint>
+          <waypoint>
+            <time>219.160837</time>
+            <pose>-189.821571 40.919054 -0.1 0 0 4.425654</pose>
+          </waypoint>
+          <waypoint>
+            <time>222.494171</time>
+            <pose>-192.649794 31.327331 -0.1 0 0 3.290581</pose>
+          </waypoint>
+          <waypoint>
+            <time>233.562390</time>
+            <pose>-225.486602 26.398506 -0.1 0 0 3.290581</pose>
+          </waypoint>
+          <waypoint>
+            <time>236.895723</time>
+            <pose>-235.375819 24.914129 -0.1 0 0 4.159624</pose>
+          </waypoint>
+          <waypoint>
+            <time>247.075182</time>
+            <pose>-251.409776 -1.076345 -0.1 0 0 4.159624</pose>
+          </waypoint>
+          <waypoint>
+            <time>250.408515</time>
+            <pose>-256.660204 -9.587103 -0.1 0 0 4.574659</pose>
+          </waypoint>
+          <waypoint>
+            <time>259.359191</time>
+            <pose>-260.346851 -36.184848 -0.1 0 0 4.574659</pose>
+          </waypoint>
+          <waypoint>
+            <time>262.692525</time>
+            <pose>-261.719800 -46.090150 -0.1 0 0 4.027391</pose>
+          </waypoint>
+          <waypoint>
+            <time>277.182975</time>
+            <pose>-289.222893 -79.755238 -0.1 0 0 4.027391</pose>
+          </waypoint>
+          <waypoint>
+            <time>280.516308</time>
+            <pose>-295.549610 -87.499439 -0.1 0 0 4.814476</pose>
+          </waypoint>
+          <waypoint>
+            <time>289.059561</time>
+            <pose>-292.937680 -112.995761 -0.1 0 0 4.814476</pose>
+          </waypoint>
+          <waypoint>
+            <time>292.392895</time>
+            <pose>-291.918580 -122.943697 -0.1 0 0 5.230329</pose>
+          </waypoint>
+          <waypoint>
+            <time>300.179209</time>
+            <pose>-280.353765 -143.238901 -0.1 0 0 5.230329</pose>
+          </waypoint>
+          <waypoint>
+            <time>303.512542</time>
+            <pose>-275.402850 -151.927309 -0.1 0 0 6.195610</pose>
+          </waypoint>
+          <waypoint>
+            <time>312.188680</time>
+            <pose>-249.474187 -154.203852 -0.1 0 0 6.195610</pose>
+          </waypoint>
+          <waypoint>
+            <time>315.522013</time>
+            <pose>-239.512510 -155.078489 -0.1 0 0 5.859502</pose>
+          </waypoint>
+          <waypoint>
+            <time>322.802195</time>
+            <pose>-219.603083 -164.057584 -0.1 0 0 5.859502</pose>
+          </waypoint>
+          <waypoint>
+            <time>326.135528</time>
+            <pose>-210.487273 -168.168788 -0.1 0 0 5.147132</pose>
+          </waypoint>
+          <waypoint>
+            <time>335.404115</time>
+            <pose>-198.776118 -193.388011 -0.1 0 0 5.147132</pose>
+          </waypoint>
+          <waypoint>
+            <time>338.737448</time>
+            <pose>-194.564345 -202.457795 -0.1 0 0 4.480651</pose>
+          </waypoint>
+          <waypoint>
+            <time>348.839712</time>
+            <pose>-201.524890 -231.954445 -0.1 0 0 4.480651</pose>
+          </waypoint>
+          <waypoint>
+            <time>352.173045</time>
+            <pose>-203.821585 -241.687131 -0.1 0 0 5.380784</pose>
+          </waypoint>
+          <waypoint>
+            <time>365.570401</time>
+            <pose>-178.913482 -273.230573 -0.1 0 0 5.380784</pose>
+          </waypoint>
+          <waypoint>
+            <time>368.903735</time>
+            <pose>-172.716213 -281.078749 -0.1 0 0 6.042747</pose>
+          </waypoint>
+          <waypoint>
+            <time>383.333331</time>
+            <pose>-130.672678 -291.387021 -0.1 0 0 6.042747</pose>
+          </waypoint>
+          <waypoint>
+            <time>386.666665</time>
+            <pose>-120.960340 -293.768301 -0.1 0 0 6.891643</pose>
+          </waypoint>
+          <waypoint>
+            <time>399.819501</time>
+            <pose>-88.583420 -271.213722 -0.1 0 0 6.891643</pose>
+          </waypoint>
+          <waypoint>
+            <time>403.152835</time>
+            <pose>-80.378113 -265.497697 -0.1 0 0 7.250608</pose>
+          </waypoint>
+          <waypoint>
+            <time>418.695704</time>
+            <pose>-53.919945 -227.102483 -0.1 0 0 7.250608</pose>
+          </waypoint>
+          <waypoint>
+            <time>422.029037</time>
+            <pose>-48.245710 -218.868222 -0.1 0 0 8.100398</pose>
+          </waypoint>
+          <waypoint>
+            <time>436.346725</time>
+            <pose>-58.723258 -177.212651 -0.1 0 0 8.100398</pose>
+          </waypoint>
+          <waypoint>
+            <time>439.680058</time>
+            <pose>-61.162560 -167.514723 -0.1 0 0 9.227156</pose>
+          </waypoint>
+          <waypoint>
+            <time>452.596106</time>
+            <pose>-99.156517 -159.906972 -0.1 0 0 9.227156</pose>
+          </waypoint>
+          <waypoint>
+            <time>455.929439</time>
+            <pose>-108.961879 -157.943587 -0.1 0 0 8.855420</pose>
+          </waypoint>
+          <waypoint>
+            <time>472.108821</time>
+            <pose>-149.843007 -131.777103 -0.1 0 0 8.855420</pose>
+          </waypoint>
+          <waypoint>
+            <time>475.442154</time>
+            <pose>-158.265482 -126.386192 -0.1 0 0 8.240836</pose>
+          </waypoint>
+          <waypoint>
+            <time>489.349117</time>
+            <pose>-174.005837 -87.748468 -0.1 0 0 8.240836</pose>
+          </waypoint>
+          <waypoint>
+            <time>492.682450</time>
+            <pose>-177.778612 -78.487466 -0.1 0 0 7.835696</pose>
+          </waypoint>
+          <waypoint>
+            <time>501.356456</time>
+            <pose>-177.302803 -52.469799 -0.1 0 0 7.835696</pose>
+          </waypoint>
+          <waypoint>
+            <time>504.689790</time>
+            <pose>-177.119955 -42.471470 -0.1 0 0 9.047532</pose>
+          </waypoint>
+          <waypoint>
+            <time>513.876454</time>
+            <pose>-202.742005 -32.319440 -0.1 0 0 9.047532</pose>
+          </waypoint>
+          <waypoint>
+            <time>517.209787</time>
+            <pose>-212.038833 -28.635829 -0.1 0 0 8.362540</pose>
+          </waypoint>
+          <waypoint>
+            <time>526.913181</time>
+            <pose>-226.213125 -3.209620 -0.1 0 0 8.362540</pose>
+          </waypoint>
+          <waypoint>
+            <time>530.246514</time>
+            <pose>-231.082312 5.524852 -0.1 0 0 7.934060</pose>
+          </waypoint>
+          <waypoint>
+            <time>542.552222</time>
+            <pose>-234.035433 42.323672 -0.1 0 0 7.934060</pose>
+          </waypoint>
+          <waypoint>
+            <time>545.885555</time>
+            <pose>-234.835365 52.291626 -0.1 0 0 7.453780</pose>
+          </waypoint>
+          <waypoint>
+            <time>557.934670</time>
+            <pose>-220.752208 85.582694 -0.1 0 0 7.453780</pose>
+          </waypoint>
+          <waypoint>
+            <time>561.268003</time>
+            <pose>-216.856166 94.792518 -0.1 0 0 6.255018</pose>
+          </waypoint>
+          <waypoint>
+            <time>574.256512</time>
+            <pose>-177.906097 93.695113 -0.1 0 0 6.255018</pose>
+          </waypoint>
+          <waypoint>
+            <time>577.589846</time>
+            <pose>-167.910063 93.413478 -0.1 0 0 5.407525</pose>
+          </waypoint>
+          <waypoint>
+            <time>593.535438</time>
+            <pose>-137.271100 56.676425 -0.1 0 0 5.407525</pose>
+          </waypoint>
+          <waypoint>
+            <time>596.868771</time>
+            <pose>-130.866203 48.996757 -0.1 0 0 5.678047</pose>
+          </waypoint>
+          <waypoint>
+            <time>611.470876</time>
+            <pose>-94.838862 24.076403 -0.1 0 0 5.678047</pose>
+          </waypoint>
+          <waypoint>
+            <time>614.804210</time>
+            <pose>-86.614628 18.387645 -0.1 0 0 6.118828</pose>
+          </waypoint>
+          <waypoint>
+            <time>626.017667</time>
+            <pose>-53.427601 12.883477 -0.1 0 0 6.118828</pose>
+          </waypoint>
+          <waypoint>
+            <time>629.351000</time>
+            <pose>-43.562364 11.247298 -0.1 0 0 5.258121</pose>
+          </waypoint>
+          <waypoint>
+            <time>643.268169</time>
+            <pose>-21.891482 -24.439692 -0.1 0 0 5.258121</pose>
+          </waypoint>
+          <waypoint>
+            <time>646.601503</time>
+            <pose>-16.701039 -32.987166 -0.1 0 0 6.381877</pose>
+          </waypoint>
+          <waypoint>
+            <time>658.054224</time>
+            <pose>17.489934 -29.601789 -0.1 0 0 6.381877</pose>
+          </waypoint>
+          <waypoint>
+            <time>661.387557</time>
+            <pose>27.441273 -28.616469 -0.1 0 0 6.025213</pose>
+          </waypoint>
+          <waypoint>
+            <time>674.259195</time>
+            <pose>64.778387 -38.467939 -0.1 0 0 6.025213</pose>
+          </waypoint>
+          <waypoint>
+            <time>677.592528</time>
+            <pose>74.447479 -41.019147 -0.1 0 0 5.442425</pose>
+          </waypoint>
+          <waypoint>
+            <time>687.430319</time>
+            <pose>94.129833 -63.011056 -0.1 0 0 5.442425</pose>
+          </waypoint>
+          <waypoint>
+            <time>690.763652</time>
+            <pose>100.798794 -70.462562 -0.1 0 0 5.647700</pose>
+          </waypoint>
+          <waypoint>
+            <time>700.442068</time>
+            <pose>124.165894 -87.696955 -0.1 0 0 5.647700</pose>
+          </waypoint>
+          <waypoint>
+            <time>703.775402</time>
+            <pose>132.213732 -93.632635 -0.1 0 0 4.732144</pose>
+          </waypoint>
+          <waypoint>
+            <time>714.648795</time>
+            <pose>132.858103 -126.246450 -0.1 0 0 4.732144</pose>
+          </waypoint>
+          <waypoint>
+            <time>717.982128</time>
+            <pose>133.055640 -136.244498 -0.1 0 0 5.917817</pose>
+          </waypoint>
+          <waypoint>
+            <time>734.515959</time>
+            <pose>179.383051 -153.966775 -0.1 0 0 5.917817</pose>
+          </waypoint>
+          <waypoint>
+            <time>737.849292</time>
+            <pose>188.722974 -157.539707 -0.1 0 0 4.912084</pose>
+          </waypoint>
+          <waypoint>
+            <time>747.164186</time>
+            <pose>194.266372 -184.929047 -0.1 0 0 4.912084</pose>
+          </waypoint>
+          <waypoint>
+            <time>750.497520</time>
+            <pose>196.250076 -194.730318 -0.1 0 0 4.535357</pose>
+          </waypoint>
+          <waypoint>
+            <time>765.958288</time>
+            <pose>188.081729 -240.387697 -0.1 0 0 4.535357</pose>
+          </waypoint>
+          <waypoint>
+            <time>769.291621</time>
+            <pose>186.320637 -250.231403 -0.1 0 0 3.940510</pose>
+          </waypoint>
+          <waypoint>
+            <time>781.616678</time>
+            <pose>160.531081 -276.727857 -0.1 0 0 3.940510</pose>
+          </waypoint>
+          <waypoint>
+            <time>784.950011</time>
+            <pose>153.556251 -283.893870 -0.1 0 0 3.048296</pose>
+          </waypoint>
+          <waypoint>
+            <time>798.684733</time>
+            <pose>112.531283 -280.055229 -0.1 0 0 3.048296</pose>
+          </waypoint>
+          <waypoint>
+            <time>802.018066</time>
+            <pose>102.574773 -279.123614 -0.1 0 0 2.778743</pose>
+          </waypoint>
+          <waypoint>
+            <time>817.399334</time>
+            <pose>59.435425 -262.745355 -0.1 0 0 2.778743</pose>
+          </waypoint>
+          <waypoint>
+            <time>820.732668</time>
+            <pose>50.086532 -259.195960 -0.1 0 0 2.982156</pose>
+          </waypoint>
+          <waypoint>
+            <time>830.709103</time>
+            <pose>20.536821 -254.444335 -0.1 0 0 2.982156</pose>
+          </waypoint>
+          <waypoint>
+            <time>834.042436</time>
+            <pose>10.663651 -252.856718 -0.1 0 0 2.292770</pose>
+          </waypoint>
+          <waypoint>
+            <time>843.859346</time>
+            <pose>-8.799380 -230.753872 -0.1 0 0 2.292770</pose>
+          </waypoint>
+          <waypoint>
+            <time>847.192679</time>
+            <pose>-15.408056 -223.248847 -0.1 0 0 1.572414</pose>
+          </waypoint>
+          <waypoint>
+            <time>858.976334</time>
+            <pose>-15.465248 -187.897928 -0.1 0 0 1.572414</pose>
+          </waypoint>
+          <waypoint>
+            <time>862.309668</time>
+            <pose>-15.481426 -177.897941 -0.1 0 0 0.614864</pose>
+          </waypoint>
+          <waypoint>
+            <time>876.856422</time>
+            <pose>20.166211 -152.724176 -0.1 0 0 0.614864</pose>
+          </waypoint>
+          <waypoint>
+            <time>880.189755</time>
+            <pose>28.334731 -146.955703 -0.1 0 0 -0.056953</pose>
+          </waypoint>
+          <waypoint>
+            <time>887.999038</time>
+            <pose>51.724595 -148.289257 -0.1 0 0 -0.056953</pose>
+          </waypoint>
+          <waypoint>
+            <time>891.332371</time>
+            <pose>61.708382 -148.858474 -0.1 0 0 1.083181</pose>
+          </waypoint>
+          <waypoint>
+            <time>904.801078</time>
+            <pose>80.639491 -113.161590 -0.1 0 0 1.083181</pose>
+          </waypoint>
+          <waypoint>
+            <time>908.134411</time>
+            <pose>85.324700 -104.327065 -0.1 0 0 1.083181</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+    <plugin filename="libPatrolAndFollowScoringPlugin.so" name="vrx::PatrolAndFollowScoringPlugin">
+      <vehicle>wamv</vehicle>
+      <task_name>patrolandfollow</task_name>
+      <task_info_topic>/vrx/task/info</task_info_topic>
+      <initial_state_duration>10</initial_state_duration>
+      <ready_state_duration>10</ready_state_duration>
+      <running_state_duration>900</running_state_duration>
+      <release_topic>/vrx/release</release_topic>
+      <pinger_position>36.491415 291.927743 0</pinger_position>
+      <target_name>ennemy</target_name>
+      <markers>
+        <scaling>0.2 0.2 2.0</scaling>
+        <height>0.5</height>
+      </markers>
+      <phase_rally_tolerance>20</phase_rally_tolerance>
+      <phase_alert_process_period>1.0</phase_alert_process_period>
+      <phase_alert_tolerance>50.0</phase_alert_tolerance>
+      <phase_follow_process_period>1.0</phase_follow_process_period>
+      <phase_follow_tolerance>50</phase_follow_tolerance>
+      <phase_follow_target_distance>30</phase_follow_target_distance>
+      <phase_follow_ennemy_time>180.0</phase_follow_ennemy_time>
+      <collision_min_distance>10.0</collision_min_distance>
+      <collision_finish>true</collision_finish>
+      <collision_penality>10</collision_penality>
+      <collision_objects>
+        <object>
+          <name>ally_0</name>
+        </object>
+        <object>
+          <name>ally_1</name>
+        </object>
+      </collision_objects>
+      <ais_allies_period>1.0</ais_allies_period>
+      <ais_ennemy_period>10.0</ais_ennemy_period>
+      <ais_ennemy_wait_time>180.0</ais_ennemy_wait_time>
+    </plugin>
+  </world>
+</sdf>

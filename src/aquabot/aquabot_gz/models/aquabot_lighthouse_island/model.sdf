@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="aquabot_lighthouse_island">
+    <include>
+      <name>aquabot_lighthouse</name>
+      <pose>0 0 -0.5 0 0 2.60</pose>
+      <uri>aquabot_lighthouse</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_3</name>
+      <pose>1.4 -5.55 -10.45 0.41 0.82 -1.09</pose>
+      <uri>aquabot_rock</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_grass_1</name>
+      <pose>-12 -0.27 0.9 0 0 1</pose>
+      <uri>aquabot_grass</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_grass_2</name>
+      <pose>-8 6 0.8 0 0 -1</pose>
+      <uri>aquabot_grass</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_grass_3</name>
+      <pose>-8 -9 0.9 0 0 -2</pose>
+      <uri>aquabot_grass</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_sapling_1</name>
+      <pose>0 12 0 0 0 0</pose>
+      <uri>aquabot_sapling</uri>
+    </include>
+  </model>
+</sdf>
