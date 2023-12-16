@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="aquabot_regatta_world">
+    <include>
+      <name>aquabot_lighthouse_island</name>
+      <pose>120 -50 0 0 0 0</pose>
+      <uri>aquabot_lighthouse_island</uri>
+    </include>
+
+    <include>
+      <name>aquabot_island_1</name>
+      <pose>-150 0 0 0 0 -3.14</pose>
+      <uri>aquabot_island</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_island_2</name>
+      <pose>110 130 4 0.2 0 1.0</pose>
+      <uri>aquabot_island</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_island_0</name>
+      <pose>12 -102 0 0 0 0</pose>
+      <uri>aquabot_rock_island_1</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_island_1</name>
+      <pose>92 170 0 0 0 1</pose>
+      <uri>aquabot_rock_island_1</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_0</name>
+      <pose>-88 180 0 -2 1 -2</pose>
+      <uri>aquabot_rock</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_1</name>
+      <pose>-40 220 1 -2 2 -3</pose>
+      <uri>aquabot_rock</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_2</name>
+      <pose>-48 -92 -6 0 0 0</pose>
+      <uri>aquabot_rock</uri>
+    </include>
+    
+    <include>
+      <name>aquabot_rock_3</name>
+      <pose>-30 -150 -6 0 2 0</pose>
+      <uri>aquabot_rock</uri>
+    </include>
+  </model>
+</sdf>
