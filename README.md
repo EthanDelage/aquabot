@@ -61,7 +61,7 @@ make build
 make launch
 ```
 
-## Final
+## Acknowledgments
 
-After 2 months of research and hard work, we've been awarded second place in the ranking!
-Many thanks to the Sirehna and Naval Group teams for organizing the competition and supporting us. 
+After 2 months of research and hard work, we've been awarded **second place** in the competition!
+We would like to thank Sirehna and Naval Group for organizing the competition and supporting us. 
