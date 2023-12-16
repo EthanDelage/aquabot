@@ -21,7 +21,7 @@ The perception module is designed to detect threats utilizing the camera and est
 For additional details, please refer to the report available:
 
 - [PDF report](assets/report.pdf)
-- [PowerPoint presentation](assets/presentation)
+- [PowerPoint presentation](assets/presentation.pptx)
 
 ## Usage
 
