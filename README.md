@@ -18,6 +18,8 @@ https://github.com/EthanDelage/aquabot/assets/50496792/67a0170c-d944-461a-99a4-6
 ### Perception
 The perception module is designed to detect threats utilizing the camera and estimate their distance using lidar sensor. Threat recognition is achieved through color detection, while distance estimation involves projecting the lidar's 3D points onto the camera rendering. By leveraging the threat's distance and angle, the module can calculate its GPS position.
 
+https://github.com/EthanDelage/aquabot/assets/50496792/6377734d-59ac-47a8-b206-32733cc76101
+
 For additional details, please refer to the report available:
 
 - [PDF report](assets/report.pdf)
